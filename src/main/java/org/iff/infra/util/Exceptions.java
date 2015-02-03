@@ -23,6 +23,9 @@ public class Exceptions {
 	 */
 	public static void exception(CharSequence message, Throwable t)
 			throws Exception {
+		if (t.getMessage().startsWith("[FOSS") && (t instanceof Exception)) {
+			throw (Exception) t;
+		}
 		throw new Exception("[FOSS-1001][" + t.getClass().getSimpleName()
 				+ "][" + message + "]", t);
 	}
@@ -46,6 +49,10 @@ public class Exceptions {
 	 * @since 2014-3-14
 	 */
 	public static void runtime(CharSequence message, Throwable t) {
+		if (t.getMessage().startsWith("[FOSS")
+				&& (t instanceof RuntimeException)) {
+			throw (RuntimeException) t;
+		}
 		throw new RuntimeException("[FOSS-1003]["
 				+ t.getClass().getSimpleName() + "][" + message + "]", t);
 	}
