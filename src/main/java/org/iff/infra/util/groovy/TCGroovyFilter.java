@@ -11,19 +11,11 @@ import groovy.lang.GroovyObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -31,9 +23,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
-import org.iff.infra.util.SocketHelper;
 
 /**
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
@@ -60,7 +49,19 @@ public class TCGroovyFilter implements javax.servlet.Filter {
 			Enumeration<String> names = filterConfig.getInitParameterNames();
 			while (names.hasMoreElements()) {
 				String name = names.nextElement();
-				System.setProperty(name, filterConfig.getInitParameter(name));
+				if ("system_props".equals(name)) {//system_props="a=b@@@b=c" -> a:b, b:c
+					String value = filterConfig.getInitParameter(name);
+					value = value == null ? "" : value.trim();
+					String[] split = value.split("@@@");
+					for (String s : split) {
+						String[] propsPaire = s.split("=");
+						if (propsPaire.length == 2) {
+							System.setProperty(propsPaire[0], propsPaire[1]);
+						}
+					}
+				} else {
+					System.setProperty(name, filterConfig.getInitParameter(name));
+				}
 			}
 		}
 		{

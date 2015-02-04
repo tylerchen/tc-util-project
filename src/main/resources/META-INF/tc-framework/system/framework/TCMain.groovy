@@ -75,7 +75,7 @@ class TCFilter implements javax.servlet.Filter{
 		request.setCharacterEncoding("UTF-8")
 		response.setCharacterEncoding("UTF-8")
 		def target=request.servletPath
-		def target_prefix=request.getAttribute('tc_groovy_target_prefix')
+		def target_prefix=request.getAttribute('tc_groovy_target_prefix') ?: ''
 		println "doFilter: ${handler.class.name}, target:${target}, target_prefix:${target_prefix}"
 		if(target.endsWith(".gsp")||target.endsWith(".jsp")||target.startsWith("/css/")||target.startsWith("/js/")||target.startsWith("/images/")){
 			chain.doFilter(request, response)
@@ -96,10 +96,14 @@ class TCFilter implements javax.servlet.Filter{
 			if(target.endsWith(".html")){
 				target=target.substring(0, target.length()-5)
 			}
+			def appContext=org.iff.infra.util.StringHelper.pathBuild("${request.contextPath}/${target_prefix}/", '/')
+			if(appContext.endsWith('/')){
+				appContext=appContext.substring(0,appContext.size()-1)
+			}
 			def result=handler.process(['request':request, 'response':response, 
 				'context':request.contextPath,
 				'resContext':request.contextPath,
-				'appContext':org.iff.infra.util.StringHelper.pathBuild("${request.contextPath}/${target_prefix}/", '/')[0..-2],
+				'appContext':appContext,
 				'servletPath':request.servletPath, 'target':target, 'urlParams':[]])
 			if(true==result){
 				return
@@ -125,7 +129,7 @@ class TCServer{
 	def start(){
 		server = new org.eclipse.jetty.server.Server(9090)
 		def connector = new org.eclipse.jetty.server.ServerConnector(server)
-		def webApp = new org.eclipse.jetty.webapp.WebAppContext(contextPath:"/", resourceBase:"${TCCache.me().cache().app_root}/webapp", classLoader:classLoader)
+		def webApp = new org.eclipse.jetty.webapp.WebAppContext(contextPath:TCCache.me().cache().props.contextPath ?: '/', resourceBase:TCCache.me().cache().props.resourceBase ?: "${TCCache.me().cache().app_root}/webapp", classLoader:classLoader)
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false")
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false")	// webApp.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "false"));
 		server.setHandler(webApp)

@@ -42,6 +42,7 @@ class FileBrowserAction{
 		]
 	def parseRequest(){
 		def req
+		println "params: ${params}"
 		println "params.request.contentType:${params.request.contentType}"
 		println "query string:${params.request.queryString}"
 		def queryString=params.request.queryString

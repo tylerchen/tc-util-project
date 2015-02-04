@@ -19,7 +19,8 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		//for test
-		System.setProperty("app_root", "G:/bak/app_root");
+		System.setProperty("app_root", "E:/workspace/JeeGalileo/tc-util-project/src/main/resources/META-INF/tc-framework");
+		System.setProperty("resourceBase", "G:/bak/app_root/webapp");
 		{
 			TCCLassManager.me().compile(System.getProperty("app_root") + "/system/framework/TC.groovy");
 			Class clazz = TCCLassManager.me().get().loadClass("org.iff.groovy.framework.Starter");
