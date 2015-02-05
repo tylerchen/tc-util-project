@@ -26,6 +26,7 @@ public class TCMainClassLoader extends GroovyClassLoader {
 
 	protected String file;
 	protected long lastModify = 0;
+	protected boolean lastCompileSuccess = false;
 
 	public TCMainClassLoader() {
 		super(Thread.currentThread().getContextClassLoader(), getCompilerConfiguration());
@@ -38,9 +39,11 @@ public class TCMainClassLoader extends GroovyClassLoader {
 					if (lastModify == 0) {
 						lastModify = -1;
 						super.recompile(new URL(file), null, null);
+						lastCompileSuccess = true;
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+					lastCompileSuccess = false;
 				}
 			} else {
 				try {
@@ -49,13 +52,19 @@ public class TCMainClassLoader extends GroovyClassLoader {
 						lastModify = groovyFile.lastModified();
 						System.out.println("------TCMainClassLoader.recompile-------->" + file);
 						super.recompile(groovyFile.getCanonicalFile().toURI().toURL(), null, null);
+						lastCompileSuccess = true;
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+					lastCompileSuccess = false;
 				}
 			}
 		}
 		return this;
+	}
+
+	public boolean isLastCompileSuccess() {
+		return lastCompileSuccess;
 	}
 
 	public String getFile() {

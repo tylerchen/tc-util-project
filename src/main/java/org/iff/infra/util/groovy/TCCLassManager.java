@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.iff.infra.util.FCS;
+import org.iff.infra.util.Logger;
+
 /**
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2014-12-26
@@ -106,13 +109,15 @@ public class TCCLassManager {
 			return loader;
 		}
 		TCMainClassLoader loader = TCGroovyClassLoader.get(file);
-		loader.recompile();
-		Class[] classes = loader.getLoadedClasses();
-		if (classes == null || classes.length < 1) {
-			return loader;
-		}
 		this.register(loader);
-		this.addClassNameScriptMapping(loader, file);
+		loader.recompile();
+		if (loader.isLastCompileSuccess()) {
+			Class[] classes = loader.getLoadedClasses();
+			if (classes == null || classes.length < 1) {
+				return loader;
+			}
+			this.addClassNameScriptMapping(loader, file);
+		}
 		return loader;
 	}
 

@@ -6,7 +6,7 @@ class TestAction{
 		def build = new groovy.xml.MarkupBuilder(params.response.writer)
 		build.html{
 			head{ title('index') }
-			body{ h1("So great!!!") }
+			body{ h1("So great!!! ${params}}") }
 		}
 	}
 	def hello(){

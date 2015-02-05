@@ -14,7 +14,7 @@ class FolderWatchers {
 		watchService = FileSystems.getDefault().newWatchService()
 	}
 	def static FolderWatchers me() {
-		if (null == watchers){
+		if (!watchers){
 			watchers = new FolderWatchers()
 		}
 		return watchers
@@ -44,7 +44,7 @@ class FolderWatchers {
 				if(dir==null){
 					continue
 				}
-				key.pollEvents().each(){ event ->
+				key.pollEvents().each{ event ->
 					Path name = event.context()
 					Path child = dir.resolve(name)
 					println "${event.kind().name()}:${dir}:${name}: ${child}\n"
@@ -58,7 +58,7 @@ class FolderWatchers {
 					if (!Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
 						def groovyPath=child.toString()
 						if(groovyPath.endsWith(".groovy")){
-							changeListener.addEvent(event, groovyPath.substring(TCCache.me().cache().app_root.size()))
+							changeListener.addEvent(event, groovyPath)
 						}
 					}
 				}// end each
@@ -120,18 +120,18 @@ class TCClassParse{
 	}
 	def mappingClass(){
 		def classMap=TCCache.me().cache().anno_class
-		classes.each(){
+		classes.each{
 			def anno=it.getAnnotation(TCAction.class)
 			if(!anno){
 				anno=it.getAnnotation(TCFramework.class)
 			}
 			if(anno){
 				if(anno instanceof TCAction){
-					classMap.action[it.name]=['name':anno.name()]
+					classMap.action[it.name]=[name:anno.name()]
 				}else if(anno instanceof TCFramework){
-					classMap.framework[it.name]=['name':anno.name(), 'order':anno.order()]
+					classMap.framework[it.name]=[name:anno.name(), order:anno.order()]
 				}
-				classMap[it.name]=['clazz':it, 'instance':null]
+				classMap[it.name]=[clazz:it, instance:null]
 			}
 		}
 		println "classes = $classes"
@@ -141,18 +141,18 @@ class TCClassParse{
 		def cache=TCCache.me().cache()
 		def classMap=cache.anno_class
 		def frameworkAnnoNameMappingClassOrder=[:]//framework annotation name value mapping class name and order
-		classes.each(){
+		classes.each{
 			def key=it.name
 			def value=classMap.framework[key]
 			if(value){
 				if(!frameworkAnnoNameMappingClassOrder[value.name]){
-					frameworkAnnoNameMappingClassOrder[value.name]=['name':key,'order':value.order]
+					frameworkAnnoNameMappingClassOrder[value.name]=[name:key, order:value.order]
 				}else if(frameworkAnnoNameMappingClassOrder[value.name].order<value.order){
-					frameworkAnnoNameMappingClassOrder[value.name]=['name':key,'order':value.order]
+					frameworkAnnoNameMappingClassOrder[value.name]=[name:key, order:value.order]
 				}
 			}
 		}
-		frameworkAnnoNameMappingClassOrder.each(){key, value ->
+		frameworkAnnoNameMappingClassOrder.each{key, value ->
 			println "framework_instance: ${key}, ${value}"
 			cache.framework_instance[key]=classMap[value.name].clazz.newInstance()
 			classMap[value.name].instance=cache.framework_instance[key]
@@ -161,7 +161,7 @@ class TCClassParse{
 	def actionProcess(){
 		def classMap=TCCache.me().cache().anno_class
 		def actionHandler=TCCache.me().cache().framework_instance.TCActionHandler
-		classes.each(){
+		classes.each{
 			def action=classMap.action[it.name]
 			if(action){
 				actionHandler.registerAction(classMap[it.name].clazz)
@@ -175,7 +175,7 @@ class TCCache{
 	private TCCache(){
 	}
 	def static init(){
-		def cache=new HashMap()
+		def cache=[:]
 		cache.putAll([
 			'framework_instance':[:],
 			'action_instance':[:],
@@ -322,25 +322,48 @@ class Starter{
 		def order=["system/util","system/framework","app/model","app/service","app/view"]
 		def groovy_files=TCCache.me().cache().groovy_files.sort()
 		order.each{ path ->
-			println "compile path ${TCCache.me().cache().app_root}/${path}"
+			println "compile path: ${TCCache.me().cache().app_root}/${path}"
+			def errorCompile=[]
+			def errorTimes=100
 			groovy_files.each{pathContext, files ->
 				pathContext=pathContext.replaceAll('^/|/$','')
 				if(pathContext.startsWith(path)){
 					files.each{ file ->
-						println "compile file $file"
+						println "compile file: $file"
 						if(!file.endsWith("/system/framework/TC.groovy")){
 							def loader=TCCLassManager.me().compile(file)
-							TCClassParse.me().addClasses(loader.loadedClasses)
+							if(loader.isLastCompileSuccess()){
+								TCClassParse.me().addClasses(loader.loadedClasses)
+							}else{
+								println "comile file error: ${file}"
+								errorCompile.add(file)
+							}
 						}
 					}
 				}
+			}// END-each:groovy_files
+			for(;errorTimes>0;errorTimes--){
+				if(errorCompile.isEmpty()){
+					break
+				}
+				def errorFiles=errorCompile.clone()
+				errorCompile.clear()
+				errorFiles.each{file ->
+					try{
+						println "recompile error file: $file"
+						def loader=TCCLassManager.me().compile(file)
+						TCClassParse.me().addClasses(loader.loadedClasses)
+					}catch(err){
+						errorCompile << file
+					}
+				}
 			}
-		}
+		}// END-each:order
 		TCClassParse.me().process()
 	}
 	def systemPropertiesToMap(){
 		Properties ps = System.getProperties()
-		ps.entrySet().each(){ entry->
+		ps.entrySet().each{ entry->
 			if(entry.key instanceof String){
 				TCCache.me().cache().props.put(entry.key, entry.value)
 				println "property: ${entry}"
