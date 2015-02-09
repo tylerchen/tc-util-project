@@ -79,7 +79,10 @@ public class TCGroovyFilter implements javax.servlet.Filter {
 			try {
 				TCCLassManager.me().compile(map.get("/system/framework/TC.groovy"));
 				{
-					Class clazz = TCCLassManager.me().get().loadClass("org.iff.groovy.framework.Starter");
+					String startClassName = filterConfig.getInitParameter("tc_groovy_framework_start_class");
+					startClassName = startClassName == null || (startClassName = startClassName.trim()).length() < 1 ? "org.iff.groovy.framework.TCStarter"
+							: startClassName;
+					Class clazz = TCCLassManager.me().get().loadClass(startClassName);
 					GroovyObject groovyObject = (GroovyObject) clazz.newInstance();
 					groovyObject.invokeMethod("start", map);
 				}
