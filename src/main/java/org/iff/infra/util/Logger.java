@@ -12,6 +12,7 @@ import org.apache.log4j.LogManager;
 import org.slf4j.LoggerFactory;
 
 /**
+ * A Logger util to provide log message
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2014-3-14
  */

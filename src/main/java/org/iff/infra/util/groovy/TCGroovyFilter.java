@@ -12,6 +12,8 @@ import groovy.lang.GroovyObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
@@ -134,7 +136,7 @@ public class TCGroovyFilter implements javax.servlet.Filter {
 	}
 
 	public static void main(String[] args) {
-		//Path path = Paths.get("G:/app_roo");
+		Path path = Paths.get("G:/app_roo");
 		//path.toFile().exists()
 		//		try {
 		//			URL url = new URL("jar:file:/E:/workspace/JeeGalileo/jfinal-groovy-project/lib/tc-groovy-framework.jar!/META-INF/app_root/system/framework/TC.groovy");

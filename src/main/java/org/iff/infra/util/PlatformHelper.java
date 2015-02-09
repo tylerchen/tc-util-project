@@ -1,5 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2013-2-14 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * All rights reserved.
+ *
+ * Contributors:
+ *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ ******************************************************************************/
 package org.iff.infra.util;
 
+/**
+ * A platform helper to test the OS platform type.
+ * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @since 2013-2-14
+ */
 public final class PlatformHelper {
 	private static final int UNSPECIFIED = -1;
 	private static final int MAC = 0;

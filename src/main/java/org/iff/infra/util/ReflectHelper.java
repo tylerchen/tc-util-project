@@ -14,6 +14,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 /**
+ * A Reflect helper provides a set of utility methods to process the java class.
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2013-2-14
  */

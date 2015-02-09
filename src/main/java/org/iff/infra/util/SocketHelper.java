@@ -14,11 +14,20 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
+ * A socket util.
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2011-12-7
  */
 public class SocketHelper {
 
+	/**
+	 * test the ip:port is connect-able
+	 * @param ip
+	 * @param port
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static boolean test(String ip, int port) {
 		Socket client = null;
 		try {
@@ -36,11 +45,18 @@ public class SocketHelper {
 		return false;
 	}
 
+	/**
+	 * get the input stream content, default charset UTF-8.
+	 * @param is
+	 * @param notClose
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String getContent(InputStream is, boolean notClose) {
 		StringBuilder sb = new StringBuilder(128);
 		try {
-			BufferedReader br = new BufferedReader(new InputStreamReader(is,
-					"UTF-8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				sb.append(line).append("\n");

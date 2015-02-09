@@ -88,7 +88,7 @@ class ChangeListener {
 		events.put(path, anEvent)
 	}
 	def processEvent(){
-		events.each(){ k,v ->
+		events.each{ k,v ->
 			onEvent(v, k)
 		}
 		if(!events.isEmpty()){
@@ -112,8 +112,6 @@ class TCClassParse{
 	}
 	def process(){
 		mappingClass()
-		println "action=====>${TCCache.me().cache().anno_class.action}"
-		println "framework=====>${TCCache.me().cache().anno_class.framework}"
 		frameworkProcess()
 		actionProcess()
 		classes.clear()

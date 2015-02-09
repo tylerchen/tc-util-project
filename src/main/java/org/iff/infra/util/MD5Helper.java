@@ -1,10 +1,26 @@
+/*******************************************************************************
+ * Copyright (c) 2014-8-25 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * All rights reserved.
+ *
+ * Contributors:
+ *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ ******************************************************************************/
 package org.iff.infra.util;
 
 import java.security.MessageDigest;
 
+/**
+ * A md5 helper.
+ * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @since 2014-8-25
+ */
 public class MD5Helper {
-	/*** 
-	 * MD5加码 生成32位md5码 
+	/**
+	 * String to md5 string
+	 * @param inStr
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
 	 */
 	public static String string2MD5(String inStr) {
 		MessageDigest md5 = null;
@@ -33,8 +49,12 @@ public class MD5Helper {
 		return hexValue.toString();
 	}
 
-	/** 
-	 * 加密解密算法 执行一次加密，两次解密 
+	/**
+	 * encrypt md5 string
+	 * @param inStr
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
 	 */
 	public static String convertMD5(String inStr) {
 
@@ -46,8 +66,12 @@ public class MD5Helper {
 		return s;
 	}
 
-	/*** 
-	 * MD5加码 生成32位md5码 
+	/**
+	 * generate 32-bit md5
+	 * @param inStr
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
 	 */
 	public static byte[] md5(String inStr) {
 		MessageDigest md5 = null;

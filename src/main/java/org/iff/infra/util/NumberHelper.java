@@ -13,21 +13,46 @@ import java.util.Map;
 import org.apache.commons.lang3.math.NumberUtils;
 
 /**
+ * A number helper to process Number.
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2014-8-25
  */
 public class NumberHelper {
 
+	/**
+	 * convert value to int or return default value if has exceptions, or return Integer.MIN_VALUE.
+	 * @param value
+	 * @param defaultValue
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static int getInt(Object value, Number defaultValue) {
 		Number number = get(value, defaultValue);
 		return number != null ? number.intValue() : Integer.MIN_VALUE;
 	}
 
+	/**
+	 * convert value to long or return default value if has exceptions, or return Long.MIN_VALUE.
+	 * @param value
+	 * @param defaultValue
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static long getLong(Object value, Number defaultValue) {
 		Number number = get(value, defaultValue);
 		return number != null ? number.longValue() : Long.MIN_VALUE;
 	}
 
+	/**
+	 * convert value to int or return default value if has exceptions.
+	 * @param value
+	 * @param defaultValue
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static Number get(Object value, Number defaultValue) {
 		if (value == null) {
 			return defaultValue;

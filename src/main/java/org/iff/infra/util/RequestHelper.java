@@ -29,14 +29,24 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 
 /**
+ * A request helper provides a set of utility methods to process the http request.
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2014-7-3
  */
 public class RequestHelper {
 
+	/** setting http client properties **/
 	static final HttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(
 			RequestConfig.custom().setConnectionRequestTimeout(2000).setSocketTimeout(2000).build()).build();
 
+	/**
+	 * set request parameters
+	 * @param builder
+	 * @param params
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	protected static URIBuilder setParams(URIBuilder builder, Map<?, ?> params) {
 		if (params != null) {
 			for (Entry<?, ?> entry : params.entrySet()) {
@@ -46,6 +56,13 @@ public class RequestHelper {
 		return builder;
 	}
 
+	/**
+	 * set request header
+	 * @param method
+	 * @param header
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	protected static void setHeader(HttpRequestBase method, Map<?, ?> header) {
 		if (header != null) {
 			for (Entry<?, ?> entry : header.entrySet()) {
@@ -54,6 +71,13 @@ public class RequestHelper {
 		}
 	}
 
+	/**
+	 * execute http method
+	 * @param method
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	protected static RequestResult executeMethod(HttpRequestBase method) {
 		try {
 			HttpResponse response = httpClient.execute(method);
@@ -69,6 +93,15 @@ public class RequestHelper {
 		}
 	}
 
+	/**
+	 * process request GET method and return result
+	 * @param url
+	 * @param params
+	 * @param header
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static RequestResult get(String url, Map<?, ?> params, Map<?, ?> header) {
 		try {
 			if (Logger.getLogger().isDebugEnabled()) {
@@ -83,6 +116,16 @@ public class RequestHelper {
 		}
 	}
 
+	/**
+	 * process request PUT method and return result
+	 * @param url
+	 * @param params
+	 * @param header
+	 * @param data
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static RequestResult put(String url, Map<?, ?> params, Map<?, ?> header, String data) {
 		try {
 			if (Logger.getLogger().isDebugEnabled()) {
@@ -100,6 +143,16 @@ public class RequestHelper {
 		}
 	}
 
+	/**
+	 * process request POST method and return result
+	 * @param url
+	 * @param params
+	 * @param header
+	 * @param data
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static RequestResult post(String url, Map<?, ?> params, Map<?, ?> header, String data) {
 		try {
 			if (Logger.getLogger().isDebugEnabled()) {
@@ -117,6 +170,15 @@ public class RequestHelper {
 		}
 	}
 
+	/**
+	 * process request DELETE method and return result
+	 * @param url
+	 * @param params
+	 * @param header
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static RequestResult delete(String url, Map<?, ?> params, Map<?, ?> header) {
 		try {
 			if (Logger.getLogger().isDebugEnabled()) {
@@ -131,6 +193,13 @@ public class RequestHelper {
 		}
 	}
 
+	/**
+	 * convert respose content to string, default charset UTF-8
+	 * @param response
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String getResponseBodyAsString(HttpResponse response) {
 		StringBuilder sb = new StringBuilder();
 		try {
@@ -150,6 +219,10 @@ public class RequestHelper {
 		return sb.toString();
 	}
 
+	/**
+	 * Request result structure
+	 * @author Tyler
+	 */
 	public static class RequestResult {
 		int code;
 		String status;

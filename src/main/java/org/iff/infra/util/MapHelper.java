@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * A Map helper
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2014-2-26
  */
@@ -57,6 +58,14 @@ public class MapHelper {
 		return map;
 	}
 
+	/**
+	 * get map value by path, 'a/b/c' -&gt; map.get('a').get('b').get('c')
+	 * @param map
+	 * @param path
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static Object getByPath(Map map, String path) {
 		if (path == null || map == null || map.isEmpty()) {
 			return null;
@@ -77,6 +86,14 @@ public class MapHelper {
 		return tmp.get(paths[paths.length - 1]);
 	}
 
+	/**
+	 * set map value by path, 'a/b/c' -&gt; map.get('a').get('b').set('c', value)
+	 * @param map
+	 * @param path
+	 * @param value
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static void setByPath(Map map, String path, Object value) {
 		if (path == null || map == null) {
 			return;

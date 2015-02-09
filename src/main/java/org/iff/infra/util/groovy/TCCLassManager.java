@@ -7,15 +7,14 @@
  ******************************************************************************/
 package org.iff.infra.util.groovy;
 
+import groovy.lang.GroovyObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.iff.infra.util.FCS;
-import org.iff.infra.util.Logger;
 
 /**
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
@@ -139,4 +138,14 @@ public class TCCLassManager {
 		return scriptMapClassLoader;
 	}
 
+	public static void main(String[] args) {
+		try {
+			TCCLassManager.me().compile(System.getProperty("app_root") + "/system/framework/TC.groovy");
+			Class clazz = TCCLassManager.me().get().loadClass("org.iff.groovy.framework.TCStarter");
+			GroovyObject groovyObject = (GroovyObject) clazz.newInstance();
+			groovyObject.invokeMethod("start", new Object[0]);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

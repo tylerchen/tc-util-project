@@ -15,13 +15,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * A string helper provides a set of utility methods to process the data.
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2012-11-21
  */
 public final class StringHelper {
 
+	/** the default encrypt password you should set the 'encrypt.key' to System.properties when you want to use AES encode. **/
 	private static final String ENCRYPTOR_PASSWD = "@@@ENCRYPTOR_PASSWD$$$";
+	/** special char in html, this is the highest(int value is bigger) char **/
 	public static final int HIGHEST_SPECIAL = '>' + 1;
+	/** store the special html char **/
 	public static char[][] specialCharactersRepresentation = new char[HIGHEST_SPECIAL][];
 	static {
 		specialCharactersRepresentation['&'] = "&amp;".toCharArray();
@@ -31,9 +35,19 @@ public final class StringHelper {
 		specialCharactersRepresentation['\''] = "&#039;".toCharArray();
 	}
 
+	/**
+	 * this constructor should never be called
+	 */
 	private StringHelper() {
 	}
 
+	/**
+	 * concatenate the strings. Null string convert to blank string.
+	 * @param strs
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String concat(String... strs) {
 		if (strs == null || strs.length == 0) {
 			return "";
@@ -151,6 +165,13 @@ public final class StringHelper {
 		return sb.toString();
 	}
 
+	/**
+	 * concatenate strings with path separator. null value convert to blank string.
+	 * @param paths
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String pathConcat(String... paths) {
 		if (paths == null || paths.length == 0) {
 			return "";
@@ -207,14 +228,33 @@ public final class StringHelper {
 		return sb.toString();
 	}
 
+	/**
+	 * @return file or path separator
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String getFileSeparator() {
 		return File.separator;
 	}
 
+	/**
+	 * null value will return the blank string .
+	 * @param value
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String getNotNullValue(Object value) {
 		return value == null ? "" : value.toString();
 	}
 
+	/**
+	 * reverse the string.
+	 * @param str
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String reverse(String str) {
 		if (str == null) {
 			return null;
@@ -222,18 +262,31 @@ public final class StringHelper {
 		return new StringBuilder(str).reverse().toString();
 	}
 
+	/**
+	 * return the uuid string , defualt is 19 length uuid. 
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String uuid() {
 		return minUUID();
 	}
 
+	/**
+	 * calculate the digits.
+	 * @param val
+	 * @param digits
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	private static String digits(long val, int digits) {
 		long hi = 1L << (digits * 4);
 		return NumberHelper.toString(hi | (val & (hi - 1)), NumberHelper.MAX_RADIX).substring(1);
 	}
 
 	/** 
-	 * 以62进制（字母加数字）生成19位UUID，最短的UUID 
-	 *  
+	 * generate 19 length uuid
 	 * @return 
 	 */
 	public static String minUUID() {
@@ -254,9 +307,7 @@ public final class StringHelper {
 	}
 
 	/**
-	 * 编写一个截取字符串的函数，输入为一个字符串和字节数，输出为按字节截取的字符串。
-	 * 但是要保证汉字不被截半个，如"我ABC"4，应该截为"我AB"，输入"我ABC汉DEF"，6，
-	 * 应该输出为"我ABC"而不是"我ABC+汉的半个"
+	 * sub a unicode string, and make sure not sub a half character.
 	 * @param str
 	 * @param byteLength
 	 * @return
@@ -330,6 +381,13 @@ public final class StringHelper {
 
 	static final String EX = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.!~*'()";
 
+	/**
+	 * encode uri, use UTF-8 charset.
+	 * @param input
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String encodeURIComponent(String input) {
 		if (input == null) {
 			return "";
@@ -352,6 +410,13 @@ public final class StringHelper {
 		return o.toString();
 	}
 
+	/**
+	 * hex encode the data.
+	 * @param buf
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
 	public static String getHex(byte buf[]) {
 		StringBuilder o = new StringBuilder(buf.length * 3);
 		for (int i = 0; i < buf.length; i++) {
@@ -374,6 +439,12 @@ public final class StringHelper {
 		}
 		System.out.println((System.currentTimeMillis() - start));
 		System.out.println(uuid());
+		for (int i = 0; i < 256; i++) {
+			System.out.print(Character.isLetter(i) ? (char) i : ' ');
+			System.out.print('=');
+			System.out.print(i);
+			System.out.print(',');
+		}
 	}
 
 }

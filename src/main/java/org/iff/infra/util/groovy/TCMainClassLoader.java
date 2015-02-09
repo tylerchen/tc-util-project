@@ -10,13 +10,13 @@ package org.iff.infra.util.groovy;
 import groovy.lang.GroovyClassLoader;
 
 import java.io.File;
-import java.net.JarURLConnection;
 import java.net.URL;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
-import org.iff.infra.util.SocketHelper;
+import org.iff.infra.util.FCS;
+import org.iff.infra.util.Logger;
 
 /**
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
@@ -38,11 +38,12 @@ public class TCMainClassLoader extends GroovyClassLoader {
 				try {
 					if (lastModify == 0) {
 						lastModify = -1;
+						Logger.debug(FCS.get("TCMainClassLoader.recompile file: {0}", file));
 						super.recompile(new URL(file), null, null);
 						lastCompileSuccess = true;
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					Logger.warn(FCS.get("compile groovy file error: {0}", file), e);
 					lastCompileSuccess = false;
 				}
 			} else {
@@ -50,12 +51,12 @@ public class TCMainClassLoader extends GroovyClassLoader {
 					File groovyFile = new File(file);
 					if (lastModify < groovyFile.lastModified()) {
 						lastModify = groovyFile.lastModified();
-						System.out.println("------TCMainClassLoader.recompile-------->" + file);
+						Logger.debug(FCS.get("TCMainClassLoader.recompile file: {0}", file));
 						super.recompile(groovyFile.getCanonicalFile().toURI().toURL(), null, null);
 						lastCompileSuccess = true;
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					Logger.warn(FCS.get("compile groovy file error: {0}", file), e);
 					lastCompileSuccess = false;
 				}
 			}
@@ -99,15 +100,5 @@ public class TCMainClassLoader extends GroovyClassLoader {
 			return loader[0].loadClass_0(name, lookupScriptFiles, preferClassOverScript, resolve);
 		}
 		return super.loadClass(name, lookupScriptFiles, preferClassOverScript, resolve);
-	}
-
-	protected Class<?> findClass1(String name) throws ClassNotFoundException {
-		//return super.findClass(name);
-		Class clazz = null;
-		TCMainClassLoader[] loader = TCCLassManager.me().getClassMapLoader().get(name);
-		if (loader != null) {
-			loader[0].loadClass(name);
-		}
-		return super.findClass(name);
 	}
 }
