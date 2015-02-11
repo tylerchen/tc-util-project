@@ -32,6 +32,7 @@ Including:
 3. setting the resourceBase, where the web root dir is
 4. invoke the code org.iff.infra.util.groovy.TCCLassManager.main(null)
 5. Sample Code
+
 	public static void main(String[] args) throws Exception {
 		System.setProperty("app_root", "/tc-util-project/src/main/resources/META-INF/myapp");
 		System.setProperty("tc_jar_path", "META-INF/tc-framework");
