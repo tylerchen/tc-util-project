@@ -33,18 +33,19 @@ Including:
 4. invoke the code org.iff.infra.util.groovy.TCCLassManager.main(null)
 5. Sample Code
 
-	public static void main(String[] args) throws Exception {
-		System.setProperty("app_root", "/tc-util-project/src/main/resources/META-INF/myapp");
-		System.setProperty("tc_jar_path", "META-INF/tc-framework");
-		System.setProperty("resourceBase", "/tc-util-project/src/main/webapp");
-		{
-			org.iff.infra.util.groovy.TCCLassManager.main(args);
+		public static void main(String[] args) throws Exception {
+			System.setProperty("app_root", "/tc-util-project/src/main/resources/META-INF/myapp");
+			System.setProperty("tc_jar_path", "META-INF/tc-framework");
+			System.setProperty("resourceBase", "/tc-util-project/src/main/webapp");
+			{
+				org.iff.infra.util.groovy.TCCLassManager.main(args);
+			}
 		}
-	}
 
 #### How to start the framework as embedded mode
 
 1. place the config to web.xml, and change it
+
 		<filter>
 			<filter-name>tcfilter</filter-name>
 			<filter-class>org.iff.infra.util.groovy.TCGroovyFilter</filter-class>
@@ -66,6 +67,7 @@ Including:
 			<url-pattern>/hello/*</url-pattern>
 		</filter-mapping>
 
+
 #### How to write a view page
 
 1. Create a groovy file and define groovy class
@@ -74,6 +76,7 @@ Including:
 4. Access the url : http://host:port/context/filterContext/viewPath/methodName, if no specify methodName, will access index() method
 5. There is many render types, you can use MarkupBuilder, TCFreeMarkerRender, TCJspRender, TCGspRender. for TCGspRender you need to register the groovy gsp servlet in web.xml
 6. The internal parameter "params" include many properties: 
+
 		request     : HttpServletRequest
 		response    : HttpServletResponse
 		context     : request.contextPath
@@ -82,7 +85,9 @@ Including:
 		servletPath : request.servletPath
 		target      : http://host:port/context/filterContext/viewPath/methodName, target="viewPath/methodName"
 		urlParams   : http://host:port/context/filterContext/viewPath/methodName/urlParam1/urlParam2, urlParams=["urlParam1", "urlParam2"]
+
 7. Sample Code
+
 		package org.iff.groovy.test.b
 		@TCAction(name="/b")
 		class TestAction{
@@ -111,23 +116,37 @@ Including:
 			}
 		}
 
+
 #### Parameters
 
 1. app_root
+
 		application root dir, where you place the groovy files, such as:
 		System.setProperty("app_root", "/project/tc-framework");
+
 2. resourceBase
+
 		the web resource dir, where you place the web resource and web.xml, the dir structure as the same as war package, such as:
 		System.setProperty("resourceBase", "/project/tc-framework/webapp");
+
 3. tc_file_path
+
 		the framework will scan the path and load the groovy files, if tc_file_path is not set will default to app_root
+
 4. tc_jar_path
+
 		the framework will scan the jar path and load the groovy files
+
 5. tc_groovy_framework_start_class
+
 		the class to start the tc groovy framework default is org.iff.groovy.framework.TCStarter
+
 6. app_mode
+
 		this parameter will set the "embedded" value, when you embedded the framework to an existing web as a filter
+
 7. target_prefix
+
 		this parameter should be set a value (filter prefix path) when you embedded the framework to an existing web as a filter
 
 
