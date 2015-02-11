@@ -9,20 +9,20 @@ class TCMain{
 		def handlers=TCCache.me().cache().framework.action_handlers
 		handlers.add(new TCChain(){
 			def process(params){
-				TCHelper.debug('[BeforeHandler]: {0}',params.target)
+				println "[BeforeHandler]: ${params.target}"
 				nextChain?.process(params)
 			}
 		})
 		handlers.add(TCCache.me().cache().framework_instance.TCActionHandler)
 		handlers.add(new TCChain(){
 			def process(params){
-				TCHelper.debug('[AfterHandler]: {0}',params.target)
+				println "[AfterHandler]: ${params.target}"
 				nextChain?.process(params)
 			}
 		})
 		//
-		def starts=TCCache.me().cache().framework_instance.TCStarts
-		starts.start()
+		def starter=TCCache.me().cache().framework_instance.TCStarter
+		starter.start()
 	}
 }
 @org.iff.infra.util.groovy.TCFramework(name="TCIniter")
@@ -34,14 +34,14 @@ class TCIniter{
 		}
 	}
 }
-@org.iff.infra.util.groovy.TCFramework(name="TCStarts")
-class TCStarts{
+@org.iff.infra.util.groovy.TCFramework(name="TCStarter")
+class TCStarter{
 	def start(){
 		def list=TCCache.me().cache().framework.starts// data structure=[instance,method]
 		list.each(){
 			def final start=it
 			Thread.start{
-				TCHelper.debug('[TCStarts]: {0}',start)
+				println "=======TCStarter=======> ${start}"
 				start.instance."$start.method"()
 			}//end thread
 		}
@@ -59,7 +59,7 @@ class TCStopper{
 class TCFilter implements javax.servlet.Filter{
 	def handler
 	def void init(javax.servlet.FilterConfig filterConfig) throws javax.servlet.ServletException{
-		TCHelper.debug('[TCFilter Init]')
+		println "Groovy Filter Init"
 		TCCache.me().cache().servlet.put("servletContext", filterConfig.servletContext)
 		if(!handler){
 			def tmp=new TCChain()
@@ -76,7 +76,7 @@ class TCFilter implements javax.servlet.Filter{
 		response.setCharacterEncoding("UTF-8")
 		def target=request.servletPath
 		def target_prefix=request.getAttribute('tc_groovy_target_prefix') ?: ''
-		TCHelper.debug('[doFilter] handler:{0}, target:{1}, target_prefix:{2}', handler.class.name, target, target_prefix)
+		println "doFilter: ${handler.class.name}, target:${target}, target_prefix:${target_prefix}"
 		if(target.endsWith(".gsp")||target.endsWith(".jsp")||target.startsWith("/css/")||target.startsWith("/js/")||target.startsWith("/images/")){
 			chain.doFilter(request, response)
 			return
@@ -120,7 +120,7 @@ class TCServer{
 	def classLoader=TCCLassManager.get()
 	def TCServer(){
 		def app_mode=TCCache.me().cache().props.app_mode
-		TCHelper.debug('[TCServer] app_mode:{0}', app_mode)
+		println "---------app_mode----------> ${app_mode}"
 		if(!app_mode || 'embedded'!=app_mode){
 			TCCache.me().cache().framework.starts.add(['instance':this,'method':'start'])
 			TCCache.me().cache().framework.stops .add(['instance':this,'method':'stop' ])
@@ -133,10 +133,8 @@ class TCServer{
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false")
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false")	// webApp.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "false"));
 		server.setHandler(webApp)
-		TCHelper.debug('[TCServer] Starting web server on port: 9090')
 		println "Starting web server on port: 9090"
 		server.start()
-		TCHelper.debug('[TCServer] Starting Complete. Welcome To The TC World :-)')
 		println "Starting Complete. Welcome To The TC World :-)"
 		server.join()
 	}
@@ -156,12 +154,14 @@ class TCActionHandler extends TCChain{
 			nextChain.process(params)
 			return false
 		}
-		TCHelper.debug('[ActionHandler] nextChain:{0}, target:{1}', nextChain,target)
+		println "[ActionHandler][${nextChain}][${actions}]: ${target}"
 		def actionMap=actions[target]
 		if(!actionMap){// target=/a/b/c split -> 1: /a/b, [c]; 2: /a, [b,c]; 3: /, [a,b,c]
 			def targets=target.split("\\/")
+			println "----> ${targets}"
 			for(def i=targets.size()-2;i>-1;i--){
 				def t=targets[0..i].join('/')
+				println "join----> ${t}"
 				actionMap=actions[t]
 				if(actionMap){
 					params.put('urlParams',targets[i+1..-1])
@@ -170,6 +170,7 @@ class TCActionHandler extends TCChain{
 			}
 		}
 		if(actionMap){
+			println "actionMap.action: ${actionMap.action}"
 			def actionClazz=TCCLassManager.me().loadClass(actionMap.action)
 			def result
 			if(actionClazz.getMethod(actionMap.method,null)){
@@ -190,6 +191,7 @@ class TCActionHandler extends TCChain{
 		return false
 	}
 	def registerAction(actionClass){
+		println "----registerAction---:${actionClass}"
 		if(!actionClass){
 			return false
 		}
@@ -203,12 +205,14 @@ class TCActionHandler extends TCChain{
 			def exclude=['invokeMethod','getMetaClass','setMetaClass','setProperty','getProperty']
 			def methodName=it.name
 			if(methodName.indexOf('$')<0 && !(methodName in exclude)){
+				println "$methodName"
 				if('index'==methodName){
 					actions[context]=['action':actionClass.name,'method':methodName,'context':context]
 				}
 				actions["${context}/${methodName}"]=['action':actionClass.name,'method':methodName,'context':context]
 			}
 		}
+		println "actions: ${actions}"
 	}
 	def unRegisterAction(actionClass){
 		if(!actionClass){
@@ -225,6 +229,7 @@ class TCActionHandler extends TCChain{
 			def exclude=['invokeMethod','getMetaClass','setMetaClass','setProperty','getProperty']
 			def methodName=it.name
 			if(methodName.indexOf('$')<0 && !exclude.contains(methodName)){
+				println "$methodName"
 				actions.remove("${context}/${methodName}")
 			}
 	   }

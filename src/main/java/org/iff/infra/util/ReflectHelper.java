@@ -7,6 +7,7 @@
  ******************************************************************************/
 package org.iff.infra.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -21,10 +22,8 @@ import com.google.common.collect.Multimap;
 public class ReflectHelper {
 
 	private static boolean CACHE = false;
-	private static Multimap<Class<?>, Field> CACHE_FIELD = ArrayListMultimap
-			.create();
-	private static Multimap<Class<?>, Method> CACHE_METHOD = ArrayListMultimap
-			.create();
+	private static Multimap<Class<?>, Field> CACHE_FIELD = ArrayListMultimap.create();
+	private static Multimap<Class<?>, Method> CACHE_METHOD = ArrayListMultimap.create();
 
 	private ReflectHelper() {
 	}
@@ -37,4 +36,31 @@ public class ReflectHelper {
 		CACHE = cache;
 	}
 
+	public static Constructor<?> getConstructor(String className, String... parameterTypes) {
+		try {
+			Class<?> clazz = Class.forName(className);
+			if (parameterTypes == null || parameterTypes.length < 1) {
+				return clazz.getConstructor();
+			}
+			Constructor<?>[] constructors = clazz.getConstructors();
+			for (Constructor<?> c : constructors) {
+				Class<?>[] types = c.getParameterTypes();
+				if (types.length != parameterTypes.length) {
+					continue;
+				}
+				int i = 0;
+				for (; i < types.length; i++) {
+					if (!types[i].getName().equals(parameterTypes[i])) {
+						break;
+					}
+				}
+				if (i == types.length) {
+					return c;
+				}
+			}
+		} catch (Exception e) {
+			Logger.error(FCS.get("[NoConstructorFound] className:{0}, parameterTypes:{1}", className, parameterTypes));
+		}
+		return null;
+	}
 }

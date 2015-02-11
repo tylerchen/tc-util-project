@@ -1,172 +1,5 @@
 package org.iff.groovy.framework
 
-import java.nio.file.*
-import java.nio.file.attribute.*
-import java.util.concurrent.*
-
-class FolderWatchers {
-	def static FolderWatchers watchers
-	def static WatchService watchService
-	def static Map<WatchKey,Path> keys=[:]
-	def static ChangeListener changeListener
-	def boolean cancel
-	private FolderWatchers(){
-		watchService = FileSystems.getDefault().newWatchService()
-	}
-	def static FolderWatchers me() {
-		if (!watchers){
-			watchers = new FolderWatchers()
-		}
-		return watchers
-	}
-	def addFolderListener(Path path, ChangeListener changeListener) {
-		FolderWatchers.changeListener=changeListener
-		registerAll(path)
-		processEvent()
-	}
-	def cancelFolderWatching() {
-	}
-	def registerAll(Path path){
-		Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)throws IOException{
-				def key=dir.register(watchService, changeListener.getEventTypes())
-				keys.put(key, dir)
-				println "lisent: $dir"
-				return FileVisitResult.CONTINUE
-			}
-		})
-	}
-	def processEvent(){
-		def t=Thread.start{
-			while(!cancel){
-				def key = watchService.take()
-				def dir = keys.get(key)
-				if(dir==null){
-					continue
-				}
-				key.pollEvents().each{ event ->
-					Path name = event.context()
-					Path child = dir.resolve(name)
-					println "${event.kind().name()}:${dir}:${name}: ${child}\n"
-					if(event.kind()!=StandardWatchEventKinds.OVERFLOW){
-						if (event.kind()==StandardWatchEventKinds.ENTRY_CREATE) {
-							if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
-								registerAll(child)
-							}
-						}
-					}
-					if (!Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
-						def groovyPath=child.toString()
-						if(groovyPath.endsWith(".groovy")){
-							changeListener.addEvent(event, groovyPath)
-						}
-					}
-				}// end each
-				// reset key and remove from set if directory no longer accessible
-				if (!key.reset()) {
-					keys.remove(key)
-					// all directories are inaccessible
-					if (keys.isEmpty()) {
-						break
-					}
-				}
-				changeListener.processEvent()
-			}// end while
-		}//end thread
-	}
-}
-class ChangeListener {
-	def WatchEvent.Kind[] eventTypes
-	def events=[:]
-	public ChangeListener(WatchEvent.Kind[] eventTypes) {
-		this.eventTypes = eventTypes
-	}
-	def WatchEvent.Kind[] getEventTypes() {
-		return eventTypes
-	}
-	def addEvent(WatchEvent anEvent, String path){
-		events.put(path, anEvent)
-	}
-	def processEvent(){
-		events.each{ k,v ->
-			onEvent(v, k)
-		}
-		if(!events.isEmpty()){
-			TCClassParse.me().process()
-		}
-		events.clear()
-	}
-	def onEvent(WatchEvent anEvent, String path){
-	}
-}
-class TCClassParse{
-	def static TCClassParse _me=new TCClassParse()
-	def classes=[]
-	def static me(){
-		return _me
-	}
-	def addClasses(Class[] clazz){
-		if(clazz){
-			classes.addAll(clazz)
-		}
-	}
-	def process(){
-		mappingClass()
-		frameworkProcess()
-		actionProcess()
-		classes.clear()
-	}
-	def mappingClass(){
-		def classMap=TCCache.me().cache().anno_class
-		classes.each{
-			def anno=it.getAnnotation(TCAction.class)
-			if(!anno){
-				anno=it.getAnnotation(TCFramework.class)
-			}
-			if(anno){
-				if(anno instanceof TCAction){
-					classMap.action[it.name]=[name:anno.name()]
-				}else if(anno instanceof TCFramework){
-					classMap.framework[it.name]=[name:anno.name(), order:anno.order()]
-				}
-				classMap[it.name]=[clazz:it, instance:null]
-			}
-		}
-		println "classes = $classes"
-		println "classMap = $classMap"
-	}
-	def frameworkProcess(){
-		def cache=TCCache.me().cache()
-		def classMap=cache.anno_class
-		def frameworkAnnoNameMappingClassOrder=[:]//framework annotation name value mapping class name and order
-		classes.each{
-			def key=it.name
-			def value=classMap.framework[key]
-			if(value){
-				if(!frameworkAnnoNameMappingClassOrder[value.name]){
-					frameworkAnnoNameMappingClassOrder[value.name]=[name:key, order:value.order]
-				}else if(frameworkAnnoNameMappingClassOrder[value.name].order<value.order){
-					frameworkAnnoNameMappingClassOrder[value.name]=[name:key, order:value.order]
-				}
-			}
-		}
-		frameworkAnnoNameMappingClassOrder.each{key, value ->
-			println "framework_instance: ${key}, ${value}"
-			cache.framework_instance[key]=classMap[value.name].clazz.newInstance()
-			classMap[value.name].instance=cache.framework_instance[key]
-		}
-	}
-	def actionProcess(){
-		def classMap=TCCache.me().cache().anno_class
-		def actionHandler=TCCache.me().cache().framework_instance.TCActionHandler
-		classes.each{
-			def action=classMap.action[it.name]
-			if(action){
-				actionHandler.registerAction(classMap[it.name].clazz)
-			}
-		}
-	}
-}
 class TCCache{
 	private static final TCCache _me=new TCCache()
 	private def Map _cache=init()
@@ -196,145 +29,61 @@ class TCCache{
 		return _cache
 	}
 }
-class Starter{
+class TCStarter{
+	def TCStarter(){
+		TCCache.me().cache().framework_instance.TCStarter=this
+	}
 	def start(groovyFiles){
 		//
-		systemPropertiesToMap()
+		system_properties_to_map()
 		//
-		scanGroovyFile(groovyFiles)
-		//
-		compileByOrder()
-		//
-		startFolderListener()
-		//
-		startServer()
-		//
-	}
-	def scanGroovyFile(groovyFiles){
-		groovyFiles.each{name, path ->
-			if(name.endsWith('.groovy')){
-				if(name.lastIndexOf('/')>-1){
-					name=name.substring(0,name.lastIndexOf('/')).replaceAll('^/|/$','')
-				}
-			}
-			def files=TCCache.me().cache().groovy_files.get(name)
-			def isCollectionOrArray={object ->
-					[Collection, Object[]].any { it.isAssignableFrom(object.getClass()) }
-			}
-			def paths=(isCollectionOrArray(path)?path:[path]) as List
-			if(!files){
-				TCCache.me().cache().groovy_files.put(name, paths)
-			}else{
-				files.addAll(paths)
-			}
-		}
 		def app_root=TCCache.me().cache().app_root
-		if(!app_root || app_root.size()<1){
-			return
-		}
-		def rootPath=Paths.get(app_root)
-		if(!rootPath?.toFile()?.exists()){
-			return
-		}
-		// Walk thru mainDir directory
-		Files.walkFileTree(rootPath, new FileVisitor<Path>() {
-			def visitPathFiles=[:]// path:files
-			// First (minor) speed up. Compile regular expression pattern only one time.
-			public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes atts) throws IOException {
-				//return (matches)? FileVisitResult.CONTINUE:FileVisitResult.SKIP_SUBTREE;
-				visitPathFiles.put(path.toString().replaceAll("\\\\","/"),[])
-				println "PRE-DIR: $path"
-				return FileVisitResult.CONTINUE
-			}
-			public FileVisitResult visitFile(Path path, BasicFileAttributes mainAtts) throws IOException {
-				if(path.toString().endsWith(".groovy")){
-					def files=visitPathFiles.get(path.parent.toString().replaceAll("\\\\","/"))
-					files.add(path.toString().replaceAll("\\\\","/"))
-					println "FILE: $path"
-				}
-				return FileVisitResult.CONTINUE
-			}
-			public FileVisitResult postVisitDirectory(Path path, IOException exc) throws IOException {
-				def cleanPath=path.toString().replaceAll("\\\\","/")
-				def files=visitPathFiles.get(cleanPath)
-				println "postVisitDirectory: ${cleanPath}=${files}"
-				if(files && !files.isEmpty()){
-					def pos=TCCache.me().cache().app_root.size() as int
-					if(cleanPath.size()>pos){
-						TCCache.me().cache().groovy_files.put(cleanPath.substring(pos),files)
-					}else{
-						TCCache.me().cache().groovy_files.put('',files)
-					}
-				}
-				//
-				visitPathFiles.remove(cleanPath)
-				//
-				println "POST-DIR: $path, ${files}"
-				return FileVisitResult.CONTINUE
-			}
-			public FileVisitResult visitFileFailed(Path path, IOException exc) throws IOException {
-				exc.printStackTrace()
-				return path.equals(rootDir)? FileVisitResult.TERMINATE:FileVisitResult.CONTINUE
-			}
-		})//walkFileTree done
-		println "=============groovy_files============>>>>>>>>>>>>> ${TCCache.me().cache().groovy_files}"
+		def tc_jar_path=TCCache.me().cache().props.tc_jar_path
+		def tc_file_path=TCCache.me().cache().props.tc_file_path ?: app_root
+		TCHelper.debug('\napp_root:{0}\ntc_jar_path:{1}\ntc_file_path:{2}',app_root,tc_jar_path,tc_file_path)
+		//
+		def jar_files=scan_groovy_files_from_jar(app_root, tc_jar_path)
+		def dir_files=scan_groovy_files_from_filesys(app_root, tc_file_path, ['app','system'])
+		def exists_groovy_files=scan_exists_groovy_file(app_root, groovyFiles)
+		def scan_groovy_files=scan_combine_groovy_files(jar_files, dir_files, exists_groovy_files)
+		//
+		compile_by_order(app_root, scan_groovy_files.sort())
+		//
+		scan_start_folder_listener(app_root, tc_file_path)
+		//
+		start_server()
+		//
 	}
-	def startFolderListener(){
-		def app_root=TCCache.me().cache().app_root
-		if(!app_root || app_root.size()<1){
-			return
-		}
-		def rootPath=Paths.get(app_root)
-		if(!rootPath?.toFile()?.exists()){
-			return
-		}
-		def changeListener = new ChangeListener([StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,StandardWatchEventKinds.ENTRY_MODIFY]){
-			def onEvent(WatchEvent anEvent, String path){
-				println "LISTENER 1 ${anEvent.kind().name()}, ${path}"
-				def file=path.replaceAll("\\\\","/")
-				println "Reload Groovy: ${anEvent.kind().name()}, ${path}"
-				if(file.startsWith("${TCCache.me().cache().app_root}/system/")){
-					println "RESTART FRAMEWORK!!!.........."
-				}
-				if(anEvent.kind()==StandardWatchEventKinds.ENTRY_DELETE){
-					org.iff.infra.util.groovy.TCCLassManager.me().removeClassNameScriptMapping(file)
-				}else{
-					def loader=TCCLassManager.me().compile(file)
-					TCClassParse.me().addClasses(loader.loadedClasses)
-					println "Recompile Classes: ${loader.loadedClasses}"
-				}
-			}
-		}
-		FolderWatchers.me().addFolderListener(rootPath, changeListener)
+	def pathClean(path){
+		return path ? TCHelper.pathClean(path.toString()).replaceAll('^/|/$','') : null
 	}
-	def startServer(){
-		def cache=TCCache.me().cache()
-		println "CACHE: ${cache}"
-		if(cache.framework_instance.TCMain){
-			def instance=cache.framework_instance.TCMain
-			instance.main()
+	def system_properties_to_map(){
+		def map=TCHelper.prop2map(System.getProperties()){true}
+		TCCache.me().cache().with{
+			get('props').putAll(map)
+			put("app_root", pathClean(map.app_root))
 		}
 	}
-	def compileByOrder(){
-		println "compileByOrder============>>>>>>> ${TCCache.me().cache().groovy_files}"
+	def compile_by_order(app_root, groovy_files){
+		app_root=pathClean(app_root)
+		TCHelper.debug('Compile By Order: {0}',groovy_files)
 		def order=["system/util","system/framework","app/model","app/service","app/view"]
-		def groovy_files=TCCache.me().cache().groovy_files.sort()
 		order.each{ path ->
-			println "compile path: ${TCCache.me().cache().app_root}/${path}"
+			TCHelper.debug('Compile Path: {0}/{1}',app_root,path)
 			def errorCompile=[]
 			def errorTimes=100
 			groovy_files.each{pathContext, files ->
-				pathContext=pathContext.replaceAll('^/|/$','')
+				pathContext=pathClean(pathContext)
 				if(pathContext.startsWith(path)){
 					files.each{ file ->
-						println "compile file: $file"
+						TCHelper.debug('Compile File: {0}',file)
 						if(!file.endsWith("/system/framework/TC.groovy")){
 							def loader=TCCLassManager.me().compile(file)
 							if(loader.isLastCompileSuccess()){
-								TCClassParse.me().addClasses(loader.loadedClasses)
+								parse_add_class(loader.loadedClasses)
 							}else{
-								println "comile file error: ${file}"
-								errorCompile.add(file)
+								TCHelper.warn('Compile File Error: {0}',file)
+								errorCompile << file
 							}
 						}
 					}
@@ -348,25 +97,334 @@ class Starter{
 				errorCompile.clear()
 				errorFiles.each{file ->
 					try{
-						println "recompile error file: $file"
+						TCHelper.debug('Recompile File: {0}',file)
 						def loader=TCCLassManager.me().compile(file)
-						TCClassParse.me().addClasses(loader.loadedClasses)
+						parse_add_class(loader.loadedClasses)
 					}catch(err){
+						TCHelper.warn('Recompile File Error: {0}',file)
 						errorCompile << file
 					}
 				}
 			}
 		}// END-each:order
-		TCClassParse.me().process()
+		parse_process()
 	}
-	def systemPropertiesToMap(){
-		Properties ps = System.getProperties()
-		ps.entrySet().each{ entry->
-			if(entry.key instanceof String){
-				TCCache.me().cache().props.put(entry.key, entry.value)
-				println "property: ${entry}"
+	def start_server(){
+		TCHelper.debug('start_server ......')
+		TCHelper.debug('framework_instance:{0}',TCCache.me().cache().framework_instance)
+		TCHelper.debug('anno_class:{0}',TCCache.me().cache().anno_class)
+		def instance=TCCache.me().cache().framework_instance
+		if(instance.TCMain){
+			instance.TCMain.main()
+		}
+	}
+	//====== scan groovy file and listen file change start ======
+	def scan_dir_groovy_files=[:]// {file path:lastModify}
+	def scan_cancel_listner=false
+	def scan_sleep_second=5
+	def scan_groovy_files_from_jar(app_root, path){
+		def files=[:]
+		if(!path || path.size()<1){
+			return files
+		}
+		path=pathClean(path)
+		def rs=getClass().getClassLoader().getResources(path)
+		while(rs.hasMoreElements()){
+			def url=rs.nextElement()
+			def filePath=url.getFile(), protocol=url.getProtocol()
+			if (protocol in ['file','jar'] && filePath.startsWith('file:')) {// path will starts with file:/
+				TCHelper.debug('JAR: {0}',path)
+				def file = new File(filePath.substring('file:'.size(), filePath.lastIndexOf("!/")))
+				def jarFile = new java.util.jar.JarFile(file)
+				def entries=jarFile.entries()
+				while(entries.hasMoreElements()){
+					def entry=entries.nextElement()
+					def entryName=pathClean(entry.name)
+					if (entryName.startsWith(path) && entryName.endsWith('.groovy')) {
+						def fileName=pathClean(entryName.substring(0,entryName.lastIndexOf('/'))-path)
+						if(fileName in files){
+							files[fileName].add("${protocol}:${filePath.substring(0, filePath.lastIndexOf('!/') + 2)}${entryName}")
+						}else{
+							files[fileName]=["${protocol}:${filePath.substring(0, filePath.lastIndexOf('!/') + 2)}${entryName}"]
+						}
+						TCHelper.debug('JAR: {0}, file: {1}',path,entryName)
+					}
+				}
 			}
 		}
-		TCCache.me().cache().put("app_root", TCCache.me().cache().props.app_root.toString().replaceAll("\\\\","/"))
+		return files
+	}
+	def scan_groovy_files_from_filesys(app_root, dir_root, subdirs){
+		def files=[:]//{parentPath:[fileSet]}
+		if(!dir_root || dir_root.size()<1 || !(new File(dir_root).exists())){
+			return files
+		}
+		dir_root=pathClean(dir_root)
+		(subdirs ?: ['']).each{subdir->
+			new File(dir_root+'/'+subdir).eachFileRecurse(groovy.io.FileType.FILES){ file ->
+				if(file.path.endsWith('.groovy')){
+					def parent=pathClean(pathClean(file.parent)-dir_root), path=pathClean(file.path)
+					scan_dir_groovy_files.put(file.path, file.lastModified())// add for listener
+					TCHelper.debug('Groovy File: {0}, file: {1}',parent,path)
+					if(files[parent]){
+						files[parent].add(path)
+					}else{
+						files[parent]=[path]
+					}
+				}
+			}
+		}
+		return files
+	}
+	def scan_exists_groovy_file(app_root, groovyFiles){
+		def groovy_files=[:]
+		app_root=pathClean(app_root) ?: ''
+		groovyFiles.each{name, path ->
+			if(name.endsWith('.groovy') && name.lastIndexOf('/')>0){
+				name=name.substring(0,name.lastIndexOf('/'))
+			}
+			name=pathClean(pathClean(name)-app_root)
+			def paths=(TCHelper.isObjects(path)?path:[path]) as List
+			if(name in groovy_files){
+				groovy_files[name].addAll(paths)
+			}else{
+				groovy_files[name]=paths.clone()
+			}
+		}
+		return groovy_files
+	}
+	def scan_combine_groovy_files(Object[] groovyFiles){
+		def groovy_files=[:]
+		groovyFiles.each{gfs->
+			gfs.each{key, value->
+				value=(TCHelper.isObjects(value)?value:[value]) as List
+				if(key in groovy_files){
+					groovy_files[key].addAll(value)
+				}else{
+					groovy_files[key]=value.clone()
+				}
+			}
+		}
+		return groovy_files
+	}
+	def scan_start_folder_listener(app_root, root_dir){
+		Thread.start{
+			TCHelper.debug('scan_start_folder_listener, root_dir:{0}, app_root:{1}',root_dir,app_root)
+			while(!scan_cancel_listner){
+				def dirFile=[:]
+				def modified=[:]
+				new File(root_dir).traverse(type:groovy.io.FileType.FILES, nameFilter: ~/.*\.groovy$/){file->
+					def path=file.path, lastModify=file.lastModified()
+					if(path in scan_dir_groovy_files){
+						if(lastModify != scan_dir_groovy_files[path]){
+							modified.put(path, 'modify')
+						}
+					}else{
+						modified.put(path, 'add')
+					}
+					dirFile.put(path, lastModify)
+				}
+				scan_dir_groovy_files.each{k,v->
+					if(!(k in dirFile)){
+						modified.put(k, 'delete')
+					}
+				}
+				scan_dir_groovy_files.clear()
+				scan_dir_groovy_files.putAll(dirFile)
+				if(!modified.isEmpty()){
+					modified.findAll{k,v-> v=='delete'}.each{k,v->
+						TCCLassManager.me().removeClassNameScriptMapping(k)
+					}
+					def updated_groovy_files=[:]
+					root_dir=pathClean(root_dir)
+					modified.findAll{k,v-> v!='delete'}.each{k,v->
+						def name=pathClean(k)
+						name=pathClean(pathClean(name.substring(0,name.lastIndexOf('/')))-root_dir)
+						if(name in updated_groovy_files){
+							updated_groovy_files[name].add(k)
+						}else{
+							updated_groovy_files[name]=[k]
+						}
+					}
+					def scan_groovy_files=scan_combine_groovy_files(updated_groovy_files)
+					compile_by_order(app_root, scan_groovy_files.sort())
+				}
+				java.util.concurrent.TimeUnit.SECONDS.sleep(scan_sleep_second)
+			}
+		}
+	}
+	//====== scan groovy file and listen file change end ======
+	//====== parse class start ======
+	def parse_classes=[]
+	def parse_add_class(Class[] clazz){
+		if(clazz){
+			parse_classes.addAll(clazz)
+		}
+	}
+	def parse_process(){
+		parse_mapping_class()
+		parse_framework_process()
+		parse_action_process()
+		parse_classes.clear()
+	}
+	def parse_mapping_class(){
+		def classMap=TCCache.me().cache().anno_class
+		parse_classes.each{
+			def anno=it.getAnnotation(TCAction.class)
+			if(!anno){
+				anno=it.getAnnotation(TCFramework.class)
+			}
+			if(anno){
+				if(anno in TCAction){
+					classMap.action[it.name]=[name:anno.name()]
+				}else if(anno in TCFramework){
+					classMap.framework[it.name]=[name:anno.name(), order:anno.order()]
+				}
+				classMap[it.name]=[clazz:it, instance:null]
+			}
+		}
+		TCHelper.debug('parse_mapping_class, classes: {0}, anno_class:{1}',parse_classes,classMap)
+	}
+	def parse_framework_process(){
+		def cache=TCCache.me().cache()
+		def classMap=cache.anno_class
+		def annoMap=[:]//framework annotation name value mapping class name and order
+		parse_classes.each{
+			def key=it.name
+			def value=classMap.framework[key]
+			if(value){
+				if(!annoMap[value.name]){
+					annoMap[value.name]=[name:key, order:value.order] // class name, class order
+				}else if(annoMap[value.name].order<value.order){
+					annoMap[value.name]=[name:key, order:value.order]
+				}
+			}
+		}
+		annoMap.each{key, value ->
+			TCHelper.debug('parse_mapping_class, framework_instance:{0}={1}',key,value)
+			cache.framework_instance[key]=classMap[value.name].clazz.newInstance()
+			classMap[value.name].instance=cache.framework_instance[key]
+		}
+	}
+	def parse_action_process(){
+		def classMap=TCCache.me().cache().anno_class
+		def actionHandler=TCCache.me().cache().framework_instance.TCActionHandler
+		parse_classes.each{
+			def action=classMap.action[it.name]
+			if(action){
+				actionHandler.registerAction(classMap[it.name].clazz)
+			}
+		}
+	}
+	//====== parse class end ======
+}
+class TCHelper{
+	def static cache=[:]
+	def static prop2map(props, filter){
+		def map=[:]
+		if(!props || !(props in Properties)){
+			return map
+		}
+		props.entrySet().each{ entry->
+			def ok=true
+			if(filter && filter in Closure){
+				ok=filter(entry)
+			}
+			if(ok==true){
+				map.put(entry.key, entry.value)
+			}
+		}
+		return map
+	}
+	def static pathPut(path, value){
+		synchronized(cache){
+			org.iff.infra.util.MapHelper.setByPath(cache, path, value)
+		}
+	}
+	def static pathGet(path){
+		org.iff.infra.util.MapHelper.getByPath(cache, path)
+	}
+	def static getKey(key){
+		cache[key]
+	}
+	def static putAll(map){
+		synchronized(cache){
+			cache.putAll(map)
+		}
+	}
+	def static remove(key){
+		synchronized(cache){
+			cache.remove(key)
+		}
+	}
+	def static clear(){
+		synchronized(cache){
+			cache.clear()
+		}
+	}
+	def static pathClean(path){
+		org.iff.infra.util.StringHelper.pathBuild(path, '/')
+	}
+	def static isObjects(object){
+		if(object==null){
+			return false
+		}
+		return Collection.isAssignableFrom(object.getClass()) || object.getClass().isArray()
+	}
+	//=======Log Start
+	def static debug(message,Object[] params){
+		if(org.iff.infra.util.Logger.getLogger().isDebugEnabled() && message){
+			def args=params ? (params as List) : []
+			def error=(args[0] in Throwable) ? args.remove(0) : null
+			if(error){
+				org.iff.infra.util.Logger.debug(org.iff.infra.util.FCS.get(message.toString(), args as Object[]), error)
+			}else{
+				org.iff.infra.util.Logger.debug(org.iff.infra.util.FCS.get(message.toString(), args as Object[]))
+			}
+		}
+	}
+	def static warn(message,Object[] params){
+		if(org.iff.infra.util.Logger.getLogger().isWarnEnabled() && message){
+			def args=params ? (params as List) : []
+			def error=(args[0] in Throwable) ? args.remove(0) : null
+			if(error){
+				org.iff.infra.util.Logger.warn(org.iff.infra.util.FCS.get(message.toString(), args as Object[]), error)
+			}else{
+				org.iff.infra.util.Logger.warn(org.iff.infra.util.FCS.get(message.toString(), args as Object[]))
+			}
+		}
+	}
+	def static info(message,Object[] params){
+		if(org.iff.infra.util.Logger.getLogger().isInfoEnabled() && message){
+			def args=params ? (params as List) : []
+			def error=(args[0] in Throwable) ? args.remove(0) : null
+			if(error){
+				org.iff.infra.util.Logger.info(org.iff.infra.util.FCS.get(message.toString(), args as Object[]), error)
+			}else{
+				org.iff.infra.util.Logger.info(org.iff.infra.util.FCS.get(message.toString(), args as Object[]))
+			}
+		}
+	}
+	def static error(message,Object[] params){
+		if(org.iff.infra.util.Logger.getLogger().isErrorEnabled() && message){
+			def args=params ? (params as List) : []
+			def error=(args[0] in Throwable) ? args.remove(0) : null
+			if(error){
+				org.iff.infra.util.Logger.error(org.iff.infra.util.FCS.get(message.toString(), args as Object[]), error)
+			}else{
+				org.iff.infra.util.Logger.error(org.iff.infra.util.FCS.get(message.toString(), args as Object[]))
+			}
+		}
+	}
+	def static trace(message,Object[] params){
+		if(org.iff.infra.util.Logger.getLogger().isTraceEnabled() && message){
+			def args=params ? (params as List) : []
+			def error=(args[0] in Throwable) ? args.remove(0) : null
+			if(error){
+				org.iff.infra.util.Logger.trace(org.iff.infra.util.FCS.get(message.toString(), args as Object[]), error)
+			}else{
+				org.iff.infra.util.Logger.trace(org.iff.infra.util.FCS.get(message.toString(), args as Object[]))
+			}
+		}
 	}
 }

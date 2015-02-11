@@ -414,10 +414,10 @@ class ExcelAction{
 		def workbook=new ExcelBuilder().workbook {
 			styles{
 				font("bold"){ font ->
-					font.setBoldweight(org.apache.poi.ss.usermodel.Font.BOLDWEIGHT_BOLD)
+					font.setBoldweight(font.BOLDWEIGHT_BOLD)
 				}
 				cellStyle ("header"){ cellStyle ->
-					cellStyle.setAlignment(org.apache.poi.ss.usermodel.CellStyle.ALIGN_CENTER)
+					cellStyle.setAlignment(cellStyle.ALIGN_CENTER)
 				}
 			}
 			data {

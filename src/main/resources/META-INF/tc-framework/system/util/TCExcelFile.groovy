@@ -32,10 +32,6 @@
 
 package org.iff.groovy.util
 
-import org.apache.poi.hssf.usermodel.*
-import org.apache.poi.ss.usermodel.*
-import org.apache.poi.ss.util.*
-
 /**
  * A Groovy builder that wraps Apache POI for generating binary Microsoft Excel sheets.
  *
@@ -76,7 +72,7 @@ import org.apache.poi.ss.util.*
  */
 class ExcelBuilder {
 
-    def workbook = new HSSFWorkbook()
+    def workbook = org.iff.infra.util.ReflectHelper.getConstructor('org.apache.poi.hssf.usermodel.HSSFWorkbook').newInstance()
     def sheet
     def int rowsCounter
 
@@ -177,7 +173,7 @@ class ExcelBuilder {
         rows.each { Number rowIndex ->
             assert rowIndex
 
-            Row row = sheet.getRow(rowIndex.intValue() - 1)
+            def row = sheet.getRow(rowIndex.intValue() - 1)
             if (!row){
 				return
 			}
@@ -224,8 +220,8 @@ class ExcelBuilder {
         sheetName = (sheetName && !(sheetName in String)) ? null : sheetName
 
         def sheet = sheetName ? workbook.getSheet(sheetName as String) : workbook.getSheetAt(0)
-
-        sheet.addMergedRegion(new CellRangeAddress(rows.first() - 1, rows.last() - 1, cols.first() - 1, cols.last() - 1))
+		def cellRangeAddress=org.iff.infra.util.ReflectHelper.getConstructor('org.apache.poi.ss.util.CellRangeAddress','int','int','int','int')
+        sheet.addMergedRegion(cellRangeAddress.newInstance((rows.first() - 1) as int, (rows.last() - 1) as int, (cols.first() - 1) as int, (cols.last() - 1) as int))
     }
 
     def applyColumnWidth(map)  {
@@ -279,10 +275,11 @@ class ExcelBuilder {
                 default:
                     def stringValue = value?.toString() ?: ""
                     if (stringValue.startsWith('=')) {
-                        cell.setCellType(Cell.CELL_TYPE_FORMULA)
+                        cell.setCellType(cell.CELL_TYPE_FORMULA)
                         cell.setCellFormula(stringValue.substring(1))
                     } else {
-                        cell.setCellValue(new HSSFRichTextString(stringValue))
+						def hssfRichTextString=org.iff.infra.util.ReflectHelper.getConstructor('org.apache.poi.hssf.usermodel.HSSFRichTextString', 'java.lang.String')
+                        cell.setCellValue(hssfRichTextString.newInstance(stringValue.toString()))
                     }
                     break
             }
