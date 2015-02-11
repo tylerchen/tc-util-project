@@ -5,41 +5,10 @@ import java.net.*
 import java.text.*
 import java.util.zip.*
 import java.io.*
+
 @TCAction(name="/file_browser")
 class FileBrowserAction{
-	def static final config=[
-			 native_commands:           true
-			,read_only:                 false
-			,allow_upload:              true
-			,restrict_browsing:         true
-			,restrict_whitelist:        true
-			,restrict_path:             "G:\\bak\\app_root"
-			,upload_monitor_refresh:    2
-			,editfield_cols:            85
-			,editfield_rows:            30
-			,use_popup:                 true
-			,use_dir_preview:           false
-			,dir_preview_number:        10
-			,css_name:                  "css/browser/Browser.css"
-			,compression_level:         1
-			,forbidden_drives:          ["a:\\"]
-			,command_interpreter:       ["cmd", "/C"]// "/bin/sh","-c"
-			,max_process_running_time:  30 * 1000// 30 seconds
-			//button names
-			,save_as_zip:               "Download selected files as (z)ip"
-			,rename_file:               "(R)ename File"
-			,delete_files:              "(Del)ete selected files"
-			,create_dir:                "Create (D)ir"
-			,create_file:               "(C)reate File"
-			,move_files:                "(M)ove Files"
-			,copy_files:                "Cop(y) Files"
-			,launch_command:            "(L)aunch external program"
-			,upload_files:              "Upload"
-			//
-			,tempdir:                   "."
-			,version_nr:                "1.2"
-			,dateFormat:                DateFormat.getDateTimeInstance()
-		]
+	def config=[restrict_path:TCCache.me().cache().props.tc_file_browser_path ?: '$$']
 	def parseRequest(){
 		def req
 		println "params: ${params}"

@@ -17,13 +17,13 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
+import org.iff.infra.util.ReflectHelper;
 
 /**
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2013-2-2
  */
-@Intercepts( { @Signature(type = Executor.class, method = "update", args = {
-		MappedStatement.class, Object.class }) })
+@Intercepts( { @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class UUIDPlugin implements Interceptor {
 
 	public UUIDPlugin() {
@@ -31,11 +31,9 @@ public class UUIDPlugin implements Interceptor {
 
 	@Override
 	public Object intercept(Invocation invocation) throws Throwable {
-		final MappedStatement mappedStatement = (MappedStatement) invocation
-				.getArgs()[0];
+		final MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
 		if (mappedStatement.getSqlCommandType() == SqlCommandType.INSERT) {
-			ReflectHelper.setValueByFieldName(mappedStatement, "keyGenerator",
-					new UUIDKeyGenerator());
+			ReflectHelper.setValueByFieldName(mappedStatement, "keyGenerator", new UUIDKeyGenerator());
 		}
 		return invocation.proceed();
 	}

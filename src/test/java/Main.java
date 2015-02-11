@@ -15,9 +15,10 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		//for test
-		System.setProperty("app_root", "E:/workspace/JeeGalileo/tc-util-project/src/main/resources/META-INF/tc-framework-new");
+		System.setProperty("app_root", "E:/workspace/JeeGalileo/tc-util-project/src/main/resources/META-INF/tc-framework");
 		//System.setProperty("tc_jar_path", "META-INF/tc-framework-test");
 		System.setProperty("resourceBase", "G:/bak/app_root/webapp");
+		//System.setProperty("tc_file_browser_path", "G:/bak/app_root/webapp");
 		{
 			org.iff.infra.util.groovy.TCCLassManager.main(args);
 		}
