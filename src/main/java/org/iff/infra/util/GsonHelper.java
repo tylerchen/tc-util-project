@@ -23,13 +23,13 @@ public class GsonHelper {
 	}
 
 	public static Map toJsonMap(String json) {
-		Gson gson = new Gson();
+		Gson gson = JsonHelper.GSON;
 		LinkedHashMap fromJson = gson.fromJson(json, LinkedHashMap.class);
 		return fromJson;
 	}
 
 	public static String toJsonString(Object o) {
-		Gson gson = new Gson();
+		Gson gson = JsonHelper.GSON;
 		return gson.toJson(o);
 	}
 
@@ -43,8 +43,7 @@ public class GsonHelper {
 	 * @since 2013-2-28
 	 */
 	public static <T> T accessMap(Map map, String namePath) {
-		if (map == null || namePath == null || map.isEmpty()
-				|| namePath.length() < 1) {
+		if (map == null || namePath == null || map.isEmpty() || namePath.length() < 1) {
 			return (T) null;
 		}
 		String[] names = namePath.split("\\.");

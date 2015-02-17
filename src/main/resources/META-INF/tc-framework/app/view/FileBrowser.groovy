@@ -8,7 +8,7 @@ import java.io.*
 
 @TCAction(name="/file_browser")
 class FileBrowserAction{
-	def config=[restrict_path:TCCache.me().cache().props.tc_file_browser_path ?: '$$']
+	def config=[restrict_path:TCCache.me().props.tc_file_browser_path ?: '$$']
 	def parseRequest(){
 		def req
 		println "params: ${params}"
@@ -35,7 +35,13 @@ class FileBrowserAction{
 		currentParent=org.iff.infra.util.StringHelper.pathBuild(currentParent, '/')
 		
 		if(params.request.contentType && params.request.contentType.toLowerCase().contains('multipart/form-data')){
-			req=new com.oreilly.servlet.MultipartRequest(params.request, currentPath, 1024*1024, "UTF-8", new com.oreilly.servlet.multipart.DefaultFileRenamePolicy())
+			def policy=org.iff.infra.util.ReflectHelper.getConstructor('com.oreilly.servlet.multipart.DefaultFileRenamePolicy').newInstance()
+			req=org.iff.infra.util.ReflectHelper.getConstructor('com.oreilly.servlet.MultipartRequest'
+				,'javax.servlet.http.HttpServletRequest'
+				,'java.lang.String'
+				,'int'
+				,'java.lang.String'
+				,'com.oreilly.servlet.multipart.FileRenamePolicy').newInstance(params.request, currentPath, 1024*1024, "UTF-8", policy)
 		}else{
 			req=params.request
 		}

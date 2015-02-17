@@ -35,7 +35,7 @@ class TCFreeMarkerRender extends TCRender{
 		if(config){
 			return
 		}
-		def servletContext=TCCache.me().cache().servlet.servletContext
+		def servletContext=TCCache.me().servlet.servletContext
 		config=new freemarker.template.Configuration()
 		config.setServletContextForTemplateLoading(servletContext, "/")
 		config.setTemplateUpdateDelay(0)

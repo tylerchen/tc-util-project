@@ -68,6 +68,10 @@ public class TCMainClassLoader extends GroovyClassLoader {
 		return lastCompileSuccess;
 	}
 
+	public long getLastModify() {
+		return lastModify;
+	}
+
 	public String getFile() {
 		return file;
 	}

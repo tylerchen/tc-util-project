@@ -1,21 +1,20 @@
 package org.iff.groovy.framework
 
-import org.iff.infra.util.groovy.TCCLassManager;
 
-@org.iff.infra.util.groovy.TCFramework(name="TCMain")
+@TCFramework(name="TCMain")
 class TCMain{
 	def main(){
-		def initer=TCCache.me().cache().framework_instance.TCIniter
+		def initer=TCCache.me().framework_instance.TCIniter
 		initer.init()
 		//
-		def handlers=TCCache.me().cache().framework.action_handlers
+		def handlers=TCCache.me().framework.action_handlers
 		handlers.add(new TCChain(){
 			def process(params){
 				TCHelper.debug('[BeforeHandler]: {0}',params.target)
 				nextChain?.process(params)
 			}
 		})
-		handlers.add(TCCache.me().cache().framework_instance.TCActionHandler)
+		handlers.add(TCCache.me().framework_instance.TCActionHandler)
 		handlers.add(new TCChain(){
 			def process(params){
 				TCHelper.debug('[AfterHandler]: {0}',params.target)
@@ -23,23 +22,23 @@ class TCMain{
 			}
 		})
 		//
-		def starts=TCCache.me().cache().framework_instance.TCStarts
+		def starts=TCCache.me().framework_instance.TCStarts
 		starts.start()
 	}
 }
-@org.iff.infra.util.groovy.TCFramework(name="TCIniter")
+@TCFramework(name="TCIniter")
 class TCIniter{
 	def init(){
-		def list=TCCache.me().cache().framework.inits// data structure=[instance,method]
+		def list=TCCache.me().framework.inits// data structure=[instance,method]
 		list.each{
 			it.instance."$it.method"()
 		}
 	}
 }
-@org.iff.infra.util.groovy.TCFramework(name="TCStarts")
+@TCFramework(name="TCStarts")
 class TCStarts{
 	def start(){
-		def list=TCCache.me().cache().framework.starts// data structure=[instance,method]
+		def list=TCCache.me().framework.starts// data structure=[instance,method]
 		list.each(){
 			def final start=it
 			Thread.start{
@@ -49,10 +48,10 @@ class TCStarts{
 		}
 	}
 }
-@org.iff.infra.util.groovy.TCFramework(name="TCStopper")
+@TCFramework(name="TCStopper")
 class TCStopper{
 	def stop(){
-		def list=TCCache.me().cache().framework.stops// data structure=[instance,method]
+		def list=TCCache.me().framework.stops// data structure=[instance,method]
 		list.each{
 			it.instance."$it.method"()
 		}
@@ -63,11 +62,13 @@ class TCFilter implements javax.servlet.Filter{
 	def target_prefix
 	def void init(javax.servlet.FilterConfig filterConfig) throws javax.servlet.ServletException{
 		TCHelper.debug('[TCFilter Init]')
-		TCCache.me().cache().servlet.put('servletContext', filterConfig.servletContext)
+		println "-----> ${TCCache.me()}"
+		TCCache.me().servlet.put('filterConfig', filterConfig)
+		TCCache.me().servlet.put('servletContext', filterConfig.servletContext)
 		target_prefix = filterConfig.getInitParameter('target_prefix') ?: ''
 		if(!handler){
 			def tmp=new TCChain()
-			def list=TCCache.me().cache().framework.action_handlers
+			def list=TCCache.me().framework.action_handlers
 			list.reverse().each{
 				it.nextChain=tmp
 				tmp=it
@@ -117,24 +118,24 @@ class TCFilter implements javax.servlet.Filter{
 	def void destroy(){
 	}
 }
-@org.iff.infra.util.groovy.TCFramework(name="TCServer")
+@TCFramework(name="TCServer")
 class TCServer{
 	def server
 	def classLoader=TCCLassManager.get()
 	def TCServer(){
-		def app_mode=TCCache.me().cache().props.app_mode
+		def app_mode=TCCache.me().props.app_mode
 		TCHelper.debug('[TCServer] app_mode:{0}', app_mode)
 		if(!app_mode || 'embedded'!=app_mode){
-			TCCache.me().cache().framework.starts.add(['instance':this,'method':'start'])
-			TCCache.me().cache().framework.stops .add(['instance':this,'method':'stop' ])
+			TCCache.me().framework.starts.add(['instance':this,'method':'start'])
+			TCCache.me().framework.stops .add(['instance':this,'method':'stop' ])
 		}
 	}
 	def start(){
 		server = org.iff.infra.util.ReflectHelper.getConstructor('org.eclipse.jetty.server.Server','int').newInstance(9090)
 		def connector = org.iff.infra.util.ReflectHelper.getConstructor('org.eclipse.jetty.server.ServerConnector','org.eclipse.jetty.server.Server').newInstance(server)
 		def webApp = org.iff.infra.util.ReflectHelper.getConstructor('org.eclipse.jetty.webapp.WebAppContext').newInstance()
-		webApp.contextPath=TCCache.me().cache().props.contextPath ?: '/'
-		webApp.resourceBase=TCCache.me().cache().props.resourceBase ?: "${TCCache.me().cache().app_root}/webapp"
+		webApp.contextPath=TCCache.me().props.contextPath ?: '/'
+		webApp.resourceBase=TCCache.me().props.resourceBase ?: "${TCCache.me().app_root}/webapp"
 		webApp.classLoader=classLoader
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false")
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false")	// webApp.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "false"));
@@ -154,10 +155,10 @@ class TCChain{
 	def nextChain
 	def process(params){}
 }
-@org.iff.infra.util.groovy.TCFramework(name="TCActionHandler")
+@TCFramework(name="TCActionHandler")
 class TCActionHandler extends TCChain{
 	def process(params){
-		def actions=TCCache.me().cache().framework?.actions, target=params?.target
+		def actions=TCCache.me().framework?.actions, target=params?.target
 		if(!params || !target || !actions){
 			nextChain.process(params)
 			return false
@@ -203,12 +204,12 @@ class TCActionHandler extends TCChain{
 		if(!anno){
 			return false
 		}
-		def actions=TCCache.me().cache().framework.actions
+		def actions=TCCache.me().framework.actions
 		def context=anno.name()
 		actionClass.declaredMethods.each{
 			def exclude=['invokeMethod','getMetaClass','setMetaClass','setProperty','getProperty']
-			def methodName=it.name
-			if(methodName.indexOf('$')<0 && !(methodName in exclude)){
+			def methodName=it.name, modifiers=it.modifiers
+			if(methodName.indexOf('$')<0 && !(methodName in exclude) && !java.lang.reflect.Modifier.isStatic(modifiers) && java.lang.reflect.Modifier.isPublic(modifiers)){
 				if('index'==methodName){
 					actions[context]=['action':actionClass.name,'method':methodName,'context':context]
 				}
@@ -220,7 +221,7 @@ class TCActionHandler extends TCChain{
 		if(!actionClass){
 			return false
 		}
-		def actions=TCCache.me().cache().framework.actions
+		def actions=TCCache.me().framework.actions
 		TCAction anno=actionClass.getAnnotation(TCAction.class)
 		if(!anno){
 			return false

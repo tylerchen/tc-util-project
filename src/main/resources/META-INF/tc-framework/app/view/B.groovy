@@ -6,7 +6,10 @@ class TestAction{
 		def build = new groovy.xml.MarkupBuilder(params.response.writer)
 		build.html{
 			head{ title('bbbb') }
-			body{ h1("Hello TC!") }
+			body{ 
+				h1("Hello TC!")
+				div("${TCCache.me().framework_instance.TCServer.server.handler.sessionHandler.sessionManager.@_sessions}")
+			}
 		}
 	}
 	def aa(){

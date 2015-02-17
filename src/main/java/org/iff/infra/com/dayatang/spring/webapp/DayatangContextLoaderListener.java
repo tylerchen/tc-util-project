@@ -8,11 +8,27 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+/**
+ * DO NOT use this class again!!!!! Please using spring mvc listener instead!!!
+ * <pre>
+ *     <context-param>
+ *         <param-name>contextConfigLocation</param-name>
+ *         <param-value>WEB-INF/beans.xml</param-value>
+ *     </context-param>
+ *     <listener>
+ *         <listener-class>
+ *             org.springframework.web.context.ContextLoaderListener
+ *         </listener-class>
+ *     </list
+ * @author Tyler
+ */
+@Deprecated
 public class DayatangContextLoaderListener extends ContextLoaderListener {
 
 	public void contextInitialized(ServletContextEvent event) {
 		super.contextInitialized(event);
-		WebApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(event.getServletContext());
+		WebApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(event
+				.getServletContext());
 		SpringInstanceProvider springProvider = new SpringInstanceProvider(applicationContext);
 		InstanceFactory.setInstanceProvider(springProvider);
 	}

@@ -2,12 +2,15 @@ package org.iff.infra.com.dayatang.domain;
 
 
 /**
+ * DO NOT use this class again!!!!!
+ * @see org.iff.infra.domain.InstanceProvider
  * 实例提供者接口。该接口封装了IoC工厂的具体实现。它抽象
  * 出IoC工厂的基本能力：提供某种指定类型（接口/类）的一个
  * 实例。
  * @author yyang
  *
  */
+@Deprecated
 public interface InstanceProvider {
 
 	/**

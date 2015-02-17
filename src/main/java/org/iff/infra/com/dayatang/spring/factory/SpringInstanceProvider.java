@@ -6,11 +6,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
+ * DO NOT use this class again!!!!!
+ * @see org.iff.infra.util.spring.factory.SpringInstanceProvider
  * 实例提供者接口的Spring实现。
  * SpringProvider内部通过Spring IoC的ApplicationContext实现对象创建。
  * @author yyang
  *
  */
+@Deprecated
 public class SpringInstanceProvider implements InstanceProvider {
 
 	private ApplicationContext applicationContext;

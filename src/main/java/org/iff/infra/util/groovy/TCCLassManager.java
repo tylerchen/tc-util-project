@@ -7,20 +7,21 @@
  ******************************************************************************/
 package org.iff.infra.util.groovy;
 
-import groovy.lang.Binding;
 import groovy.lang.GroovyObject;
-import groovy.lang.GroovyShell;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.iff.infra.util.FCS;
 import org.iff.infra.util.Logger;
+import org.iff.infra.util.ResourceHelper;
+import org.iff.infra.util.StringHelper;
 
 /**
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
@@ -197,80 +198,44 @@ public class TCCLassManager {
 	}
 
 	public static Map scan_groovy_files_from_jar(String app_root, String path) {
-		Binding binding = new Binding();
-		binding.setVariable("app_root", app_root);
-		binding.setVariable("path", path);
-		GroovyShell shell = new GroovyShell(binding);
-		return (Map) shell.evaluate(scan_groovy_files_from_jar);
+		List<String> list = ResourceHelper.loadResourcesInClassPath(path, ".groovy", "*", null);
+		Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
+		String cleanPath = StringHelper.pathBuild(path + "/", "/");
+		for (String s : list) {
+			String dir = "";
+			if (s.startsWith("jar:")) {
+				dir = s.substring(s.indexOf(cleanPath, s.lastIndexOf("!/")) + cleanPath.length(), s.lastIndexOf('/'));
+			} else {
+				dir = s.substring(s.indexOf(cleanPath) + cleanPath.length(), s.lastIndexOf('/'));
+			}
+			List<String> files = map.get(dir);
+			if (files == null) {
+				files = new ArrayList<String>();
+				map.put(dir, files);
+			}
+			files.add(s);
+		}
+		return map;
 	}
 
 	public static Map scan_groovy_files_from_filesys(String app_root, String dir_root, List<?> subdirs) {
-		Binding binding = new Binding();
-		binding.setVariable("app_root", app_root);
-		binding.setVariable("dir_root", dir_root);
-		binding.setVariable("subdirs", subdirs);
-		GroovyShell shell = new GroovyShell(binding);
-		return (Map) shell.evaluate(scan_groovy_files_from_filesys);
+		List<String> list = ResourceHelper.loadResourcesInFileSystem(dir_root, ".groovy", "*", null);
+		Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
+		String cleanPath = StringHelper.pathBuild(dir_root + "/", "/");
+		for (String s : list) {
+			String dir = "";
+			if (s.startsWith("jar:")) {
+				dir = s.substring(s.indexOf(cleanPath, s.lastIndexOf("!/")) + cleanPath.length(), s.lastIndexOf('/'));
+			} else {
+				dir = s.substring(s.indexOf(cleanPath) + cleanPath.length(), s.lastIndexOf('/'));
+			}
+			List<String> files = map.get(dir);
+			if (files == null) {
+				files = new ArrayList<String>();
+				map.put(dir, files);
+			}
+			files.add(s);
+		}
+		return map;
 	}
-
-	public static final String scan_groovy_files_from_filesys = ""//
-			+ "    def scan_groovy_files_from_filesys(app_root, dir_root, subdirs){\r\n"
-			+ "        def files=[:]//{parentPath:[fileSet]}\r\n"
-			+ "        if(!dir_root || dir_root.size()<1 || !(new File(dir_root).exists())){\r\n"
-			+ "            return files\r\n"
-			+ "        }\r\n"
-			+ "        dir_root=pathClean(dir_root)\r\n"
-			+ "        (subdirs ?: ['']).each{subdir->\r\n"
-			+ "            new File(dir_root+'/'+subdir).eachFileRecurse(groovy.io.FileType.FILES){ file ->\r\n"
-			+ "                if(file.path.endsWith('.groovy')){\r\n"
-			+ "                    def parent=pathClean(pathClean(file.parent)-dir_root), path=pathClean(file.path)\r\n"
-			+ "                    if(files[parent]){\r\n"
-			+ "                        files[parent].add(path)\r\n"
-			+ "                    }else{\r\n"
-			+ "                        files[parent]=[path]\r\n"
-			+ "                    }\r\n"
-			+ "                }\r\n"
-			+ "            }\r\n"
-			+ "        }\r\n"
-			+ "        return files\r\n"
-			+ "    }\r\n"
-			+ "    def pathClean(path){\r\n"
-			+ "        return path ? org.iff.infra.util.StringHelper.pathBuild(path.toString(), '/').replaceAll('^/|/$','') : null\r\n"
-			+ "    }\r\n" + "	return scan_groovy_files_from_filesys(app_root, dir_root, subdirs)\r\n";
-
-	public static final String scan_groovy_files_from_jar = ""//
-			+ "    def scan_groovy_files_from_jar(app_root, path){\r\n"
-			+ "        def files=[:]\r\n"
-			+ "        if(!path || path.size()<1){\r\n"
-			+ "            return files\r\n"
-			+ "        }\r\n"
-			+ "        path=pathClean(path)\r\n"
-			+ "        def rs=getClass().getClassLoader().getResources(path)\r\n"
-			+ "        while(rs.hasMoreElements()){\r\n"
-			+ "            def url=rs.nextElement()\r\n"
-			+ "            def filePath=url.getFile(), protocol=url.getProtocol()\r\n"
-			+ "            if (protocol in ['file','jar'] && filePath.startsWith('file:')) {// path will starts with file:/\r\n"
-			+ "                def file = new File(filePath.substring('file:'.size(), filePath.lastIndexOf(\"!/\")))\r\n"
-			+ "                def jarFile = new java.util.jar.JarFile(file)\r\n"
-			+ "                def entries=jarFile.entries()\r\n"
-			+ "                while(entries.hasMoreElements()){\r\n"
-			+ "                    def entry=entries.nextElement()\r\n"
-			+ "                    def entryName=pathClean(entry.name)\r\n"
-			+ "                    if (entryName.startsWith(path) && entryName.endsWith('.groovy')) {\r\n"
-			+ "                        def fileName=pathClean(entryName.substring(0, entryName.lastIndexOf('/'))-path)\r\n"
-			+ "                        def fileSet=files[fileName]\r\n"
-			+ "                        if(fileName in files){\r\n"
-			+ "                            files[fileName].add(\"${protocol}:${filePath.substring(0, filePath.lastIndexOf('!/') + 2)}${entryName}\")\r\n"
-			+ "                        }else{\r\n"
-			+ "                            files[fileName]=[\"${protocol}:${filePath.substring(0, filePath.lastIndexOf('!/') + 2)}${entryName}\"]\r\n"
-			+ "                        }\r\n"
-			+ "                    }\r\n"
-			+ "                }\r\n"
-			+ "            }\r\n"
-			+ "        }\r\n"
-			+ "        return files\r\n"
-			+ "    }\r\n"
-			+ "    def pathClean(path){\r\n"
-			+ "        return path ? org.iff.infra.util.StringHelper.pathBuild(path.toString(), '/').replaceAll('^/|/$','') : null\r\n"
-			+ "    }\r\n" + "   return scan_groovy_files_from_jar(app_root, path)\r\n";
 }

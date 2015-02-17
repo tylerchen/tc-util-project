@@ -1,45 +1,16 @@
 package org.iff.groovy.framework
 
-class TCCache{
-	private static final TCCache _me=new TCCache()
-	private def Map _cache=init()
-	private TCCache(){
-	}
-	def static init(){
-		def cache=[:]
-		cache.putAll([
-			'framework_instance':[:],
-			'action_instance':[:],
-			'anno_class':['action':[:],'framework':[:]],
-			'groovy_files':[:],
-			'props':[:],
-			'framework':[	'inits':[/*{instance,method}*/],
-							'starts':[/*{instance,method}*/],
-							'stops':[/*{instance,method}*/],
-							'action_handlers':[],
-							'actions':[:]/*{url:{action,context,method}}*/],
-			'servlet':[:]
-		])
-		return cache
-	}
-	def static me(){
-		return _me
-	}
-	def cache(){
-		return _cache
-	}
-}
 class TCStarter{
 	def TCStarter(){
-		TCCache.me().cache().framework_instance.TCStarter=this
+		TCCache.me().framework_instance.TCStarter=this
 	}
 	def start(groovyFiles){
 		//
 		system_properties_to_map()
 		//
-		def app_root=TCCache.me().cache().app_root
-		def tc_jar_path=TCCache.me().cache().props.tc_jar_path
-		def tc_file_path=TCCache.me().cache().props.tc_file_path ?: app_root
+		def app_root=TCCache.me().app_root
+		def tc_jar_path=TCCache.me().props.tc_jar_path
+		def tc_file_path=TCCache.me().props.tc_file_path ?: app_root
 		TCHelper.debug('\napp_root:{0}\ntc_jar_path:{1}\ntc_file_path:{2}',app_root,tc_jar_path,tc_file_path)
 		//
 		def jar_files=scan_groovy_files_from_jar(app_root, tc_jar_path)
@@ -55,11 +26,15 @@ class TCStarter{
 		//
 	}
 	def pathClean(path){
-		return path ? TCHelper.pathClean(path.toString()).replaceAll('^/|/$','') : null
+		if(org.iff.infra.util.PlatformHelper.isWindows()){
+			return path ? TCHelper.pathClean(path.toString()).replaceAll('^/|/$','') : null
+		}else{
+			return path ? TCHelper.pathClean(path.toString()).replaceAll('/$','') : null
+		}
 	}
 	def system_properties_to_map(){
 		def map=TCHelper.prop2map(System.getProperties()){true}
-		TCCache.me().cache().with{
+		TCCache.me().with{
 			get('props').putAll(map)
 			put("app_root", pathClean(map.app_root))
 		}
@@ -71,7 +46,7 @@ class TCStarter{
 		order.each{ path ->
 			TCHelper.debug('Compile Path: {0}/{1}',app_root,path)
 			def errorCompile=[]
-			def errorTimes=100
+			def errorTimes=10
 			groovy_files.each{pathContext, files ->
 				pathContext=pathClean(pathContext)
 				if(pathContext.startsWith(path)){
@@ -111,9 +86,9 @@ class TCStarter{
 	}
 	def start_server(){
 		TCHelper.debug('start_server ......')
-		TCHelper.debug('framework_instance:{0}',TCCache.me().cache().framework_instance)
-		TCHelper.debug('anno_class:{0}',TCCache.me().cache().anno_class)
-		def instance=TCCache.me().cache().framework_instance
+		TCHelper.debug('framework_instance:{0}',TCCache.me().framework_instance)
+		TCHelper.debug('anno_class:{0}',TCCache.me().anno_class)
+		def instance=TCCache.me().framework_instance
 		if(instance.TCMain){
 			instance.TCMain.main()
 		}
@@ -161,7 +136,8 @@ class TCStarter{
 		}
 		dir_root=pathClean(dir_root)
 		(subdirs ?: ['']).each{subdir->
-			new File(dir_root+'/'+subdir).eachFileRecurse(groovy.io.FileType.FILES){ file ->
+			def dirFile=new File(dir_root+'/'+subdir)
+			dirFile.exists() && dirFile.eachFileRecurse(groovy.io.FileType.FILES){ file ->
 				if(file.path.endsWith('.groovy')){
 					def parent=pathClean(pathClean(file.parent)-dir_root), path=pathClean(file.path)
 					scan_dir_groovy_files.put(file.path, file.lastModified())// add for listener
@@ -197,6 +173,7 @@ class TCStarter{
 		def groovy_files=[:]
 		groovyFiles.each{gfs->
 			gfs.each{key, value->
+				key=key.replaceAll('^/|/$','')
 				value=(TCHelper.isObjects(value)?value:[value]) as List
 				if(key in groovy_files){
 					groovy_files[key].addAll(value)
@@ -211,9 +188,11 @@ class TCStarter{
 		Thread.start{
 			TCHelper.debug('scan_start_folder_listener, root_dir:{0}, app_root:{1}',root_dir,app_root)
 			while(!scan_cancel_listner){
-				def dirFile=[:]
-				def modified=[:]
-				new File(root_dir).traverse(type:groovy.io.FileType.FILES, nameFilter: ~/.*\.groovy$/){file->
+				def dirFile=[:], modified=[:], folder=new File(root_dir)
+				if(!folder.exists()){
+					break
+				}
+				folder.exists()&& folder.traverse(type:groovy.io.FileType.FILES, nameFilter: ~/.*\.groovy$/){file->
 					def path=file.path, lastModify=file.lastModified()
 					if(path in scan_dir_groovy_files){
 						if(lastModify != scan_dir_groovy_files[path]){
@@ -268,7 +247,7 @@ class TCStarter{
 		parse_classes.clear()
 	}
 	def parse_mapping_class(){
-		def classMap=TCCache.me().cache().anno_class
+		def classMap=TCCache.me().anno_class
 		parse_classes.each{
 			def anno=it.getAnnotation(TCAction.class)
 			if(!anno){
@@ -286,7 +265,7 @@ class TCStarter{
 		TCHelper.debug('parse_mapping_class, classes: {0}, anno_class:{1}',parse_classes,classMap)
 	}
 	def parse_framework_process(){
-		def cache=TCCache.me().cache()
+		def cache=TCCache.me()
 		def classMap=cache.anno_class
 		def annoMap=[:]//framework annotation name value mapping class name and order
 		parse_classes.each{
@@ -307,8 +286,8 @@ class TCStarter{
 		}
 	}
 	def parse_action_process(){
-		def classMap=TCCache.me().cache().anno_class
-		def actionHandler=TCCache.me().cache().framework_instance.TCActionHandler
+		def classMap=TCCache.me().anno_class
+		def actionHandler=TCCache.me().framework_instance.TCActionHandler
 		parse_classes.each{
 			def action=classMap.action[it.name]
 			if(action){
@@ -319,7 +298,6 @@ class TCStarter{
 	//====== parse class end ======
 }
 class TCHelper{
-	def static cache=[:]
 	def static prop2map(props, filter){
 		def map=[:]
 		if(!props || !(props in Properties)){
@@ -335,32 +313,6 @@ class TCHelper{
 			}
 		}
 		return map
-	}
-	def static pathPut(path, value){
-		synchronized(cache){
-			org.iff.infra.util.MapHelper.setByPath(cache, path, value)
-		}
-	}
-	def static pathGet(path){
-		org.iff.infra.util.MapHelper.getByPath(cache, path)
-	}
-	def static getKey(key){
-		cache[key]
-	}
-	def static putAll(map){
-		synchronized(cache){
-			cache.putAll(map)
-		}
-	}
-	def static remove(key){
-		synchronized(cache){
-			cache.remove(key)
-		}
-	}
-	def static clear(){
-		synchronized(cache){
-			cache.clear()
-		}
 	}
 	def static pathClean(path){
 		org.iff.infra.util.StringHelper.pathBuild(path, '/')

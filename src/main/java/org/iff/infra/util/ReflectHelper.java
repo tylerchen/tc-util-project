@@ -69,29 +69,33 @@ public class ReflectHelper {
 	}
 
 	public static Method getMethod(String className, String method, String... parameterTypes) {
+
 		try {
 			Class<?> clazz = Class.forName(className);
-			if (parameterTypes == null || parameterTypes.length < 1) {
+			parameterTypes = parameterTypes == null ? new String[0] : parameterTypes;
+			for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
 				try {
-					return clazz.getMethod(method);
-				} catch (Exception e) {
-					return null;
-				}
-			}
-			Method[] methods = clazz.getMethods();
-			for (Method m : methods) {
-				Class<?>[] types = m.getParameterTypes();
-				if (types.length != parameterTypes.length) {
-					continue;
-				}
-				int i = 0;
-				for (; i < types.length; i++) {
-					if (!types[i].getName().equals(parameterTypes[i])) {
-						break;
+					Method[] methods = superClass.getDeclaredMethods();
+					for (Method m : methods) {
+						if (!m.getName().equals(method)) {
+							continue;
+						}
+						Class<?>[] types = m.getParameterTypes();
+						if (types.length != parameterTypes.length) {
+							continue;
+						}
+						int i = 0;
+						for (; i < types.length; i++) {
+							if (!types[i].getName().equals(parameterTypes[i])) {
+								break;
+							}
+						}
+						if (i == types.length) {
+							m.setAccessible(true);
+							return m;
+						}
 					}
-				}
-				if (i == types.length) {
-					return m;
+				} catch (Exception e) {
 				}
 			}
 		} catch (Exception e) {

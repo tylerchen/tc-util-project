@@ -9,7 +9,7 @@ import com.google.gson.reflect.TypeToken;
 
 public final class JsonHelper {
 
-	private static final Gson GSON = new GsonBuilder().setDateFormat(
+	public static final Gson GSON = new GsonBuilder().setDateFormat(
 			"yyyy-MM-dd HH:mm:ss").create();
 
 	private JsonHelper() {

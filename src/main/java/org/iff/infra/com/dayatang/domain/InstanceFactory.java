@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * DO NOT use this class again!!!!!
+ * @see org.iff.infra.domain.InstanceFactory
  * 实例工厂类。通过它可以获得其管理的类的实例。 InstanceFactory向客户代码隐藏了IoC工厂的具体实现。在后台，它通过
  * InstanceProvider策略接口，允许选择不同的IoC工厂，例如Spring， Google Guice和TapestryIoC等等。
  * IoC工厂应该在应用程序启动时装配好，也就是把初始化好的InstanceProvider
@@ -15,6 +17,7 @@ import java.util.Map;
  * @author yyang
  * 
  */
+@Deprecated
 public class InstanceFactory {
 
 	private static InstanceProvider instanceProvider;
