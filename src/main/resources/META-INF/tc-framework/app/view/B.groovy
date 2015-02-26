@@ -1,6 +1,6 @@
 package org.iff.groovy.test.b
 
-@TCAction(name="/b")
+@org.iff.infra.util.groovy.TCAction(name="/b")
 class TestAction{
 	def index(){
 		def build = new groovy.xml.MarkupBuilder(params.response.writer)

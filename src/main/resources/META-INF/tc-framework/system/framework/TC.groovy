@@ -249,15 +249,23 @@ class TCStarter{
 	def parse_mapping_class(){
 		def classMap=TCCache.me().anno_class
 		parse_classes.each{
-			def anno=it.getAnnotation(TCAction.class)
+			def anno=it.getAnnotation(org.iff.infra.util.groovy.TCAction.class)
 			if(!anno){
-				anno=it.getAnnotation(TCFramework.class)
+				anno=it.getAnnotation(org.iff.infra.util.groovy.TCFramework.class)
 			}
 			if(anno){
 				if(anno in TCAction){
-					classMap.action[it.name]=[name:anno.name()]
+					if(classMap.action[it.name]){
+						TCHelper.error('class name exists: {1}',it.name)
+					}else{
+						classMap.action[it.name]=[name:anno.name()]
+					}
 				}else if(anno in TCFramework){
-					classMap.framework[it.name]=[name:anno.name(), order:anno.order()]
+					if(classMap.action[it.name]){
+						TCHelper.error('class name exists: {1}',it.name)
+					}else{
+						classMap.framework[it.name]=[name:anno.name(), order:anno.order()]
+					}
 				}
 				classMap[it.name]=[clazz:it, instance:null]
 			}
