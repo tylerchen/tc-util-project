@@ -1,4 +1,4 @@
-package org.iff.groovy.view.system
+package org.iff.groovy.view.tools
 
 @TCAction(name="/webservice")
 class WebserviceAction{

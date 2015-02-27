@@ -1,4 +1,4 @@
-package org.iff.groovy.test.c
+package org.iff.groovy.view.tools
 
 @TCAction(name="/output")
 class TestAction{

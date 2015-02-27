@@ -1,4 +1,4 @@
-package org.iff.groovy.module.openreport
+package org.iff.groovy.view.openreport
 
 @TCAction(name="/open_report")
 class OpenReportParser{
