@@ -179,13 +179,56 @@ class TCActionHandler extends TCChain{
 		if(actionMap){
 			def actionClazz=TCCLassManager.me().loadClass(actionMap.action)
 			def result
+			def ins=actionClazz.newInstance()
+			ins.metaClass.params=params
+			ins.metaClass._request_params=[:]
+			if(ins.metaClass.addUrlParam){
+				ins.metaClass.addUrlParam={name, value->
+					_request_params.put(name, urlEncode(value))
+					return ins
+				}
+			}
+			if(ins.metaClass.urlEncode){
+				ins.metaClass.urlEncode={url->
+					url ? java.net.URLEncoder.encode(url,'UTF-8') : ''
+				}
+			}
+			if(ins.metaClass.urlDecode){
+				ins.metaClass.urlDecode={url->
+					url ? java.net.URLDecoder.decode(url,'UTF-8') : ''
+				}
+			}
+			if(ins.metaClass.redirect){
+				ins.metaClass.redirect={url->
+					if(url && _request_params.size()>0){
+						if(url.endsWith('?')||url.endsWith('&')){
+							url=url+_request_params.collect{k,v-> k+'='+v}.join('&')
+						}else if(url.indexOf('?')>-1){
+							url=url+'&'+_request_params.collect{k,v-> k+'='+v}.join('&')
+						}else{
+							url=url+'?'+_request_params.collect{k,v-> k+'='+v}.join('&')
+						}
+					}
+					ins.params.response.sendRedirect(url ? url.toString() : '')
+				}
+			}
+			if(ins.metaClass.forward){
+				ins.metaClass.forward={url->
+					if(url && _request_params.size()>0){
+						if(url.endsWith('?')||url.endsWith('&')){
+							url=url+_request_params.collect{k,v-> k+'='+v}.join('&')
+						}else if(url.indexOf('?')>-1){
+							url=url+'&'+_request_params.collect{k,v-> k+'='+v}.join('&')
+						}else{
+							url=url+'?'+_request_params.collect{k,v-> k+'='+v}.join('&')
+						}
+					}
+					ins.params.request.getRequestDispatcher(url ? url.toString() : '').forward(ins.params.request, ins.params.response)
+				}
+			}
 			if(actionClazz.getMethod(actionMap.method,null)){
-				def ins=actionClazz.newInstance()
-				ins.metaClass.params=params
 				result=ins."$actionMap.method"()
 			}else{
-				def ins=actionClazz.newInstance()
-				ins.metaClass.params=params
 				result=ins."$actionMap.method"(params)
 			}
 			if(result instanceof TCRender){

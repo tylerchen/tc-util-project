@@ -1,6 +1,6 @@
 package org.iff.groovy.view.tools
 
-@TCAction(name="/output")
+@TCAction(name="/tools/output")
 class TestAction{
 	def static baos
 	def index(){
@@ -8,7 +8,7 @@ class TestAction{
 			baos=new org.iff.infra.util.ScrollableByteArrayOutputStream()
 			System.out=new PrintStream(baos)
 			System.err=new PrintStream(baos)
-			def appender=new org.apache.log4j.WriterAppender(new org.apache.log4j.PatternLayout(), baos)
+			def appender=new org.apache.log4j.WriterAppender(new org.apache.log4j.PatternLayout('[%-d{yyyy-MM-dd HH:mm:ss}][%p]-[Thread: %t]-[%M()]: %m%n'), baos)
 			org.apache.log4j.LogManager.getCurrentLoggers().toList().each{ logger->
 				logger.addAppender(appender)
 				//org.apache.log4j.Logger.getRootLogger().addAppender(appender)

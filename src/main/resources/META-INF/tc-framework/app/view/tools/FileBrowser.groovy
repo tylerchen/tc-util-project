@@ -6,15 +6,25 @@ import java.text.*
 import java.util.zip.*
 import java.io.*
 
-@TCAction(name="/file_browser")
+@TCAction(name="/tools/file_browser")
 class FileBrowserAction{
-	def config=[restrict_path:TCCache.me().props.tc_file_browser_path ?: '$$']
+	def static config=[
+			restrict_path: TCCache.me().props.tc_file_browser_path ?: '$$',
+			file_type: [
+				'-': [css:['lib/codemirror.css','addon/hint/show-hint.css','addon/display/fullscreen.css','theme/night.css'], js:['lib/codemirror.js','addon/hint/show-hint.js','addon/display/fullscreen.js'], cfg:[lineNumbers:true,matchBrackets:true,fullScreen:true,theme:'night']],
+				'js': [css:[], js:['mode/javascript/javascript.js','addon/edit/matchbrackets.js','addon/comment/continuecomment.js','addon/comment/comment.js','addon/hint/javascript-hint.js'], cfg:[mode:'text/javascript']],
+				'css': [css:[], js:['mode/css/css.js','addon/hint/css-hint.js'], cfg:[mode:'text/css']],
+				'xml': [css:[], js:['mode/xml/xml.js','addon/hint/xml-hint.js'], cfg:[mode:'text/html']],
+				'html': [css:[], js:['mode/xml/xml.js','mode/javascript/javascript.js','mode/css/css.js','mode/htmlmixed/htmlmixed.js','addon/hint/xml-hint.js','addon/hint/html-hint.js','addon/hint/css-hint.js','addon/hint/javascript-hint.js'], cfg:[mode:'text/html']],
+				'groovy': [css:[], js:['mode/groovy/groovy.js','addon/edit/matchbrackets.js'], cfg:[mode:'text/x-groovy']],
+			],
+		]
 	def parseRequest(){
 		def req
 		println "params: ${params}"
 		println "params.request.contentType:${params.request.contentType}"
 		println "query string:${params.request.queryString}"
-		def queryString=params.request.queryString
+		def queryString=urlDecode(params.request.queryString)
 		def op, parent, path
 		queryString?.split("&").each{
 			if(it.startsWith('op=')){
@@ -73,12 +83,14 @@ class FileBrowserAction{
 				upload(parse)
 			}else if("Rename"==op){
 				rename(parse)
+			}else if("Download"==op){
+				download(parse)
 			}else if("Test"==op){
 				test(parse)
 			}
 		}
 	}
-	def list(parse){
+	def private list(parse){
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		response.setContentType("text/html; charset=UTF-8")
@@ -200,7 +212,7 @@ class FileBrowserAction{
 			}
 		}
 	}
-	def getFoler(path){
+	def private getFoler(path){
 		File file=new File(path)
 		def dirs=[], files=[]
 		file.eachDir(){ dirs.add(it) }
@@ -213,34 +225,60 @@ class FileBrowserAction{
 		println "FILE:${files}"
 		return ['dir':dirs.sort(),'file':files.sort()]
 	}
-	def view(parse){
+	def private view(parse){
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		def contentType='text/plain'
 		def fileExt=currentPath.substring(currentPath.toString().lastIndexOf("."))
 		if(['.jpg','.jpeg','.png','.gif'].contains(fileExt)){
-			contentType=org.iff.infra.util.ContentType.getContentType(currentPath,'text/plain')
+			contentType=org.iff.infra.util.ContentType.getContentType(currentPath,'image/jpeg')
 		}else if(['.html','.html'].contains(fileExt)){
 			contentType=org.iff.infra.util.ContentType.getContentType(currentPath,'text/plain')
 		}
-		response.setContentType("${contentType}; charset=UTF-8")
-		response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK)
 		println "setContentType:${contentType}"
-		response.outputStream.withWriter('UTF-8'){writer ->
-			new File(currentPath).withReader('UTF-8'){ reader ->
-				writer << reader
+		def file=new File(currentPath)
+		if(!file.exists() || file.isDirectory()){
+			response.outputStream << "File not found: ${currentPath}"
+			return
+		}
+		def os=response.outputStream, is=new FileInputStream(file)
+		TCHelper.close(os,is){
+			response.reset()
+			if(contentType.startsWith('text/')){
+				response.setContentType("${contentType}; charset=UTF-8")
+				os.withWriter('UTF-8'){writer ->
+					is.withReader('UTF-8'){ reader ->
+						writer << reader
+					}
+				}
+			}else{
+				response.setContentType(contentType)
+				os << is
 			}
 		}
-		response.writer.flush()
-		response.writer.close()
 	}
-	def edit(parse){
+	def private edit(parse){
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		//
 		def sw = new StringWriter()
 		new File(currentPath).withReader('UTF-8'){ reader ->
 			sw << reader
+		}
+		//
+		def ext=currentPath.lastIndexOf('.')>0 ? currentPath.substring(currentPath.lastIndexOf('.')+1) : ''
+		def cm=config.file_type.'-'
+		def extCM=ext.size()>0 ? (config.file_type.get(ext) ?: [:]) : [:]
+		println "-----${ext}------>>>${cm}\n${extCM}"
+		def extCfg=[]
+		[cm,extCM].each{cfg->
+			cfg.cfg.each{k,v->
+				if(v instanceof String){
+					extCfg << "${k}:\"${v}\""
+				}else{
+					extCfg << "${k}:${v}"
+				}
+			}
 		}
 		//
 		def build = new groovy.xml.MarkupBuilder(response.writer)
@@ -250,11 +288,15 @@ class FileBrowserAction{
 				 meta(charset:"UTF-8")
 				 meta('http-equiv':"X-UA-Compatible",'content':"IE=edge")
 				 title("File browser")
-				 ['lib/codemirror.css','addon/hint/show-hint.css','addon/display/fullscreen.css','theme/night.css'].each{
-					 link(type:"text/css", href:"${resContext}/js/codemirror/${it}", rel:"stylesheet")
+				 [cm,extCM].each{cfg->
+					 cfg.css.each{
+						 link(type:"text/css", href:"${resContext}/js/codemirror/${it}", rel:"stylesheet")
+					 }
 				 }
-				 ['lib/codemirror.js','mode/css/css.js','addon/hint/show-hint.js','addon/hint/css-hint.js','addon/display/fullscreen.js'].each{
-					 script('',type:"text/javascript", src:"${resContext}/js/codemirror/${it}")
+				 [cm,extCM].each{cfg->
+					 cfg.js.each{
+						 script('',type:"text/javascript", src:"${resContext}/js/codemirror/${it}")
+					 }
 				 }
 			}
 			body(){
@@ -266,15 +308,13 @@ class FileBrowserAction{
 							input(type:'submit', value:'Save', id:'save')
 							input(type:'button', value:'Cancel', onclick:'confirm(\'Discard Save?\')&&window.close()')
 						}
+						div('F11: full screen, Esc: exit full screen.')
 					}
 				}
-				script('''
+				script("""
 					var myCodeMirror = CodeMirror.fromTextArea(document.getElementById(\'content\'),
-						{lineNumbers: true
-							,mode: "text/css"
-							,matchBrackets:true
-							,fullScreen: true
-							,theme: "night"
+						{   
+							${extCfg.join(',')}
 							,extraKeys: {
 								 "Alt-/": "autocomplete"
 								,"Ctrl-S": function(cm){document.getElementById('save').click();}
@@ -284,20 +324,20 @@ class FileBrowserAction{
 								}
 							}
 						});
-					''',type:"text/javascript")
+					""",type:"text/javascript")
 			}
 		}
 	}
-	def save(parse){
+	def private save(parse){
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		println "content:${content}"
 		new File(currentPath).withWriter('UTF-8'){ writer ->
 			writer << content
 		}
-		response.sendRedirect("${contextPath}/file_browser?parent=${parent}&path=${path}&op=Edit")
+		addUrlParam('parent',parent).addUrlParam('path',path).addUrlParam('op','Edit').redirect("${contextPath}/file_browser")
 	}
-	def upload(parse){
+	def private upload(parse){
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		Enumeration files = request.getFileNames()
@@ -311,9 +351,9 @@ class FileBrowserAction{
 				println "name:${name}, saveDirectory:${currentPath}, filesystemName:${filesystemName}, originalFileName:${originalFileName}, contentType:${contentType}"
 			}
 		}
-		response.sendRedirect("${contextPath}/file_browser?parent=${parent}")
+		addUrlParam('parent',parent).redirect("${contextPath}/file_browser")
 	}
-	def delete(parse){
+	def private delete(parse){
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		content?.split(",").each{
@@ -325,9 +365,9 @@ class FileBrowserAction{
 				file.delete()
 			}
 		}
-		response.sendRedirect("${contextPath}/file_browser?parent=${parent}")
+		addUrlParam('parent',parent).redirect("${contextPath}/file_browser")
 	}
-	def rename(parse){
+	def private rename(parse){
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		def currentName=request.getParameter('currentName'), newName=request.getParameter('newName')
@@ -344,6 +384,20 @@ class FileBrowserAction{
 				file.renameTo(fileName)
 			}
 		}
-		response.sendRedirect("${contextPath}/file_browser?parent=${parent}")
+		addUrlParam('parent',parent).redirect("${contextPath}/file_browser")
+	}
+	def private download(parse){
+		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
+		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
+		def file=new File(currentPath)
+		println "currentPath:${currentPath}, filename:${file.name}"
+		if(file.exists() && !file.isDirectory()){
+			response.reset()
+			response.addHeader('Content-Disposition', 'attachment;filename='+new String(file.name.getBytes('UTF-8'),'ISO8859-1'))
+			response.addHeader('Content-Length', String.valueOf(file.length()))
+			response.setContentType('application/octet-stream')
+			def os=response.outputStream, is=new FileInputStream(file)
+			TCHelper.close(os,is){ os << is }
+		}
 	}
 }

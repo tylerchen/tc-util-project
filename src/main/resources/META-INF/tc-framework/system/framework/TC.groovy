@@ -331,6 +331,17 @@ class TCHelper{
 		}
 		return Collection.isAssignableFrom(object.getClass()) || object.getClass().isArray()
 	}
+    def static close(Object[] p){
+        if(p && p.size()>0 && p[-1] in Closure){
+            try{
+                p[-1]()
+            }finally{
+                for(i in p.length-1){
+                    try{p[i].close()}catch(err){}
+                }
+            }
+        }
+    }
 	//=======Log Start
 	def static debug(message,Object[] params){
 		if(org.iff.infra.util.Logger.getLogger().isDebugEnabled() && message){

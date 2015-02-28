@@ -1,6 +1,6 @@
 package org.iff.groovy.view.tools
 
-@TCAction(name="/webservice")
+@TCAction(name="/tools/webservice")
 class WebserviceAction{
 	def index(){
 		def writer=params.response.writer
@@ -40,7 +40,7 @@ class WebserviceAction{
 				},
 				getInitParameter:{String name->
 					if ('base-address'==name) {
-						'/webservice/rest'
+						'/tools/webservice/rest'
 					}else if('jaxrs.address'==name){
 						'/hello'
 					}else{

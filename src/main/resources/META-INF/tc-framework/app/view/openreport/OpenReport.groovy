@@ -1,6 +1,6 @@
 package org.iff.groovy.view.openreport
 
-@TCAction(name="/open_report")
+@TCAction(name="/report/open_report")
 class OpenReportParser{
 	def index(){
 		def response=params.response
@@ -183,7 +183,7 @@ class OpenReportParser{
 	}
 }
 
-@TCAction(name="/report")
+@TCAction(name="/report/report")
 class OpenReportAction{
 	def index(){
 		// def response=params.response
