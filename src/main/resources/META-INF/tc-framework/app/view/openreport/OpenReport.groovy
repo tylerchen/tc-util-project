@@ -1,11 +1,13 @@
 package org.iff.groovy.view.openreport
 
+import java.io.ByteArrayOutputStream;
+
 @TCAction(name="/report/open_report")
 class OpenReportParser{
 	def index(){
 		def response=params.response
 		response.writer << "<!DOCTYPE html>\n<html><head><meta charset='utf-8'></head><body><h1>Open Report</h1>"
-		def reportFiles=org.iff.infra.util.ResourceHelper.loadResourcesInFileSystem('g:/bak/app_root/webapp/open-report', '.xml', 'open-report-*.xml', '')
+		def reportFiles=org.iff.infra.util.ResourceHelper.loadResourcesInFileSystem('E:/workspace/JeeGalileo/tc-util-project/src/test/resources/webapp/open-report', '.xml', 'open-report-*.xml', '')
 		response.writer << reportFiles
 		def xml_struct=[
 			'data-sources':[:],//name:{name,driver,url,username,password,encrypt}
@@ -39,13 +41,15 @@ class OpenReportParser{
 					'return-types':[:],//{name:value}
 				],
 			'reports':[:],//{name,display-name,page-size,condition-size,actions:[{name,display-name,action,index}],conditions:[{name,display-name,type,default-value,return-type,index,html,code,language,data-source-ref}]}
+			'processor':[:],
 		]
 		reportFiles.each{
 			parseXml(xml_struct, it)
 		}
+		registXmlProcessor(xml_struct)
 		return xml_struct
 	}
-	def parseXml(xml_struct, report_xml){
+	def private parseXml(xml_struct, report_xml){
 		def xml=new XmlParser().parse(new File(report_xml))
 		xml.'data-sources'.'data-source'.each{
 			xml_struct.'data-sources'.put(
@@ -142,9 +146,9 @@ class OpenReportParser{
 			xml_struct.'reports'.put(
 				rp.'@name', [
 					'name'          : rp.'@name',
-					'display-name'  : rp.driver.text(), 
-					'page-size'     : rp.url.text(),
-					'condition-size': rp.url.text(),
+					'display-name'  : rp.'@display-name', 
+					'page-size'     : rp.'@page-size',
+					'condition-size': rp.'@condition-size',
 					'actions'       : [].with{ m ->
 						rp.'actions'.'action'.each{
 							m.add([
@@ -176,260 +180,197 @@ class OpenReportParser{
 						m
 					},// end with
 					'query'         :rp.query.text(),
+					'html'          :[
+						'css'        : rp.html.css.text()?.trim()?.split(','),
+						'js'         : rp.html.js.text()?.trim()?.split(','),
+						'script'     : rp.html.script.text(),
+						'data-header': rp.html.'data-header'.text(),
+						'data-body'  : rp.html.'data-body'.text(),
+					],
 				]
 			)
 		}
 		return xml_struct
+	}
+	def private registXmlProcessor(xml_struct){
+		xml_struct.processor.'data-sources'={reportCfg-> // return the sql instance
+			def jdbc=reportCfg.ds
+			groovy.sql.Sql.newInstance(jdbc.url, jdbc.username, jdbc.password, jdbc.driver)
+		}
+		xml_struct.processor.'query'={reportCfg, ds, conditions-> // execute the sql from database
+			def query=xml_struct.processor.sql(reportCfg, conditions)
+			def sql=query.sql.trim(), queryConditions=query.conditions
+			def pageSize=reportCfg.report.'page-size'?.trim() ?: '0', totalCount=0, currentPage=(conditions.p ?: '1').toInteger()-1, result
+			pageSize=(pageSize.isNumber() ? pageSize.toInteger() : 0) as int
+			currentPage=currentPage>0 ? currentPage : 0
+			println "sql:${sql}\nqueryConditions:${queryConditions}"
+			def columnNames=[]
+			def sqlMetaClosure={metaData -> columnNames.addAll(metaData*.columnLabel) }
+			if(pageSize>0){
+				def countSql='select count(1) from ('+sql+') tmp_count'
+				println "countSql:${countSql}"
+				if(queryConditions.size()>0){
+					ds.eachRow(countSql, queryConditions) { totalCount=it[0] }
+				}else{
+					ds.eachRow(countSql) { totalCount=it[0] }
+				}
+				def dialect=org.iff.infra.util.jdbc.dialet.Dialect.getInstanceByUrl(reportCfg.ds.url)
+				def limitSql=dialect.getLimitString(sql, currentPage*pageSize, pageSize)
+				println "limitSql:${limitSql}"
+				result = queryConditions.size()>0 ? ds.rows(limitSql, queryConditions, sqlMetaClosure) : ds.rows(limitSql, sqlMetaClosure)
+				//result.collect{total+=it.srp}
+			}else{
+				result = queryConditions.size()>0 ? ds.rows(sql, queryConditions, sqlMetaClosure) : ds.rows(sql, sqlMetaClosure)
+				totalCount=pageSize=result.size()
+			}
+			[result:result, pageSize:pageSize, totalCount:totalCount, currentPage:currentPage, columnNames:columnNames]
+		}
+		xml_struct.processor.'queryAll'={reportCfg, ds, conditions-> // execute the sql from database
+			def query=xml_struct.processor.sql(reportCfg, conditions)
+			def sql=query.sql.trim(), queryConditions=query.conditions
+			def columnNames=[]
+			def sqlMetaClosure={metaData -> columnNames.addAll(metaData*.columnLabel) }
+			def result = queryConditions.size()>0 ? ds.rows(sql, queryConditions, sqlMetaClosure) : ds.rows(sql, sqlMetaClosure)
+			[result:result, pageSize:result.size(), totalCount:result.size(), currentPage:1, columnNames:columnNames]
+		}
+		xml_struct.processor.'sql'={reportCfg, param->// replace or remove the condition block (#[condition])
+			def sql=reportCfg.report.query, index=0, conditions=[:]
+			while((index=sql.indexOf('#['))>0){
+			    def tmp=sql.substring(index+2, sql.indexOf(']',index))
+			    def name=tmp.substring(tmp.indexOf(':')+1).trim()
+				def hasParam=param[name]!=null && param[name]!=''
+			    sql=sql.substring(0, index)+(hasParam ? tmp : '')+sql.substring(sql.indexOf(']',index)+1)
+				if(hasParam){
+					conditions.put(name, param[name])
+				}
+			}
+			[sql:sql, conditions:conditions]
+		}
+		xml_struct.processor.'condition'={reportCfg, urlParamMap->// process the url param to the conditions by type
+			def conditions=[:]
+			reportCfg.report.conditions.each{cdt->
+				def type=cdt.'return-type', name=cdt.name, value=urlParamMap[cdt.name], defVal=cdt.'default-value'
+				conditions.put(name, xml_struct.processor.'return-type'(reportCfg,type,value,defVal))
+			}
+			conditions
+		}
+		xml_struct.processor.'return-type'={reportCfg, type, value, defVal->// process the url param to the specify type
+			def typeName=reportCfg.global.config?.'return-types'?."$type"
+			def ins=this.getClass().classLoader.loadClass(typeName,true,false)?.newInstance()
+			return (!typeName || !ins) ? (value ?: defVal) : ins.returnType(value, defVal)
+		}
+		xml_struct.processor.encrypt={map->//{name, value}
+			map.value
+		}
+		xml_struct.processor.roles={map->
+			map.'role-name'?.split(',').collect{it.trim()}.findAll{it.size()>0}
+		}
+		xml_struct.processor.'html-widgets'={map->
+			//smap.'role-name'?.split(',')
+		}
 	}
 }
 
 @TCAction(name="/report/report")
 class OpenReportAction{
 	def index(){
-		// def response=params.response
-		// response.writer << "<!DOCTYPE html>\n<html><head></head><body><h1>Open Report 1</h1></body></html>"
-		// get report and config by report name
-		// get action by operation and execute
-		new ExcelAction().index()
-		def action = new QueryAction()
-		action.metaClass.params=params
-		action.index()
+		def export
+		params.urlParams.each{p->
+			if(p.startsWith('export=')){
+				export=p
+			}
+		}
+		if(export){
+			def excel=new ExcelAction()
+			excel.metaClass.superAction=this
+			excel.index()
+		}else{
+			def action = new QueryAction()
+			action.metaClass.superAction=this
+			action.index()
+		}
 		return
 	}
-}
-
-class SqlQueryUtil{
-	def query(driver,url,user,password){
-		def sql = groovy.sql.Sql.newInstance(url, user, password, driver)
-		def result = sql.rows('select brand_name,sku,srp,gross_weight,net_weight from product where product_class_id=:product_class_id',[product_class_id:30])
-		//def result = sql.rows('select product_name,sku,srp,gross_weight,net_weight from product')
-		def total=0
-		result.collect{total+=it.srp}
-		println total
-		def tutorial='''
-		Or insert a row using JDBC PreparedStatement inspired syntax:
-		 def params = [10, 'Groovy', 'http://groovy.codehaus.org']
-		 sql.execute 'insert into PROJECT (id, name, url) values (?, ?, ?)', params
-		
-		Or insert a row using GString syntax:
-		 def map = [id:20, name:'Grails', url:'http://grails.codehaus.org']
-		 sql.execute "insert into PROJECT (id, name, url) values ($map.id, $map.name, $map.url)"
-		
-		Or a row update:
-		 def newUrl = 'http://grails.org'
-		 def project = 'Grails'
-		 sql.executeUpdate "update PROJECT set url=$newUrl where name=$project"
-		
-		Now try a query using eachRow:
-		
-		 println 'Some GR8 projects:'
-		 sql.eachRow('select * from PROJECT') { row ->
-			 println "${row.name.padRight(10)} ($row.url)"
-		 }
-		 
-		 // using rows() with a named parameter with the parameter supplied in a map
-		 println sql.rows('select * from PROJECT where name=:foo', [foo:'Gradle'])
-		 // as above for eachRow()
-		 sql.eachRow('select * from PROJECT where name=:foo', [foo:'Gradle']) {
-		     // process row
-		 }
-		
-		 // an example using both the ':' and '?.' variants of the notation
-		 println sql.rows('select * from PROJECT where name=:foo and id=?.bar', [foo:'Gradle', bar:40])
-		 // as above but using Groovy's named arguments instead of an explicit map
-		 println sql.rows('select * from PROJECT where name=:foo and id=?.bar', foo:'Gradle', bar:40)
-		
-		 // an example showing rows() with a domain object instead of a map
-		 class MyDomainClass { def baz = 'Griffon' }
-		 println sql.rows('select * from PROJECT where name=?.baz', new MyDomainClass())
-		 // as above for eachRow() with the domain object supplied in a list
-		 sql.eachRow('select * from PROJECT where name=?.baz', [new MyDomainClass()]) {
-		     // process row
-		 }
-		DataSource ds = new org.hsqldb.jdbc.jdbcDataSource()
-        ds.database = "jdbc:hsqldb:mem:foo" + getMethodName()
-        ds.user = 'sa'
-        ds.password = ''
-        return new Sql(ds)
-		'''
-		return result
-	}
-}
-
-class RTString{
-	def returnType(value){
-		return value? value.toString() : ''
-	}
-}
-class RTLike{
-	def returnType(value){
-		return value? "%${value}%" : ''
-	}
-}
-class RTDate{
-	def returnType(value){
-		return org.apache.commons.lang3.time.DateUtils.parseDate(value, 'yyyy-MM-dd HH:mm:ss','yyyy-MM-dd','yyyy/MM/dd HH:mm:ss','yyyy/MM/dd')
-	}
-}
-class RTSplit{
-	def returnType(value){
-		return value? value.split(',') : []
-	}
-}
-
-class HWBlank{
-	def htmlWidget(paramMap){
-		return { mkp.yieldUnescaped('&nbsp;') }
-	}
-}
-class HWHidden{
-	def htmlWidget(paramMap){//name, value
-		return { input(type:'hidden', name:paramMap.name, value:paramMap.value, id:"cp_${paramMap.name}") }
-	}
-}
-class HWScript{
-	def htmlWidget(paramMap){//name, value
-		return { script(type:'text/javascript',paramMap.value) }
-	}
-}
-class HWText{
-	def htmlWidget(paramMap){//name, value
-		return { input(type:'text', name:paramMap.name, value:paramMap.value, id:"cp_${paramMap.name}") }
-	}
-}
-class HWCN2Select{
-	def htmlWidget(paramMap){//name, value
-		def area=paramMap.'html-widget'.data
-		return {
-			def onchange="""
-				var input1=document.getElementById(\'cp_st1_${paramMap.name}\'); var option1=this.options[this.selectedIndex]; input1.value=option1.text;
-				var data=option1.getAttribute('data'); var city=(data||\'\').trim().split(','); var select2=document.getElementById(\'cp_2_${paramMap.name}\');
-				while(select2.firstChild) {select2.removeChild(select2.firstChild);}
-				var html=\'<option></option>\'; for(var i=0;i<city.length;i++){
-					var cityIdName=city[i], cIdName=[cityIdName, cityIdName];
-					cIdName = cityIdName.indexOf(\':\')>0 ? cIdName=cityIdName.split(\':\') : cIdName;
-					html+=(\'<option value=\\'\'+cIdName[0]+\'\\'>\'+cIdName[1]+\'</option>\');
-				}
-				select2.innerHTML=html; document.getElementById(\'cp_st2_${paramMap.name}\').value='';
-			"""
-			input(type:'hidden', name:"cp_st1_${paramMap.name}", id:"cp_st1_${paramMap.name}")
-			select(name:"cp_1_${paramMap.name}", id:"cp_1_${paramMap.name}", class:'or-hw-select province', onchange: onchange){
-				option('')
-				area.split(";").collect{it.trim().split(",")}.findAll{it.size()>1}.each{
-					def province=it[0]
-					if(province.indexOf(':')>0){
-						def pIdName=province.split(":")
-						option(value:pIdName[0], data:it[1..-1].join(','), pIdName[1])
-					}else{
-						option(value:it[0], data:it[1..-1].join(','), it[0])
-					}
-				}
-			}
-			input(type:'hidden', name:"cp_st2_${paramMap.name}", id:"cp_st2_${paramMap.name}")
-			select(name:"cp_2_${paramMap.name}", id:"cp_2_${paramMap.name}", class:'or-hw-select city', 
-			onchange: "document.getElementById(\'cp_st2_${paramMap.name}\').value=this.options[this.selectedIndex].text"){
-				option('')
+	def protected urlParamMap(reportCfg){
+		def pmap=[:]
+		params.urlParams.each{p->
+			def index=p.indexOf('=')
+			if(index>0){
+				pmap.put(p.substring(0,index),p.substring(index+1))
 			}
 		}
+		pmap
 	}
-}
-class HWSelect{
-	def htmlWidget(paramMap){//name, value
-		return {
-			input(type:'hidden', name:"cp_sti_${paramMap.name}", id:"cp_sti_${paramMap.name}", paramMap.value)
-			select(name:paramMap.name, id:"cp_${paramMap.name}", class:'or-hw-select', 
-				onchange:"document.getElementById(\'cp_sti_${paramMap.name}\').value=this.options[this.selectedIndex].text"){
-				mkp.yieldUnescaped(paramMap.'html-widget'.html)
-			}
-		}
+	def protected reportCfg(reportConfig, groupName, reportName){// return {global,group,report,ds,rttype,conditions}
+		def report=[:]
+		report.global=reportConfig
+		report.group=reportConfig.'report-groups'?."$groupName"
+		report.report=reportConfig.'reports'?."$reportName"
+		report.ds=reportConfig.'data-sources'?."${report.group.'data-source-ref'}"
+		println "--->${report.group.'data-source-ref'}-----${report.ds}"
+		report.rttype=reportConfig.'config'.'return-types'
+		report.conditions=[]
+		report.report?.conditions.each{cdt->
+			def htmlWidget=reportConfig.config.'html-widgets'."${cdt.type}"
+			if(htmlWidget?.'class'){
+				def instance=this.getClass().classLoader.loadClass(htmlWidget.'class',true,false)?.newInstance()
+				def widget=instance?.htmlWidget(['name':cdt.name, 'html-widget':htmlWidget])
+				def tmp=cdt.clone()
+				tmp.put('instance', instance)
+				tmp.put('widget', widget)
+				report.conditions << tmp
+			}//END-if
+		}//END-each
+		report
 	}
-}
-
-
-class ExcelAction{
-	def index(){
-		def workbook=new ExcelBuilder().workbook {
-			styles{
-				font("bold"){ font ->
-					font.setBoldweight(font.BOLDWEIGHT_BOLD)
-				}
-				cellStyle ("header"){ cellStyle ->
-					cellStyle.setAlignment(cellStyle.ALIGN_CENTER)
-				}
-			}
-			data {
-				sheet ("Export1")  {
-					header(["Column1", "Column2", "Column3"])
-					row(["a", "b", "c"])
-				}
-				sheet ("Export2")  {
-					header(["Column1", "Column2", "Column3"])
-					row(["a", "b", "c"])
-				}
-			}
-			commands {
-				applyCellStyle(cellStyle: "header", font: "bold", rows: 1, columns: 1..3, sheetName:'Export2')
-				//mergeCells(rows: 1, columns: 1..3)
-			}
-		}
-		new File("G:/test.xls").withOutputStream{os ->
-			workbook.write(os)
-		}
+	def protected reportGroup(reportConfig, groupName){
+		
 	}
 }
 
 class QueryAction{
 	def index(){
+		def params=superAction.params
 		println "URL PARAMS -> ${params.urlParams}"
-		def response=params.response
-		def contextPath=params.request.contextPath
+		def response=params.response, contextPath=params.request.contextPath, resContext=params.resContext
 		def reportConfig=new OpenReportParser().reportConfig()
-		//'report-groups':[:],//name:{name,path,skin,display-name,data-source-ref,report-refs:{name,role,skin,display-name},role-refs:{name}}
-		def reportGroup=reportConfig.'report-groups'?."${params.urlParams[0]}"
-		def reportXml=reportConfig.'reports'?."${params.urlParams[1]}"
-		println reportConfig
-		println reportGroup
-		println reportXml
-		println reportXml?.conditions
-		//
-		response.setContentType("text/html; charset=UTF-8")
-		response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK)
+		def reportCfg=superAction.reportCfg(reportConfig, params.urlParams[0], params.urlParams[1])
+		def pmap=superAction.urlParamMap(reportCfg)
 		def build = new groovy.xml.MarkupBuilder(response.writer)
 		response.writer << "<!DOCTYPE html>"
-		def mysql=reportConfig.'data-sources'.mysql
-		def result=new SqlQueryUtil().query(mysql.driver,mysql.url,mysql.username,mysql.password)
+		def sqlExecute=reportConfig.processor.query(reportCfg, reportConfig.processor.'data-sources'(reportCfg), pmap)
+		def result=sqlExecute.result
+		println "-->${sqlExecute.pageSize}-->${sqlExecute.totalCount}"
 		def reportParameter={
 			table(class:'open-report-params'){
-				tr(){
+				tr{
 					td{
-						form(class:'or-cdts-form', onsubmit:'return false'){
-							div(class:'or-cdts'){
-								reportXml?.conditions.each{cdt->
-									def htmlWidget=reportConfig.config.'html-widgets'."${cdt.type}"
-									if(htmlWidget?.'class'){
-										def instance=this.getClass().classLoader.loadClass(htmlWidget.'class',true,false)?.newInstance()
-										def widget=instance?.htmlWidget(['name':cdt.name, 'html-widget':htmlWidget])
-										if(widget in Closure){
-											widget.delegate=delegate
-											div(class:"or-cdt ${cdt.name}"){
-												div(class:"or-cdt-name ${cdt.name}", cdt.'display-name')
-												div(class:"or-cdt-value ${cdt.name}"){
-													widget()
-												}
+						div(class:'or-cdts'){
+							reportCfg.conditions.each{cdt->
+								def htmlWidget=reportConfig.config.'html-widgets'."${cdt.type}"
+								if(htmlWidget?.'class'){
+									def instance=this.getClass().classLoader.loadClass(htmlWidget.'class',true,false)?.newInstance()
+									def widget=instance?.htmlWidget(['name':cdt.name, 'html-widget':htmlWidget])
+									if(widget in Closure){
+										widget.delegate=delegate
+										div(class:"or-cdt ${cdt.name}"){
+											div(class:"or-cdt-name ${cdt.name}", cdt.'display-name')
+											div(class:"or-cdt-value ${cdt.name}"){
+												widget()
 											}
-										}//END-if
+										}
 									}//END-if
-								}//END-each
-							}//END-div
-							div(class:'or-cdts-fbtn'){
-								div(class:'or-cdts-fbtn search'){
-									button('Search', type:'submit', onclick:'alert($(this).closest(\'form\').serialize())')
-								}
-								div(class:'or-cdts-fbtn export-xls'){
-									button(type:'submit','Excel')
-								}
+								}//END-if
+							}//END-each
+						}//END-div
+						div(class:'or-cdts-fbtns'){
+							div(class:'or-cdts-fbtn search'){
+								button('Search', type:'submit', class:'or_submitable')
 							}
-						}//END-form
+							div(class:'or-cdts-fbtn export-xls'){
+								button('Excel', type:'submit', class:'or_submitable', target:'_blank', href:"export=excel")
+							}
+						}
 					}
 				}
 			}
@@ -438,9 +379,9 @@ class QueryAction{
 			table(class:'open-report-data'){
 				thead(){
 					tr(){
-						result[0].each{k, v ->
+						sqlExecute.columnNames.each{name ->
 							th{
-								div(k)
+								div(name)
 							}
 						}
 					}
@@ -473,9 +414,9 @@ class QueryAction{
 				}
 			}
 		}
-		def reportPagination={
-			def currentPage=0
-			def totalPage=3
+		def reportPagination={//[result:result, pageSize:pageSize, totalCount:totalCount, currentPage:currentPage]
+			def currentPage=sqlExecute.currentPage
+			def totalPage=(sqlExecute.pageSize>0?(sqlExecute.totalCount+sqlExecute.pageSize-1)/sqlExecute.pageSize:0) as int
 			def url='report'
 			url=url.indexOf("?")>0 ? "${url}&" :"${url}?"
 			if(totalPage<=1){
@@ -487,36 +428,36 @@ class QueryAction{
 				tr{
 					td{
 						div{
-							a(href:'javascript:;', onclick:'return false', class:'page-btn page-total', "记录 100 条，共${totalPage}页")
-							a(href:"${url}", title:'首页', class:'page-btn page-start', '<<')
+							a(href:'javascript:;', onclick:'return false', class:'page-btn page-total', "当前记录${sqlExecute.result.size()}条，共 ${sqlExecute.totalCount}条，共${totalPage}页")
+							a(href:"p=0", title:'首页', class:'page-btn page-start or_submitable', '<<')
 							if(currentPage>4 && (totalPage-currentPage)<1){
-								a(href:"${url}page_no=${currentPage-4}", class:'page-btn', "${currentPage-4}")
+								a(href:"p=${currentPage-4}", class:'page-btn or_submitable', "${currentPage-4}")
 							}
 							if(currentPage>3 && (totalPage-currentPage)<2){
-								a(href:"${url}page_no=${currentPage-3}", class:'page-btn', "${currentPage-3}")
+								a(href:"p=${currentPage-3}", class:'page-btn or_submitable', "${currentPage-3}")
 							}
 							
 							if(currentPage>2){
-								a(href:"${url}page_no=${currentPage-2}", class:'page-btn', "${currentPage-2}")
+								a(href:"p=${currentPage-2}", class:'page-btn or_submitable', "${currentPage-2}")
 							}
 							if(currentPage>1){
-								a(href:"${url}page_no=${currentPage-1}", class:'page-btn', "${currentPage-1}")
+								a(href:"p=${currentPage-1}", class:'page-btn or_submitable', "${currentPage-1}")
 							}
-							a(href:"${url}page_no=${currentPage}", class:'page-btn page-on', "${currentPage}")
+							a(href:"p=${currentPage}", class:'page-btn page-on or_submitable', "${currentPage}")
 							if(totalPage-currentPage>0){
-								a(href:"${url}page_no=${currentPage+1}", class:'page-btn', "${currentPage+1}")
+								a(href:"p=${currentPage+1}", class:'page-btn or_submitable', "${currentPage+1}")
 							}
 							if(totalPage-currentPage>1){
-								a(href:"${url}page_no=${currentPage+2}", class:'page-btn', "${currentPage+2}")
+								a(href:"p=${currentPage+2}", class:'page-btn or_submitable', "${currentPage+2}")
 							}
 							
 							if(currentPage<3 && (totalPage-currentPage)>2){
-								a(href:"${url}page_no=${currentPage+3}", class:'page-btn', "${currentPage+3}")
+								a(href:"p=${currentPage+3}", class:'page-btn or_submitable', "${currentPage+3}")
 							}
 							if(currentPage<2 && (totalPage-currentPage)>3){
-								a(href:"${url}page_no=${currentPage+4}", class:'page-btn', "${currentPage+4}")
+								a(href:"p=${currentPage+4}", class:'page-btn or_submitable', "${currentPage+4}")
 							}
-							a(href:"${url}page_no=${totalPage}", title:'末页', class:'page-btn page-end', '>>')
+							a(href:"p=${totalPage}", title:'末页', class:'page-btn page-end or_submitable', '>>')
 						}
 					}
 				}
@@ -527,24 +468,177 @@ class QueryAction{
 				meta(charset:"UTF-8")
 				meta('http-equiv':"X-UA-Compatible",'content':"IE=edge")
 				title("Report")
-				link(type:"text/css", href:"${contextPath}/css/browser/browser.css", rel:"stylesheet")
-				script('',type:"text/javascript", src:"${contextPath}/js/jquery-1.8.2.min.js")
+				reportCfg.report.html.css.each{
+					link(type:"text/css", href:"${resContext}/${it}", rel:"stylesheet")
+				}
+				reportCfg.report.html.js.each{
+					script('',type:"text/javascript", src:"${resContext}/${it}")
+				}
 			}
-			body(){
+			body{
 				h1("hello")
 				div(class:'open-report-content'){
-					reportParameter.delegate=delegate
-					reportParameter()
-					reportData.delegate=delegate
-					reportData()
-					reportPagination.delegate=delegate
-					reportPagination()
-					mkp.yieldUnescaped("<h1>yieldUnescaped</h1>"+Class.forName("java.util.Date").newInstance())
+					form(class:'or-cdts-form', onsubmit:'return false', id: reportCfg.report.name){
+						reportParameter.delegate=delegate
+						reportParameter()
+						reportData.delegate=delegate
+						reportData()
+						reportPagination.delegate=delegate
+						reportPagination()
+					}//END-form
 				}
+			}
+			script(type:"text/javascript",reportCfg.report.html.script)
+		}
+	}
+}
+
+class RTString{
+	def returnType(value, defVal){
+		return value? value.toString() : (defVal ?: '')
+	}
+}
+class RTLike{
+	def returnType(value, defVal){
+		return value? "%${value}%" : (defVal? "%${defVal}%" : '')
+	}
+}
+class RTDate{
+	def returnType(value, defVal){
+		return org.apache.commons.lang3.time.DateUtils.parseDate(value ?: defVal, 'yyyy-MM-dd HH:mm:ss','yyyy-MM-dd','yyyy/MM/dd HH:mm:ss','yyyy/MM/dd')
+	}
+}
+class RTSplit{
+	def returnType(value){
+		return value? value.split(',') : []
+	}
+}
+
+class HWBlank{
+	def htmlWidget(paramMap){
+		return { mkp.yieldUnescaped('&nbsp;') }
+	}
+}
+class HWHidden{
+	def htmlWidget(paramMap){//name, value
+		return { input(type:'hidden', name:paramMap.name, value:paramMap.value, id:paramMap.name) }
+	}
+}
+class HWScript{
+	def htmlWidget(paramMap){//name, value
+		return { script(type:'text/javascript',paramMap.value) }
+	}
+}
+class HWText{
+	def htmlWidget(paramMap){//name, value
+		return { input(type:'text', name:paramMap.name, value:paramMap.value, id:paramMap.name) }
+	}
+}
+class HWCN2Select{
+	def htmlWidget(paramMap){//name, value
+		def area=paramMap.'html-widget'.data
+		return {
+			def onchange="""
+				var input1=document.getElementById(\'${paramMap.name}_i\'); var option1=this.options[this.selectedIndex]; input1.value=option1.text;
+				var data=option1.getAttribute('data'); var city=(data||\'\').trim().split(','); var select2=document.getElementById(\'${paramMap.name}_2\');
+				while(select2.firstChild) {select2.removeChild(select2.firstChild);}
+				var html=\'<option></option>\'; for(var i=0;i<city.length;i++){
+					var cityIdName=city[i], cIdName=[cityIdName, cityIdName];
+					cIdName = cityIdName.indexOf(\':\')>0 ? cIdName=cityIdName.split(\':\') : cIdName;
+					html+=(\'<option value=\\'\'+cIdName[0]+\'\\'>\'+cIdName[1]+\'</option>\');
+				}
+				select2.innerHTML=html; document.getElementById(\'${paramMap.name}_2\').value='';
+			"""
+			input(type:'hidden', name:"${paramMap.name}_i", id:"${paramMap.name}_i")
+			select(name:"${paramMap.name}", id:"${paramMap.name}", class:'or-hw-select province', onchange: onchange){
+				option('')
+				area.split(";").collect{it.trim().split(",")}.findAll{it.size()>1}.each{
+					def province=it[0]
+					if(province.indexOf(':')>0){
+						def pIdName=province.split(":")
+						option(value:pIdName[0], data:it[1..-1].join(','), pIdName[1])
+					}else{
+						option(value:it[0], data:it[1..-1].join(','), it[0])
+					}
+				}
+			}
+			input(type:'hidden', name:"${paramMap.name}_i2", id:"${paramMap.name}_i2")
+			select(name:"${paramMap.name}_2", id:"${paramMap.name}_2", class:'or-hw-select city',
+			onchange: "document.getElementById(\'${paramMap.name}_i2\').value=this.options[this.selectedIndex].text"){
+				option('')
+			}
+		}
+	}
+}
+class HWSelect{
+	def htmlWidget(paramMap){//name, value
+		return {
+			input(type:'hidden', name:"${paramMap.name}_i", id:"${paramMap.name}_i", paramMap.value)
+			select(name:paramMap.name, id:"${paramMap.name}", class:'or-hw-select',
+				onchange:"document.getElementById(\'${paramMap.name}_i\').value=this.options[this.selectedIndex].text"){
+				mkp.yieldUnescaped(paramMap.'html-widget'.html)
+			}
+		}
+	}
+}
+class HWMSelect{
+	def htmlWidget(paramMap){//name, value
+		return {
+			select(name:paramMap.name, id:"${paramMap.name}", class:'or-hw-mselect', multiple:'multiple'){
+				mkp.yieldUnescaped(paramMap.'html-widget'.html)
 			}
 		}
 	}
 }
 
 
+class ExcelAction{
+	def index(){
+		def params=superAction.params
+		println "URL PARAMS -> ${params.urlParams}"
+		def response=params.response, contextPath=params.request.contextPath, resContext=params.resContext
+		def reportConfig=new OpenReportParser().reportConfig()
+		def reportCfg=superAction.reportCfg(reportConfig, params.urlParams[0], params.urlParams[1])
+		def pmap=superAction.urlParamMap(reportCfg)
+		def sqlExecute=reportConfig.processor.queryAll(reportCfg, reportConfig.processor.'data-sources'(reportCfg), pmap)
+		def result=sqlExecute.result
+		
+		def workbook=new ExcelBuilder().workbook {
+			styles{
+				font("bold"){ font ->
+					font.setBoldweight(font.BOLDWEIGHT_BOLD)
+				}
+				cellStyle ("header"){ cellStyle ->
+					cellStyle.setAlignment(cellStyle.ALIGN_CENTER)
+				}
+			}
+			data {
+				sheet ("Export1")  {
+					header(sqlExecute.columnNames)
+					result.each{rowData ->
+						def data=[]
+						rowData.each{k, v -> data << v }
+						row(data)
+					}
+				}
+				sheet ("Export2")  {
+					header(["Column1", "Column2", "Column3"])
+					row(["a", "b", "c"])
+				}
+			}
+			commands {
+				applyCellStyle(cellStyle: "header", font: "bold", rows: 1, columns: 1..3, sheetName:'Export2')
+				//mergeCells(rows: 1, columns: 1..3)
+			}
+		}
+		def baos=new ByteArrayOutputStream()
+		workbook.write(baos)
+		response.reset()
+		response.addHeader('Content-Disposition', 'attachment;filename='+new String("${reportCfg.report.'display-name'}.xls".getBytes('UTF-8'),'ISO8859-1'))
+		response.addHeader('Content-Length', String.valueOf(baos.size()))
+		response.setContentType('application/octet-stream')
+		def os=response.outputStream
+		TCHelper.close(os){ baos.writeTo(os) }
+	}
+}
 

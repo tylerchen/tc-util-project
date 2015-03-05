@@ -187,7 +187,7 @@ class TCStarter{
 	def scan_start_folder_listener(app_root, root_dir){
 		Thread.start{
 			TCHelper.debug('scan_start_folder_listener, root_dir:{0}, app_root:{1}',root_dir,app_root)
-			while(!scan_cancel_listner){
+			while(!scan_cancel_listner && root_dir){
 				def dirFile=[:], modified=[:], folder=new File(root_dir)
 				if(!folder.exists()){
 					break
@@ -256,16 +256,14 @@ class TCStarter{
 			if(anno){
 				if(anno in TCAction){
 					if(classMap.action[it.name]){
-						TCHelper.error('class name exists: {1}',it.name)
-					}else{
-						classMap.action[it.name]=[name:anno.name()]
+						TCHelper.warn('class name exists: {1}',it.name)
 					}
+					classMap.action[it.name]=[name:anno.name()]
 				}else if(anno in TCFramework){
 					if(classMap.action[it.name]){
-						TCHelper.error('class name exists: {1}',it.name)
-					}else{
-						classMap.framework[it.name]=[name:anno.name(), order:anno.order()]
+						TCHelper.warn('class name exists: {1}',it.name)
 					}
+					classMap.framework[it.name]=[name:anno.name(), order:anno.order()]
 				}
 				classMap[it.name]=[clazz:it, instance:null]
 			}

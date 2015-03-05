@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<open-report>
+	<report-roles>
+		<role name="role">
+			<role-name></role-name>
+			<sql data-source-ref="data-source-ref">select name from role</sql>
+			<code language="groovy" data-source-ref="data-source-ref"></code>
+		</role>
+	</report-roles>
+</open-report>

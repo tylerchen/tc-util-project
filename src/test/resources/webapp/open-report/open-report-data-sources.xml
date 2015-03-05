@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<open-report>
+	<data-sources>
+		<data-source name="mysql">
+			<driver>com.mysql.jdbc.Driver</driver>
+			<url><![CDATA[jdbc:mysql://localhost:3306/foodmart?useUnicode=true&characterEncoding=utf8]]></url>
+			<username>iff</username>
+			<password>iff</password>
+		</data-source>
+	</data-sources>
+</open-report>

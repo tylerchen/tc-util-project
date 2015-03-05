@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<open-report>
+	<reports>
+		<report name="foodmart-product" display-name="文档树显示如下" page-size="11" condition-size="4">
+			<actions>
+				<action name="Search" display-name="Search" action="method()" />
+				<action name="PDF" display-name="PDF" action="method()" />
+			</actions>
+			<conditions>
+				<!-- <condition name="product_class_id" display-name="Product Class ID" type="html-widget-type" default-value="" return-type="string">
+					<html></html>
+					<code language="groovy" data-source-ref=""></code>
+				</condition> -->
+				<condition name="product_class_id" display-name="product_class_id:" type="pdselect" default-value="" return-type="string"/>
+				<condition name="city_select" display-name="City:" type="city" default-value="" return-type="string"/>
+				<condition name="sex_select" display-name="Sex:" type="select" default-value="" return-type="string"/>
+				<condition name="sex_mselect" display-name="Sex:" type="mselect" default-value="" return-type="string"/>
+			</conditions>
+			<query>
+				<![CDATA[
+					select brand_name,sku,srp,gross_weight,net_weight 
+					from product
+					where 1=1 
+					#[and product_class_id=:product_class_id]
+				]]>
+			</query>
+			<html>
+				<css>js/openreport/mselect/multiple-select.css,js/openreport/openreport.css</css>
+				<js>js/jquery-1.8.2.min.js,js/openreport/mselect/jquery.multiple.select.js,js/openreport/openreport.js</js>
+				<script>
+					<![CDATA[
+						$(function() {
+							$('#sex_mselect').multipleSelect({
+							});
+						});
+						$(function() {
+							or_bind_submitable('.or_submitable');
+						});
+						$(function() {
+							or_url_param_fill();
+						});
+					]]>
+				</script>
+				<data-header></data-header>
+				<data-body></data-body>
+			</html>
+		</report>
+	</reports>
+</open-report>

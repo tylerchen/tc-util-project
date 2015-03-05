@@ -1,0 +1,24 @@
+.file-browser *{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	color: #000;
+	background-color: #fff;
+}
+.file-browser .file-list{
+	border: 1px solid #000;
+	border-collapse: collapse;
+	border-spacing: 1px;
+}
+.file-browser .file-list td, .file-browser .file-list th{
+	border: 1px solid #000;
+	border-collapse: collapse;
+	border-spacing: 1px;
+}
+.file-browser .file-list a{
+	text-decoration: none; 
+	color: blue;
+}
+.file-browser .file-list a:Hover {
+	color : #022F55; 
+	text-decoration : underline;
+}

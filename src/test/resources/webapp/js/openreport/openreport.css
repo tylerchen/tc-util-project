@@ -1,0 +1,132 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9pt;
+	vertical-align: baseline;
+}
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+.open-report-content{
+	margin: 0 auto;
+	padding-left: 20px;
+}
+.or-cdts-fbtns button{
+	border-radius: 0;
+    border: 1px solid #aaa;
+    cursor: pointer;
+    display: inline;
+    height: 26px;
+    line-height: 22px;
+    overflow: hidden;
+    padding: 0;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: #fafafa;
+    box-shadow: 0 1px 0 white inset, 0 -1px 0 #e7e7e7 inset, 0 2px 3px rgba(0, 0, 0, 0.05);
+    color: #191919;
+}
+.or-cdts, .or-cdts-fbtns{
+	float: left;
+}
+div.or-cdt, div.or-cdts-fbtn{
+	float: left;
+}
+.or-cdt-name, .or-cdt-value{
+	float: left;
+}
+.or-cdt-name{
+	padding-top: 5px;
+}
+div.ms-parent{
+	width:300px;
+	float: none;
+}
+.open-report-params select{
+	border-radius: 0;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    color: #444;
+    cursor: pointer;
+    display: inline;
+    height: 26px;
+    line-height: 26px;
+    overflow: hidden;
+    padding: 0;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.city_select select{
+	width: auto;
+}
+.ms-choice {
+	border-radius: 0;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    color: #444;
+    cursor: pointer;
+    display: block;
+    height: 26px;
+    line-height: 26px;
+    overflow: hidden;
+    padding: 0;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
+    width: 100%;
+}
+.open-report-data *{
+	color: #000;
+	background-color: #fff;
+}
+.open-report-data {
+	border: 1px solid #000;
+	border-collapse: collapse;
+	border-spacing: 1px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+.open-report-data td, .open-report-data th{
+	border: 1px solid #000;
+	border-collapse: collapse;
+	border-spacing: 1px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}

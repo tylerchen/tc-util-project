@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<open-report>
+	<report-groups>
+		<report-group name="test" path="/test" skin="skin" display-name="Test Report Group" data-source-ref="mysql">
+			<report-ref name="foodmart-product" role="role" skin="skin" display-name="display-name"/>
+			<role-ref name="role-ref"/>
+		</report-group>
+	</report-groups>
+</open-report>

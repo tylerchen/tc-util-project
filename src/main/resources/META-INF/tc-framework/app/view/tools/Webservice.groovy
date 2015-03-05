@@ -20,9 +20,8 @@ class WebserviceAction{
 	def json(){
 		def writer=params.response.writer
 		params.response.setContentType("text/plain; charset=UTF-8")
-		params.response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK)
 		def o=[a:1,b:2,c:'aaaa',e:new Date()]
-		def xstream = new com.thoughtworks.xstream.XStream()
+		def xstream = org.iff.infra.util.ReflectHelper.getConstructor('com.thoughtworks.xstream.XStream').newInstance()
 		def xml=xstream.toXML([1,'a',new Date(),[],[:]])
 		def gson=groovy.json.JsonOutput.toJson(o)
 		writer << gson
@@ -63,7 +62,7 @@ class WebserviceAction{
 		def content=org.iff.infra.util.RequestHelper.get('http://localhost:9090/webservice/rest/hello/test/b/tylerchen', ['_type':'xml'],[:])
 		println content
 		params.response.writer << content
-		def xstream = new com.thoughtworks.xstream.XStream()
+		def xstream = org.iff.infra.util.ReflectHelper.getConstructor('com.thoughtworks.xstream.XStream').newInstance()
 		params.response.writer << org.iff.infra.util.JsonHelper.toJson(xstream.fromXML(content.body))
 	}
 }

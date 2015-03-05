@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<open-report>
+	<report-users>
+		<user name="" password="" role-ref="role1,role2" encrypt="BASE64|AES"/>
+		<sql data-source-ref="">select name,password,role from user</sql>
+		<code language="groovy" data-source-ref=""></code>
+	</report-users>
+</open-report>
