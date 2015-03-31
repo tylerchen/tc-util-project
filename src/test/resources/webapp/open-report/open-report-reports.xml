@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <open-report>
 	<reports>
-		<report name="foodmart-product" display-name="文档树显示如下" page-size="11" condition-size="4">
+		<report name="foodmart-product" display-name="文档树显示如下" page-size="11">
 			<actions>
-				<action name="Search" display-name="Search" action="method()" />
-				<action name="PDF" display-name="PDF" action="method()" />
+				<action name="Search" display-name="Search" action="org.iff.groovy.view.openreport.QueryAction" />
+				<action name="Excel" display-name="Excel" action="org.iff.groovy.view.openreport.ExcelAction" href="export=xls" target="_blank"/>
 			</actions>
 			<conditions>
-				<!-- <condition name="product_class_id" display-name="Product Class ID" type="html-widget-type" default-value="" return-type="string">
-					<html></html>
-					<code language="groovy" data-source-ref=""></code>
-				</condition> -->
+				<condition name="product_name" display-name="product_name:" type="text" default-value="" return-type="string"/>
 				<condition name="product_class_id" display-name="product_class_id:" type="pdselect" default-value="" return-type="string"/>
-				<condition name="city_select" display-name="City:" type="city" default-value="" return-type="string"/>
+				<condition name="city_select" display-name="选择城市：" type="city" default-value="" return-type="string"/>
 				<condition name="sex_select" display-name="Sex:" type="select" default-value="" return-type="string"/>
 				<condition name="sex_mselect" display-name="Sex:" type="mselect" default-value="" return-type="string"/>
+				<condition name="htmldate2" display-name="Date:" type="none" default-value="" return-type="date">
+					<html>
+						<![CDATA[<input id="htmldate2" name="htmldate2" placeholder="请输入日期" class="laydate-icon" onclick="laydate()">]]>
+					</html>
+				</condition>
 			</conditions>
 			<query>
 				<![CDATA[
-					select brand_name,sku,srp,gross_weight,net_weight 
+					select brand_name,sku,srp,gross_weight,net_weight
 					from product
 					where 1=1 
 					#[and product_class_id=:product_class_id]
@@ -26,21 +28,210 @@
 			</query>
 			<html>
 				<css>js/openreport/mselect/multiple-select.css,js/openreport/openreport.css</css>
-				<js>js/jquery-1.8.2.min.js,js/openreport/mselect/jquery.multiple.select.js,js/openreport/openreport.js</js>
+				<js>js/jquery-1.8.2.min.js,js/openreport/mselect/jquery.multiple.select.js,js/openreport/openreport.js,js/openreport/layer/laydate/laydate.js</js>
 				<script>
 					<![CDATA[
 						$(function() {
 							$('#sex_mselect').multipleSelect({
+								width:'100px'
 							});
 						});
 						$(function() {
 							or_bind_submitable('.or_submitable');
 						});
 						$(function() {
+							or_select_init();
+							or_city_select_init();
+						});
+						$(function() {
 							or_url_param_fill();
 						});
 					]]>
 				</script>
+				<style>.product_class_id select{width: 100px;}</style>
+				<data-header></data-header>
+				<data-body></data-body>
+			</html>
+		</report>
+		<report name="employee" display-name="employee" page-size="10">
+			<actions>
+				<action name="Search" display-name="Search" action="org.iff.groovy.view.openreport.QueryAction" />
+				<action name="Excel" display-name="Excel" action="org.iff.groovy.view.openreport.ExcelAction" href="export=xls" target="_blank"/>
+			</actions>
+			<conditions>
+				<condition name="product_name" display-name="product_name:" type="text" default-value="" return-type="string"/>
+				<condition name="product_class_id" display-name="product_class_id:" type="pdselect" default-value="" return-type="string"/>
+				<condition name="city_select" display-name="选择城市：" type="city" default-value="" return-type="string"/>
+				<condition name="sex_select" display-name="Sex:" type="select" default-value="" return-type="string"/>
+				<condition name="sex_mselect" display-name="Sex:" type="mselect" default-value="" return-type="string"/>
+				<condition name="htmldate2" display-name="Date:" type="none" default-value="" return-type="date">
+					<html>
+						<![CDATA[<input id="htmldate2" name="htmldate2" placeholder="请输入日期" class="laydate-icon" onclick="laydate()">]]>
+					</html>
+				</condition>
+			</conditions>
+			<query>
+				<![CDATA[
+					select employee_id,full_name,first_name,last_name,birth_date,hire_date,salary,marital_status m, gender g
+					from employee
+					where 1=1 
+					#[and hire_date>=:htmldate2]
+				]]>
+			</query>
+			<html>
+				<css>js/openreport/mselect/multiple-select.css,js/openreport/openreport.css</css>
+				<js>js/jquery-1.8.2.min.js,js/openreport/mselect/jquery.multiple.select.js,js/openreport/openreport.js,js/openreport/layer/laydate/laydate.js</js>
+				<script>
+					<![CDATA[
+						$(function() {
+							$('#sex_mselect').multipleSelect({
+								width:'100px'
+							});
+						});
+						$(function() {
+							or_bind_submitable('.or_submitable');
+						});
+						$(function() {
+							or_select_init();
+							or_city_select_init();
+						});
+						$(function() {
+							or_url_param_fill();
+						});
+					]]>
+				</script>
+				<style>.product_class_id select{width: 100px;}</style>
+				<data-header></data-header>
+				<data-body></data-body>
+			</html>
+		</report>
+		<report name="product-cross" display-name="employee-cross" page-size="10">
+			<actions>
+				<action name="Search" display-name="Search" action="org.iff.groovy.view.openreport.QueryAction" />
+				<action name="Excel" display-name="Excel" action="org.iff.groovy.view.openreport.ExcelAction" href="export=xls" target="_blank"/>
+			</actions>
+			<conditions>
+				<condition name="product_name" display-name="product_name:" type="text" default-value="" return-type="string"/>
+				<condition name="product_class_id" display-name="product_class_id:" type="pdselect" default-value="" return-type="string"/>
+				<condition name="city_select" display-name="选择城市：" type="city" default-value="" return-type="string"/>
+				<condition name="sex_select" display-name="Sex:" type="select" default-value="" return-type="string"/>
+				<condition name="sex_mselect" display-name="Sex:" type="mselect" default-value="" return-type="string"/>
+				<condition name="htmldate2" display-name="Date:" type="none" default-value="" return-type="date">
+					<html>
+						<![CDATA[<input id="htmldate2" name="htmldate2" placeholder="请输入日期" class="laydate-icon" onclick="laydate()">]]>
+					</html>
+				</condition>
+			</conditions>
+			<query>
+				<![CDATA[
+					select product_class_id,brand_name,sku,srp,gross_weight,net_weight,recyclable_package,low_fat,units_per_case,cases_per_pallet
+					from product
+					where 1=1 
+					#[and product_class_id=:product_class_id]
+				]]>
+			</query>
+			<cross row-summary="true" col-summary="true" display-name="汇总">
+				<rows>
+					<row name="product_class_id"/>
+					<row name="brand_name"/>
+				</rows>
+				<columns>
+					<column name="recyclable_package"/>
+					<column name="low_fat"/>
+				</columns>
+				<values>
+					<value name="gross_weight" summary-method="sum" display-name="总计 GROSS重量"/>
+					<value name="net_weight" summary-method="avg" display-name="平均NET重量"/>
+				</values>
+			</cross>
+			<html>
+				<css>js/openreport/mselect/multiple-select.css,js/openreport/openreport.css</css>
+				<js>js/jquery-1.8.2.min.js,js/openreport/mselect/jquery.multiple.select.js,js/openreport/openreport.js,js/openreport/layer/laydate/laydate.js</js>
+				<script>
+					<![CDATA[
+						$(function() {
+							$('#sex_mselect').multipleSelect({
+								width:'100px'
+							});
+						});
+						$(function() {
+							or_bind_submitable('.or_submitable');
+						});
+						$(function() {
+							or_select_init();
+							or_city_select_init();
+						});
+						$(function() {
+							or_url_param_fill();
+						});
+					]]>
+				</script>
+				<style>.product_class_id select{width: 100px;}</style>
+				<data-header></data-header>
+				<data-body></data-body>
+			</html>
+		</report>
+		<report name="sales_fact_dec_1998-cross" display-name="sales_fact_dec_1998-cross">
+			<actions>
+				<action name="Search" display-name="Search" action="org.iff.groovy.view.openreport.QueryAction" />
+				<action name="Excel" display-name="Excel" action="org.iff.groovy.view.openreport.ExcelAction" href="export=xls" target="_blank"/>
+			</actions>
+			<conditions>
+				<condition name="product_name" display-name="product_name:" type="text" default-value="" return-type="string"/>
+				<condition name="product_id" display-name="product_class_id:" type="pdselect" default-value="" return-type="string"/>
+				<condition name="city_select" display-name="选择城市：" type="city" default-value="" return-type="string"/>
+				<condition name="sex_select" display-name="Sex:" type="select" default-value="" return-type="string"/>
+				<condition name="sex_mselect" display-name="Sex:" type="mselect" default-value="" return-type="string"/>
+				<condition name="htmldate2" display-name="Date:" type="none" default-value="" return-type="date">
+					<html>
+						<![CDATA[<input id="htmldate2" name="htmldate2" placeholder="请输入日期" class="laydate-icon" onclick="laydate()">]]>
+					</html>
+				</condition>
+			</conditions>
+			<query>
+				<![CDATA[
+					select time_id, promotion_id, store_id, unit_sales, store_sales, store_cost
+					from sales_fact_1998
+					where 1=1 
+					#[and product_id=:product_id]
+				]]>
+			</query>
+			<cross row-summary="true" col-summary="true" display-name="汇总">
+				<rows>
+					<row name="store_id"/>
+					<row name="promotion_id"/>
+				</rows>
+				<columns>
+					<column name="unit_sales"/>
+				</columns>
+				<values>
+					<value name="store_sales" summary-method="sum" display-name="总计SALES重量"/>
+					<value name="store_cost" summary-method="avg" display-name="平均COST重量"/>
+				</values>
+			</cross>
+			<html>
+				<css>js/openreport/mselect/multiple-select.css,js/openreport/openreport.css</css>
+				<js>js/jquery-1.8.2.min.js,js/openreport/mselect/jquery.multiple.select.js,js/openreport/openreport.js,js/openreport/layer/laydate/laydate.js</js>
+				<script>
+					<![CDATA[
+						$(function() {
+							$('#sex_mselect').multipleSelect({
+								width:'100px'
+							});
+						});
+						$(function() {
+							or_bind_submitable('.or_submitable');
+						});
+						$(function() {
+							or_select_init();
+							or_city_select_init();
+						});
+						$(function() {
+							or_url_param_fill();
+						});
+					]]>
+				</script>
+				<style>.product_class_id select{width: 100px;}</style>
 				<data-header></data-header>
 				<data-body></data-body>
 			</html>

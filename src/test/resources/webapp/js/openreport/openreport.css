@@ -44,6 +44,7 @@ table {
 .open-report-content{
 	margin: 0 auto;
 	padding-left: 20px;
+	padding-right: 20px;
 }
 .or-cdts-fbtns button{
 	border-radius: 0;
@@ -122,6 +123,13 @@ div.ms-parent{
 	border-spacing: 1px;
 	margin-top: 20px;
 	margin-bottom: 20px;
+	width: 100%;
+}
+.open-report-pagination{
+	width: 100%;
+}
+.open-report-pagination td{
+	text-align: right;
 }
 .open-report-data td, .open-report-data th{
 	border: 1px solid #000;
@@ -129,4 +137,24 @@ div.ms-parent{
 	border-spacing: 1px;
 	padding-top: 5px;
 	padding-bottom: 5px;
+}
+.page-btn.page-on, .page-btn.page-total{
+	text-decoration: none;
+	cursor: default;
+	color: #191919;
+	pointer-events: none !important;
+}
+.or-cdt-value input {
+	border-radius: 0;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    color: #444;
+    display: inline;
+    height: 22px;
+    line-height: 22px;
+    overflow: hidden;
+    padding: 0;
+    text-align: left;
+    text-decoration: none;
+    white-space: nowrap;
 }

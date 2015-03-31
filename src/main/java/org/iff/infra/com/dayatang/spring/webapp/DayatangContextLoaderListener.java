@@ -19,7 +19,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *         <listener-class>
  *             org.springframework.web.context.ContextLoaderListener
  *         </listener-class>
- *     </list
+ *     </listener>
+ * </pre>
  * @author Tyler
  */
 @Deprecated

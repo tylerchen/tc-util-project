@@ -332,7 +332,7 @@ class TCHelper{
     def static close(Object[] p){
         if(p && p.size()>0 && p[-1] in Closure){
             try{
-                p[-1]()
+                p[-1](p)
             }finally{
                 for(i in p.length-1){
                     try{p[i].close()}catch(err){}

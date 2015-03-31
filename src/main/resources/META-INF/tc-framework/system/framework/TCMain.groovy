@@ -182,23 +182,24 @@ class TCActionHandler extends TCChain{
 			def ins=actionClazz.newInstance()
 			ins.metaClass.params=params
 			ins.metaClass._request_params=[:]
-			if(ins.metaClass.addUrlParam){
+			ins.metaClass._request_userAgent=[:]
+			if(!ins.metaClass.hasMetaMethod('addUrlParam', [Object,Object] as Class[])){
 				ins.metaClass.addUrlParam={name, value->
 					_request_params.put(name, urlEncode(value))
 					return ins
 				}
 			}
-			if(ins.metaClass.urlEncode){
+			if(!ins.metaClass.hasMetaMethod('urlEncode', [Object] as Class[])){
 				ins.metaClass.urlEncode={url->
 					url ? java.net.URLEncoder.encode(url,'UTF-8') : ''
 				}
 			}
-			if(ins.metaClass.urlDecode){
+			if(!ins.metaClass.hasMetaMethod('urlDecode', [Object] as Class[])){
 				ins.metaClass.urlDecode={url->
 					url ? java.net.URLDecoder.decode(url,'UTF-8') : ''
 				}
 			}
-			if(ins.metaClass.redirect){
+			if(!ins.metaClass.hasMetaMethod('redirect', [Object] as Class[])){
 				ins.metaClass.redirect={url->
 					if(url && _request_params.size()>0){
 						if(url.endsWith('?')||url.endsWith('&')){
@@ -212,7 +213,7 @@ class TCActionHandler extends TCChain{
 					ins.params.response.sendRedirect(url ? url.toString() : '')
 				}
 			}
-			if(ins.metaClass.forward){
+			if(!ins.metaClass.hasMetaMethod('forward', [Object] as Class[])){
 				ins.metaClass.forward={url->
 					if(url && _request_params.size()>0){
 						if(url.endsWith('?')||url.endsWith('&')){
@@ -224,6 +225,14 @@ class TCActionHandler extends TCChain{
 						}
 					}
 					ins.params.request.getRequestDispatcher(url ? url.toString() : '').forward(ins.params.request, ins.params.response)
+				}
+			}
+			if(!ins.metaClass.hasMetaMethod('userAgent', [] as Class[])){
+				ins.metaClass.userAgent={
+					if(_request_userAgent.size()<1){
+						_request_userAgent << org.iff.infra.util.HttpHelper.userAgent(params.request.getHeader('User-Agent'))
+					}
+					_request_userAgent
 				}
 			}
 			if(actionClazz.getMethod(actionMap.method,null)){

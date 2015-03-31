@@ -5,6 +5,12 @@
 			<action name=""></action>
 		</actions>
 		<html-widgets>
+			<html-widget name="text" class="org.iff.groovy.view.openreport.HWText"/>
+			<html-widget name="htmldate" class="org.iff.groovy.view.openreport.HWHtml">
+				<html><![CDATA[
+					<input id="htmldate" name="htmldate" placeholder="请输入日期" class="laydate-icon" onclick="laydate()">
+				]]></html>
+			</html-widget>
 			<html-widget name="pdselect" class="org.iff.groovy.view.openreport.HWSelect">
 				<html><![CDATA[
 					<option value=""></option>
@@ -16,6 +22,7 @@
 			</html-widget>
 			<html-widget name="select" class="org.iff.groovy.view.openreport.HWSelect">
 				<html><![CDATA[
+					<option value=""></option>
 					<option value="M">男</option>
 					<option value="F">女</option>
 				]]></html>
