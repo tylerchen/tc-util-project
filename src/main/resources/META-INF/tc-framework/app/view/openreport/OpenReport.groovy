@@ -606,6 +606,22 @@ class CrossTableAction{
 				return  total.divide(records.size() as BigDecimal, total.scale(), BigDecimal.ROUND_HALF_UP)
 			}
 			return null
+		},'max':{records, colName->
+			def max
+			records.each{rc->
+				def bd=((rc in Map) ? rc[colName] : rc) as BigDecimal
+				max=(max ?: bd).max(bd)
+			}
+			max
+		},'min':{records, colName->
+			def min
+			records.each{rc->
+				def bd=((rc in Map) ? rc[colName] : rc) as BigDecimal
+				min=(min ?: bd).min(bd)
+			}
+			min
+		},'count':{records, colName->
+			records ? records.size() : 0
 		}
 	]
 	def index(){

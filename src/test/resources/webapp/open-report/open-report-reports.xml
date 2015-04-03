@@ -206,7 +206,7 @@
 				</columns>
 				<values>
 					<value name="store_sales" summary-method="sum" display-name="总计SALES重量"/>
-					<value name="store_cost" summary-method="avg" display-name="平均COST重量"/>
+					<value name="store_cost" summary-method="max" display-name="平均COST重量"/>
 				</values>
 			</cross>
 			<html>
