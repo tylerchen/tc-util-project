@@ -1,36 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template-generator>
-	<!-- [tablename: {name, type, length, decimal, nullable, pk}] -->
-	<template name="domain-class">
-		public class <fn-toclassname>$tablename</fn-toclassname> implements java.io.Serializable{
-			<loop items="$table.colums" item="column" index="cidx">
-				private <fn-tojavatype>$type</fn-tojavatype> <fn-tofieldname>$name</fn-tofieldname>;
-			</loop>
-			<loop items="$table.colums" item="column" index="cidx">
-				public <fn-tojavatype>$type</fn-tojavatype> <fn-togettername>$name</fn-togettername>(){
-					return <fn-tofieldname>$name</fn-tofieldname>;
-				}
-				public <fn-tojavatype>$type</fn-tojavatype> <fn-tosettername>$name</fn-tosettername>(<fn-tojavatype>$type</fn-tojavatype> <fn-tofieldname>$name</fn-tofieldname>){
-					this.<fn-tofieldname>$name</fn-tofieldname>=<fn-tofieldname>$name</fn-tofieldname>;
-				}
-			</loop>
-		}
-	</template>
-	<template name="mybatis-mapper">
-		<![CDATA[
-			<?xml version="1.0" encoding="UTF-8"?>
-			<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-		]]>
-		<![CDATA[<mapper namespace="]]><fn-tomappername>$tablename</fn-tomappername><![CDATA[">]]>
-		<![CDATA[<resultMap id="]]><fn-toresultmapid>$tablename</fn-toresultmapid><![CDATA[" type="]]><fn-tofullclassname>$tablename</fn-tofullclassname><![CDATA[">]]>
-			<loop items="$table.colums" item="column" index="cidx">
-				<if test="$pk==true">
-					<![CDATA[<id property="]]><fn-tofieldname>$name</fn-tofieldname>" column="<fn-tocolumnname>$name</fn-tocolumnname>" jdbcType="<fn-tocolumntype>$type</fn-tocolumntype><![CDATA["/>]]>
-				</if>
-				<else>
-					<![CDATA[<result property="]]><fn-tofieldname>$name</fn-tofieldname>" column="<fn-tocolumnname>$name</fn-tocolumnname>" jdbcType="<fn-tocolumntype>$type</fn-tocolumntype><![CDATA["/>]]>
-				</else>
-			</loop>
-		<![CDATA[</resultMap>]]>
-	</template>
+	<templates>
+		<template name="domain-class"><!-- [tablename: {name, type, length, decimal, nullable, pk}] -->
+			public class <fn-toclassname>$tablename</fn-toclassname> implements java.io.Serializable{
+				<loop items="$table.colums" item="column" index="cidx">
+					private <fn-tojavatype>$type</fn-tojavatype> <fn-tofieldname>$name</fn-tofieldname>;
+				</loop>
+				<loop items="$table.colums" item="column" index="cidx">
+					public <fn-tojavatype>$type</fn-tojavatype> <fn-togettername>$name</fn-togettername>(){
+						return <fn-tofieldname>$name</fn-tofieldname>;
+					}
+					public <fn-tojavatype>$type</fn-tojavatype> <fn-tosettername>$name</fn-tosettername>(<fn-tojavatype>$type</fn-tojavatype> <fn-tofieldname>$name</fn-tofieldname>){
+						this.<fn-tofieldname>$name</fn-tofieldname>=<fn-tofieldname>$name</fn-tofieldname>;
+					}
+				</loop>
+			}
+		</template>
+		<template name="mybatis-mapper"><!-- [tablename: {name, type, length, decimal, nullable, pk}] -->
+			<![CDATA[
+				<?xml version="1.0" encoding="UTF-8"?>
+				<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+			]]>
+			<![CDATA[<mapper namespace="]]><fn-tomappername>$tablename</fn-tomappername><![CDATA[">]]>
+			<![CDATA[<resultMap id="]]><fn-toresultmapid>$tablename</fn-toresultmapid><![CDATA[" type="]]><fn-tofullclassname>$tablename</fn-tofullclassname><![CDATA[">]]>
+				<loop items="$table.colums" item="column" index="cidx">
+					<if test="$pk==true">
+						<![CDATA[<id property="]]><fn-tofieldname>$name</fn-tofieldname>" column="<fn-tocolumnname>$name</fn-tocolumnname>" jdbcType="<fn-tocolumntype>$type</fn-tocolumntype><![CDATA["/>]]>
+					</if>
+					<else>
+						<![CDATA[<result property="]]><fn-tofieldname>$name</fn-tofieldname>" column="<fn-tocolumnname>$name</fn-tocolumnname>" jdbcType="<fn-tocolumntype>$type</fn-tocolumntype><![CDATA["/>]]>
+					</else>
+				</loop>
+			<![CDATA[</resultMap>]]>
+		</template>
+	</templates>
+	<projects>
+		<project name="test">
+			<properties>
+				<property name="package" value="{company}.{project}.{module}.{layer}"/>
+				<property name="" value=""/>
+			</properties>
+			<files>
+				<unzip>$zipfileobject</unzip>
+				<loop items="$tables" item="table" index="tidx">
+					<property name="javapath">
+						<fn-packagetojavapath>$name</fn-packagetojavapath>
+					</property>
+					<file type="java" path="$javapath" template-name="mybatis-mapper" var="table" value="$table" />
+					<property name="mapperpath">
+						<fn-packagetomapperpath>$name</fn-packagetomapperpath>
+					</property>
+					<file type="xml" path="$mapperpath" template-name="domain-class" var="table" value="$table" />
+				</loop>
+			</files>
+		</project>
+	</projects>
+	<functions>
+		<function name="" var="" context="">
+			javascript;
+		</function>
+	</functions>
 </template-generator>

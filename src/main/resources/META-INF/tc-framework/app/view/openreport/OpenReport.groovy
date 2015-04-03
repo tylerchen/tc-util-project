@@ -727,7 +727,7 @@ class CrossTableAction{
 		}
 	}
 	def private cross_table(crossCfg, records){// need to specify 'row' names, 'col' names, 'val' names, 'valmethod' value name map with summary, 'valdisplay' value display name
-		def row=crossCfg.row, col=crossCfg.col, val=crossCfg.val, valmethod=crossCfg.valmethod, valdisplay=crossCfg.valdisplay
+		def row=crossCfg.row/*dimension x*/, col=crossCfg.col/*dimension y*/, val=crossCfg.val/*value for calculate*/, valmethod=crossCfg.valmethod/*value calculate method*/, valdisplay=crossCfg.valdisplay/*value summary display name*/
 		//if(row.any{r-> (r in col)}){
 		//	return 'ERROR: rows and columns contains the same field.'
 		//}
@@ -737,25 +737,25 @@ class CrossTableAction{
 			row.each{r->
 				rtmp << rc[r]
 			}
-			def rkey=rtmp.join(seperator_str)
-			def tmap=rowmap[rkey]=rowmap[rkey] ?: [:]
+			def rkey=rtmp.join(seperator_str)/*row key join as row key for group row-values and sort*/
+			def tmap=rowmap[rkey]=rowmap[rkey] ?: [:]/*{joined-row-key : {joined-column-key:[record-row-datas]}}*/
 			
 			def ctmp=[]
 			col.each{c->
 				ctmp << rc[c]
 			}
-			def ckey=ctmp.join(seperator_str)
+			def ckey=ctmp.join(seperator_str)/*column key join as column key for group column-values and sort*/
 			colmap.put(ckey,'')
 			
 			(tmap[ckey]=tmap[ckey] ?: []) << rc
 		}
 		
-		def ckeys=colmap.keySet().sort()/*sort col*/, headmap=[:]/*the table header*/, rktmp
+		def ckeys=colmap.keySet().sort()/*sort columns*/, headmap=[:]/*{0: [header-level0], 1: [header-level1], last: [value-header]}*/, rktmp/*temp for row key*/
 		ckeys.each{ck->
 			def split=ck.split(seperator_str)
 			for(def v=0;v<val.size();v++){
 				for(def i=0;i<split.size();i++){
-					(headmap[i]=headmap[i] ?: []).push(split[i])
+					(headmap[i]=headmap[i] ?: []).push(split[i])/*this array size for the column-span in table*/
 				}
 				(headmap[split.size()]=headmap[split.size()] ?: []).push(val[v])
 			}
@@ -790,6 +790,7 @@ class CrossTableAction{
 			cspan=null
 		}
 		tds << '</thead>'
+		
 		def hasmap=[:], rowsummary=(headmap[0]+val).collect{[]}/*init row summary*/
 		tds << "<tbody>"
 		(rowmap as TreeMap).eachWithIndex{rk,rv,ix->
