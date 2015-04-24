@@ -19,7 +19,7 @@ class FileBrowserAction{
 				'groovy': [css:[], js:['mode/groovy/groovy.js','addon/edit/matchbrackets.js'], cfg:[mode:'text/x-groovy']],
 			],
 		]
-	def parseRequest(){
+	def private parseRequest(){
 		def req
 		println "params: ${params}"
 		println "params.request.contentType:${params.request.contentType}"

@@ -1,7 +1,7 @@
 package org.iff.groovy.view.tools
 
 @TCAction(name="/tools/output")
-class TestAction{
+class ConsoleOuputAction{
 	def static baos
 	def index(){
 		if(!baos){

@@ -23,6 +23,33 @@ import java.util.jar.JarEntry;
  */
 public class ResourceHelper {
 
+	/**
+	 * <pre>
+	 * Loading resources by protocol.
+	 * if protocol starts with "jar://" then return loadResourcesInJar
+	 * if protocol starts with "classpath://" then return loadResourcesInClassPath
+	 * if protocal starts with "file://" then return loadResourcesInFileSystem
+	 * </pre>
+	 * @param resPathWithProtocol
+	 * @param fileExt
+	 * @param include
+	 * @param exclude
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-4-20
+	 */
+	public static List<String> loadResources(final String resPathWithProtocol, final String fileExt,
+			final String include, final String exclude) {
+		if (resPathWithProtocol.startsWith("jar://")) {
+			return loadResourcesInJar(resPathWithProtocol.substring("jar://".length()), fileExt, include, exclude);
+		} else if (resPathWithProtocol.startsWith("classpath://")) {
+			return loadResourcesInJar(resPathWithProtocol.substring("classpath://".length()), fileExt, include, exclude);
+		} else if (resPathWithProtocol.startsWith("file://")) {
+			return loadResourcesInJar(resPathWithProtocol.substring("file://".length()), fileExt, include, exclude);
+		}
+		return new ArrayList<String>();
+	}
+
 	public static List<String> loadResourcesInJar(final String resPath, final String fileExt, final String include,
 			final String exclude) {
 		Set<String> list = new LinkedHashSet<String>(64);
@@ -123,6 +150,16 @@ public class ResourceHelper {
 		return result;
 	}
 
+	/**
+	 * load resource in file system(&#42;=*).
+	 * @param resPath resource path, example: META-INF/hello/
+	 * @param fileExt resource file extension, example: test.properties or .properties
+	 * @param include the wild card to match the file, example: META-INF/&#42;/test.properties
+	 * @param exclude the wild card to match the file exclude, example: META-INF/&#42;_test.properties
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-4-8
+	 */
 	public static List<String> loadResourcesInFileSystem(final String resPath, final String fileExt,
 			final String include, final String exclude) {
 		Set<String> list = new LinkedHashSet<String>(64);
@@ -166,6 +203,14 @@ public class ResourceHelper {
 		return result;
 	}
 
+	/**
+	 * test the text match the wild char "*"
+	 * @param text    example: helloworld
+	 * @param pattern example: hell*world
+	 * @return 
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-4-8
+	 */
 	public static boolean wildCardMatch(String text, String pattern) {
 		if (pattern == null || pattern.length() < 1 || "*".equals(pattern)) {
 			return true;
@@ -185,8 +230,8 @@ public class ResourceHelper {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(loadResourcesInJar("META-INF/tc-framework-test", ".groovy", "*", "*/TCMain.groovy"));
-		System.out.println(loadResourcesInClassPath("META-INF", ".groovy", "*", "*/TCMain.groovy"));
-		System.out.println(loadResourcesInFileSystem("g:/bak/app_root/webapp", ".xml", "", ""));
+		System.out.println(loadResources("jar://META-INF/tc-framework-test", ".groovy", "*", "*/TCMain.groovy"));
+		System.out.println(loadResources("classpath://META-INF", ".groovy", "*", "*/TCMain.groovy"));
+		System.out.println(loadResources("file://g:/bak/app_root/webapp", ".xml", "", ""));
 	}
 }

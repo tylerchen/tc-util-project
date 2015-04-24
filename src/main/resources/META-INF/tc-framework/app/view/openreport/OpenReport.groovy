@@ -1,44 +1,96 @@
 package org.iff.groovy.view.openreport
 
-@TCAction(name="/report/open_report")
-class OpenReportParser{
+@TCAction(name="/report/report")
+class OpenReportAction{
 	def index(){
-		def response=params.response
-		response.writer << "<!DOCTYPE html>\n<html><head><meta charset='utf-8'></head><body><h1>Open Report</h1>"
-		def reportFiles=org.iff.infra.util.ResourceHelper.loadResourcesInFileSystem('E:/workspace/JeeGalileo/tc-util-project/src/test/resources/webapp/open-report', '.xml', 'open-report-*.xml', '')
-		response.writer << reportFiles
-		def xml_struct=[
-			'data-sources':[:],//name:{name,driver,url,username,password,encrypt}
-			'report-groups':[:],//name:{name,path,skin,display-name,data-source-ref,report-refs:{name,role,skin,display-name},role-refs:{name}}
-			'roles':[:],//name:{name,role-name,data-source-ref,sql,code,language}
-			'report-users':[:],//{users:name:{name,password,role-ref,encrypt},sql,code,language,data-source-ref}
-			'config':[
-					'actions':[:],//{name:value}
-					'html-widgets':[:],//{name:value}
-					'return-types':[:],//{name:value}
-				],
-			'reports':[:],//{name,display-name,page-size,condition-size,actions:[{name,display-name,action,index}],conditions:[{name,display-name,type,default-value,return-type,index,html,code,language,data-source-ref}]}
-		]
-		reportFiles.each{
-			parseXml(xml_struct, it)
+		def export
+		params.urlParams.each{p->
+			if(p.startsWith('export=')){
+				export=p-'export='
+			}
 		}
-		response.writer << xml_struct
-		response.writer << "</body></html>"
+		if(export){
+			def excel=new ExcelAction()
+			excel.metaClass.superAction=this
+			excel.index()
+		}else{
+			def response=params.response, contextPath=params.request.contextPath, resContext=params.resContext
+			def reportConfig=new OpenReportParser().reportConfig()
+			def reportCfg=reportCfg(reportConfig, params.urlParams[0], params.urlParams[1])
+			if(!reportCfg.isValid){
+				TCHelper.close(response.writer){oss-> oss[0].append('report not found') }
+				return
+			}
+			if(reportCfg.report.isCross){
+				def action = new CrossTableAction()
+				action.metaClass.superAction=this
+				action.index()
+			}else{
+				def action = new QueryAction()
+				action.metaClass.superAction=this
+				action.index()
+			}
+		}
+		return
 	}
+	def protected urlParamMap(reportCfg){
+		def pmap=[:]
+		params.urlParams.each{p->
+			def index=p.indexOf('=')
+			if(index>0){
+				pmap.put(p.substring(0,index),p.substring(index+1))
+			}
+		}
+		pmap
+	}
+	def protected reportCfg(reportConfig, groupName, reportName){// return {global,group,report,ds,rttype,conditions}
+		def report=[:]
+		report.global=reportConfig
+		report.group=reportConfig.'report-groups'?."$groupName"
+		report.report=reportConfig.'reports'?."$reportName"
+		report.ds=reportConfig.'data-sources'?."${report.group.'data-source-ref'}"
+		report.rttype=reportConfig.'config'.'return-types'
+		report.conditions=[]
+		report.report?.conditions.each{cdt->
+			if(cdt.html && cdt.html.size()){
+				report.conditions << cdt.clone()
+			}else{
+				def htmlWidget=reportConfig.config.'html-widgets'."${cdt.type}"
+				if(htmlWidget?.'class'){
+					def instance=this.getClass().classLoader.loadClass(htmlWidget.'class',true,false)?.newInstance()
+					def widget=instance?.htmlWidget(['name':cdt.name, 'html-widget':htmlWidget])
+					def tmp=cdt.clone()
+					tmp.put('instance', instance)
+					tmp.put('widget', widget)
+					report.conditions << tmp
+				}//END-if
+			}//END-else
+		}//END-each
+		report.isValid=report.group && report.report
+		report
+	}
+	def protected reportGroup(reportConfig, groupName){
+		
+	}
+}
+
+class OpenReportParser{
 	def reportConfig(){
-		def reportFiles=org.iff.infra.util.ResourceHelper.loadResourcesInFileSystem('E:/workspace/JeeGalileo/tc-util-project/src/test/resources/webapp/open-report', '.xml', 'open-report-*.xml', '')
+		def cfgs=getConfigs()
+		def tc_open_report_xml=cfgs?.get('tc_open_report_xml') ?: 'file://E:/workspace/JeeGalileo/tc-util-project/src/test/resources/webapp/open-report'
+		def reportFiles=org.iff.infra.util.ResourceHelper.loadResources(tc_open_report_xml, '.xml', 'open-report-*.xml', '')
 		def xml_struct=[
-			'data-sources':[:],//name:{name,driver,url,username,password,encrypt}
+			'data-sources' :[:],//name:{name,driver,url,username,password,encrypt}
 			'report-groups':[:],//name:{name,path,skin,display-name,data-source-ref,report-refs:{name,role,skin,display-name},role-refs:{name}}
-			'roles':[:],//name:{name,role-name,data-source-ref,sql,code,language}
-			'report-users':[:],//{users:name:{name,password,role-ref,encrypt},sql,code,language,data-source-ref}
-			'config':[
-					'actions':[:],//{name:value}
-					'html-widgets':[:],//{name:value}
-					'return-types':[:],//{name:value}
-				],
-			'reports':[:],//{name,display-name,page-size,condition-size,actions:[{name,display-name,action,index}],conditions:[{name,display-name,type,default-value,return-type,index,html,code,language,data-source-ref}]}
-			'processor':[:],
+			'roles'        :[:],//name:{name,role-name,data-source-ref,sql,code,language}
+			'report-users' :[:],//{users:name:{name,password,role-ref,encrypt},sql,code,language,data-source-ref}
+			'config'       :[
+				'actions'     :[:],//{name:value}
+				'html-widgets':[:],//{name:value}
+				'return-types':[:],//{name:value}
+			],
+			'reports'      :[:],//{name,display-name,page-size,condition-size,actions:[{name,display-name,action,index}],conditions:[{name,display-name,type,default-value,return-type,index,html,code,language,data-source-ref}]}
+			'processor'    :[:],
 		]
 		reportFiles.each{
 			parseXml(xml_struct, it)
@@ -51,7 +103,7 @@ class OpenReportParser{
 		xml.'data-sources'.'data-source'.each{
 			xml_struct.'data-sources'.put(
 				it.'@name', it.attributes()+[
-					'driver'  : it.driver.text(), 
+					'driver'  : it.driver.text(),
 					'url'     : it.url.text(),
 					'username': it.username.text(),
 					'password': it.password.text(),
@@ -208,10 +260,10 @@ class OpenReportParser{
 		xml_struct.processor.'sql'={reportCfg, param->// replace or remove the condition block (#[condition])
 			def sql=reportCfg.report.query, index=0, conditions=[:]
 			while((index=sql.indexOf('#['))>0){
-			    def tmp=sql.substring(index+2, sql.indexOf(']',index))
-			    def name=tmp.substring(tmp.indexOf(':')+1).trim()
+				def tmp=sql.substring(index+2, sql.indexOf(']',index))
+				def name=tmp.substring(tmp.indexOf(':')+1).trim()
 				def hasParam=param[name]!=null && param[name]!=''
-			    sql=sql.substring(0, index)+(hasParam ? tmp : '')+sql.substring(sql.indexOf(']',index)+1)
+				sql=sql.substring(0, index)+(hasParam ? tmp : '')+sql.substring(sql.indexOf(']',index)+1)
 				if(hasParam){
 					conditions.put(name, param[name])
 				}
@@ -245,7 +297,7 @@ class OpenReportParser{
 //						, map.key.getBytes())
 //				}
 //			}else{
-//				
+//
 //			}
 			map.value
 		}
@@ -255,80 +307,6 @@ class OpenReportParser{
 		xml_struct.processor.'html-widgets'={map->
 			//smap.'role-name'?.split(',')
 		}
-	}
-}
-
-@TCAction(name="/report/report")
-class OpenReportAction{
-	def index(){
-		def export
-		params.urlParams.each{p->
-			if(p.startsWith('export=')){
-				export=p-'export='
-			}
-		}
-		if(export){
-			def excel=new ExcelAction()
-			excel.metaClass.superAction=this
-			excel.index()
-		}else{
-			def response=params.response, contextPath=params.request.contextPath, resContext=params.resContext
-			def reportConfig=new OpenReportParser().reportConfig()
-			def reportCfg=reportCfg(reportConfig, params.urlParams[0], params.urlParams[1])
-			if(!reportCfg.isValid){
-				TCHelper.close(response.writer){oss-> oss[0].append('report not found') }
-				return
-			}
-			if(reportCfg.report.isCross){
-				def action = new CrossTableAction()
-				action.metaClass.superAction=this
-				action.index()
-			}else{
-				def action = new QueryAction()
-				action.metaClass.superAction=this
-				action.index()
-			}
-		}
-		return
-	}
-	def protected urlParamMap(reportCfg){
-		def pmap=[:]
-		params.urlParams.each{p->
-			def index=p.indexOf('=')
-			if(index>0){
-				pmap.put(p.substring(0,index),p.substring(index+1))
-			}
-		}
-		pmap
-	}
-	def protected reportCfg(reportConfig, groupName, reportName){// return {global,group,report,ds,rttype,conditions}
-		def report=[:]
-		report.global=reportConfig
-		report.group=reportConfig.'report-groups'?."$groupName"
-		report.report=reportConfig.'reports'?."$reportName"
-		report.ds=reportConfig.'data-sources'?."${report.group.'data-source-ref'}"
-		report.rttype=reportConfig.'config'.'return-types'
-		report.conditions=[]
-		report.report?.conditions.each{cdt->
-			if(cdt.html && cdt.html.size()){
-				report.conditions << cdt.clone()
-			}else{
-				def htmlWidget=reportConfig.config.'html-widgets'."${cdt.type}"
-				if(htmlWidget?.'class'){
-					def instance=this.getClass().classLoader.loadClass(htmlWidget.'class',true,false)?.newInstance()
-					def widget=instance?.htmlWidget(['name':cdt.name, 'html-widget':htmlWidget])
-					def tmp=cdt.clone()
-					tmp.put('instance', instance)
-					tmp.put('widget', widget)
-					report.conditions << tmp
-				}//END-if
-			}//END-else
-		}//END-each
-		report.isValid=report.group && report.report
-		report
-	}
-	def protected reportGroup(reportConfig, groupName){
-		
 	}
 }
 

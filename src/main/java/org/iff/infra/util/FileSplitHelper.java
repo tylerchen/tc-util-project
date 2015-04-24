@@ -9,9 +9,6 @@ package org.iff.infra.util;
 
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
@@ -60,16 +57,5 @@ public class FileSplitHelper {
 						.warn("[FileSplitHelper.Iterator.remove is not support!]");
 			}
 		};
-	}
-
-	public static void main(String[] args) {
-		String a = "da460bea-68fd-4487-9d55-7f8171088cc0" + ":" + "yyyyMMdd"
-				+ ":" + "000";
-		System.out.println(UUID.randomUUID());
-		Pattern p = Pattern
-				.compile("^da460bea-68fd-4487-9d55-7f8171088cc0:.*:000$");
-		Matcher matcher = p.matcher(a);
-		System.out.println(matcher.find());
-		System.out.println(matcher.group());
 	}
 }

@@ -1,7 +1,7 @@
 package org.iff.groovy.view.tools
 
 @TCAction(name="/tools/template_generator")
-class TemplateGenerator{
+class TemplateGeneratorAction{
 	def index(){
 		def response=params.response
 		response.writer << "<!DOCTYPE html>\n<html><head><meta charset='utf-8'></head><body><h1>TemplateGenerator</h1>"

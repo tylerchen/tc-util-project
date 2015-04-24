@@ -43,6 +43,7 @@ public class TCCache extends LinkedHashMap implements InstanceProvider {
 		setByPath("groovy_files", new LinkedHashMap());
 		setByPath("groovy_files", new LinkedHashMap());
 		setByPath("props", new LinkedHashMap());
+		setByPath("config", new LinkedHashMap());
 		setByPath("framework/inits", new ArrayList());
 		setByPath("framework/starts", new ArrayList());
 		setByPath("framework/stops", new ArrayList());

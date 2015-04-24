@@ -7,6 +7,7 @@ class TCStarter{
 	def start(groovyFiles){
 		//
 		system_properties_to_map()
+		properties_file_to_map(TCCache.me().props.tc_properties_filepath ?: 'META-INF/tc-framework.properties', TCCache.me().props.tc_properties_version ?: 'order.loading.configure')
 		//
 		def app_root=TCCache.me().app_root
 		def tc_jar_path=TCCache.me().props.tc_jar_path
@@ -38,6 +39,9 @@ class TCStarter{
 			get('props').putAll(map)
 			put("app_root", pathClean(map.app_root))
 		}
+	}
+	def properties_file_to_map(respath, version){
+		TCCache.me().config.putAll(org.iff.infra.util.PropertiesHelper.loadProperties(respath, version))
 	}
 	def compile_by_order(app_root, groovy_files){
 		app_root=pathClean(app_root)

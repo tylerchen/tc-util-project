@@ -77,8 +77,8 @@ class TCFilter implements javax.servlet.Filter{
 		}
 	}
 	def void doFilter(javax.servlet.ServletRequest request, javax.servlet.ServletResponse response,javax.servlet.FilterChain chain) throws IOException, javax.servlet.ServletException{
-		request.setCharacterEncoding("UTF-8")
-		response.setCharacterEncoding("UTF-8")
+		request.setCharacterEncoding('UTF-8')
+		response.setCharacterEncoding('UTF-8')
 		def target=request.servletPath
 		TCHelper.debug('[doFilter] handler:{0}, target:{1}, target_prefix:{2}', handler.class.name, target, target_prefix)
 		if(target.endsWith('.gsp')||target.endsWith('.jsp')||target.startsWith('/css/')||target.startsWith('/js/')||target.startsWith('/images/')){
@@ -166,7 +166,7 @@ class TCActionHandler extends TCChain{
 		TCHelper.debug('[ActionHandler] nextChain:{0}, target:{1}', nextChain,target)
 		def actionMap=actions[target]
 		if(!actionMap){// target=/a/b/c split -> 1: /a/b, [c]; 2: /a, [b,c]; 3: /, [a,b,c]
-			def targets=target.split("\\/")
+			def targets=target.split('\\/')
 			for(def i=targets.size()-2;i>-1;i--){
 				def t=targets[0..i].join('/')
 				actionMap=actions[t]
@@ -178,11 +178,35 @@ class TCActionHandler extends TCChain{
 		}
 		if(actionMap){
 			def actionClazz=TCCLassManager.me().loadClass(actionMap.action)
+			//test the access privileage
+			def config=TCCache.me().'config' ?: [:]
+			def key1='access.'+actionClazz.name+'.'+actionMap.method, key2='access.'+actionClazz.name+'.*'
+			if(!(config[key1]=='true'||config[key2]=='true')){
+				TCHelper.debug('access not permited: {0}',actionClazz.name)
+				nextChain.process(params)
+				return false 
+			}
+			// test end
 			def result
 			def ins=actionClazz.newInstance()
 			ins.metaClass.params=params
 			ins.metaClass._request_params=[:]
 			ins.metaClass._request_userAgent=[:]
+			ins.metaClass._configs=[:]
+			if(!ins.metaClass.hasMetaMethod('getConfigs', [Object[]] as Class[])){
+				ins.metaClass.getConfigs={Object[] ps->
+					if((ps && ps[0]==true) || _configs==null || _configs.size()==0){
+						def prefix=actionClazz.name+'.'
+						_configs=[:]
+						TCCache.me().config.findAll{k,v->
+							if(k.startsWith(prefix)){
+								_configs.put(k.substring(prefix.size()),v)
+							}
+						}
+					}
+					return _configs
+				}
+			}
 			if(!ins.metaClass.hasMetaMethod('addUrlParam', [Object,Object] as Class[])){
 				ins.metaClass.addUrlParam={name, value->
 					_request_params.put(name, urlEncode(value))
@@ -240,7 +264,7 @@ class TCActionHandler extends TCChain{
 			}else{
 				result=ins."$actionMap.method"(params)
 			}
-			if(result instanceof TCRender){
+			if(result && result.metaClass.hasMetaMethod('render', [] as Class[])){
 				result.render()
 			}
 			return true
