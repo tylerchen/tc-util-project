@@ -15,7 +15,7 @@ class OpenReportAction{
 			excel.index()
 		}else{
 			def response=params.response, contextPath=params.request.contextPath, resContext=params.resContext
-			def reportConfig=new OpenReportParser().reportConfig()
+			def reportConfig=new OpenReportParser().reportConfig(getConfigs())
 			def reportCfg=reportCfg(reportConfig, params.urlParams[0], params.urlParams[1])
 			if(!reportCfg.isValid){
 				TCHelper.close(response.writer){oss-> oss[0].append('report not found') }
@@ -48,7 +48,7 @@ class OpenReportAction{
 		report.global=reportConfig
 		report.group=reportConfig.'report-groups'?."$groupName"
 		report.report=reportConfig.'reports'?."$reportName"
-		report.ds=reportConfig.'data-sources'?."${report.group.'data-source-ref'}"
+		report.ds=reportConfig.'data-sources'?."${report.group?.'data-source-ref'}"
 		report.rttype=reportConfig.'config'.'return-types'
 		report.conditions=[]
 		report.report?.conditions.each{cdt->
@@ -75,9 +75,10 @@ class OpenReportAction{
 }
 
 class OpenReportParser{
-	def reportConfig(){
-		def cfgs=getConfigs()
+	def reportConfig(configs){
+		def cfgs=configs
 		def tc_open_report_xml=cfgs?.get('tc_open_report_xml') ?: 'file://E:/workspace/JeeGalileo/tc-util-project/src/test/resources/webapp/open-report'
+		println "tc_open_report_xml --> ${tc_open_report_xml}"
 		def reportFiles=org.iff.infra.util.ResourceHelper.loadResources(tc_open_report_xml, '.xml', 'open-report-*.xml', '')
 		def xml_struct=[
 			'data-sources' :[:],//name:{name,driver,url,username,password,encrypt}
@@ -93,9 +94,11 @@ class OpenReportParser{
 			'processor'    :[:],
 		]
 		reportFiles.each{
+			println "file: ${it}"
 			parseXml(xml_struct, it)
 		}
 		registXmlProcessor(xml_struct)
+		println xml_struct
 		xml_struct
 	}
 	def private parseXml(xml_struct, report_xml){
@@ -314,7 +317,7 @@ class QueryAction{
 	def index(){
 		def params=superAction.params
 		def response=params.response, contextPath=params.request.contextPath, resContext=params.resContext
-		def reportConfig=new OpenReportParser().reportConfig()
+		def reportConfig=new OpenReportParser().reportConfig(superAction.getConfigs())
 		def reportCfg=superAction.reportCfg(reportConfig, params.urlParams[0], params.urlParams[1])
 		if(!reportCfg.isValid){
 			TCHelper.close(response.writer){oss-> oss[0].append('report not found') }
@@ -605,7 +608,7 @@ class CrossTableAction{
 	def index(){
 		def params=superAction.params
 		def response=params.response, contextPath=params.request.contextPath, resContext=params.resContext
-		def reportConfig=new OpenReportParser().reportConfig()
+		def reportConfig=new OpenReportParser().reportConfig(superAction.getConfigs())
 		def reportCfg=superAction.reportCfg(reportConfig, params.urlParams[0], params.urlParams[1])
 		if(!reportCfg.isValid){
 			TCHelper.close(response.writer){oss-> oss[0].append('report not found') }
@@ -828,7 +831,7 @@ class ExcelAction{
 	def index(){
 		def params=superAction.params
 		def response=params.response, contextPath=params.request.contextPath, resContext=params.resContext
-		def reportConfig=new OpenReportParser().reportConfig()
+		def reportConfig=new OpenReportParser().reportConfig(superAction.getConfigs())
 		def reportCfg=superAction.reportCfg(reportConfig, params.urlParams[0], params.urlParams[1])
 		if(!reportCfg.isValid){
 			TCHelper.close(response.writer){oss-> oss[0].append('report not found') }

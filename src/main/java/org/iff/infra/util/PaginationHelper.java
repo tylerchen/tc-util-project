@@ -8,6 +8,7 @@
 package org.iff.infra.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,7 +27,13 @@ public class PaginationHelper {
 	 */
 	public static List<Number> middleCurrentPage(long pageSize, long totalCount, long currentPage) {
 		List<Number> list = new ArrayList<Number>();
-		pageSize = pageSize < 1 ? 1 : pageSize;
+		if (totalCount <= 1) {
+			list.add(1);
+			list.add(1);
+			list.add(1);
+			return list;
+		}
+		pageSize = pageSize < 1 ? 10 : pageSize;
 		long totalPage = (pageSize > 0 ? (totalCount + pageSize - 1) / pageSize : 0);
 		currentPage = Math.max(currentPage, 1);
 		currentPage = currentPage > totalPage ? totalPage : currentPage;
@@ -54,6 +61,6 @@ public class PaginationHelper {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(middleCurrentPage(10, 100, 2));
+		System.out.println(middleCurrentPage(10, 0, 2));
 	}
 }

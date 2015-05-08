@@ -43,9 +43,9 @@ public class ResourceHelper {
 		if (resPathWithProtocol.startsWith("jar://")) {
 			return loadResourcesInJar(resPathWithProtocol.substring("jar://".length()), fileExt, include, exclude);
 		} else if (resPathWithProtocol.startsWith("classpath://")) {
-			return loadResourcesInJar(resPathWithProtocol.substring("classpath://".length()), fileExt, include, exclude);
+			return loadResourcesInClassPath(resPathWithProtocol.substring("classpath://".length()), fileExt, include, exclude);
 		} else if (resPathWithProtocol.startsWith("file://")) {
-			return loadResourcesInJar(resPathWithProtocol.substring("file://".length()), fileExt, include, exclude);
+			return loadResourcesInFileSystem(resPathWithProtocol.substring("file://".length()), fileExt, include, exclude);
 		}
 		return new ArrayList<String>();
 	}
