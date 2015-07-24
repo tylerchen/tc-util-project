@@ -430,7 +430,44 @@ public final class StringHelper {
 		return o.toString();
 	}
 
+	/**
+	 * <pre>
+	 * convert url to standard form
+	 * input : file:///c:/windows or file:///c:\\windows
+	 * output: file:///c:/windows
+	 * input : file://c:/windows  or file://c:\\windows
+	 * output: file:///c:windows
+	 * input : file:/c:/windows   or file:/c:\\windows
+	 * output: file:///c:/windows
+	 * input : null or blank
+	 * output: null or blank
+	 * </pre> 
+	 * @param urlString
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-7-16
+	 */
+	public static String fixUrl(String urlString) {
+		if (urlString == null || urlString.length() < 1 || urlString.indexOf(':') < 0) {
+			return urlString;
+		}
+		int index = 0;
+		if (urlString.indexOf(":///") < 1) {
+			index = urlString.indexOf('/');
+			if (urlString.indexOf("://") > -1) {
+				urlString = urlString.substring(0, index) + "/" + urlString.substring(index);
+			} else if (urlString.indexOf(":/") > -1) {
+				urlString = urlString.substring(0, index) + "//" + urlString.substring(index);
+			}
+		}
+		if ((index = urlString.indexOf(":///")) > -1) {
+			urlString = urlString.substring(0, index + 3) + pathBuild(urlString.substring(index + 3), "/");
+		}
+		return urlString;
+	}
+
 	public static void main(String[] args) {
+		System.out.println(pathBuild("file:///g:/a/b/c", "/"));
 		System.out.println(subUniCodeString("我ABC汉DEF", 60));
 		System.out.println(subUniCodeString("我ABC汉DEF", 4));
 		long start = System.currentTimeMillis();

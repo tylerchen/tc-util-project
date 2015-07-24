@@ -54,7 +54,16 @@ public class TCCache extends LinkedHashMap implements InstanceProvider {
 	}
 
 	public Object getByPath(String path) {
-		return path == null ? null : MapHelper.getByPath(this, path);
+		return getByPath(path, false);
+	}
+
+	public Object getByPath(String path, boolean setWhenNull) {
+		Object result = path == null ? null : MapHelper.getByPath(this, path);
+		if (result == null && setWhenNull) {
+			setByPath(path, new LinkedHashMap());
+			result = MapHelper.getByPath(this, path);
+		}
+		return result;
 	}
 
 	public TCCache setByPath(String path, Object value) {

@@ -18,17 +18,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.iff.infra.util.Assert;
 import org.iff.infra.util.FCS;
 import org.iff.infra.util.Logger;
 import org.iff.infra.util.ResourceHelper;
-import org.iff.infra.util.StringHelper;
 
 /**
  * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
  * @since 2014-12-26
  */
 public class TCCLassManager {
-	private static TCCLassManager me = new TCCLassManager();
+	private static final Map<String, TCCLassManager> map = new HashMap<String, TCCLassManager>();
+	private String name = "default";
 	private List<TCMainClassLoader[]> loaders = new ArrayList<TCMainClassLoader[]>();
 	private Map<String, TCMainClassLoader[]> classMapLoader = new HashMap<String, TCMainClassLoader[]>();
 	private Map<String, String> classNameMapScript = new HashMap<String, String>();
@@ -38,24 +39,79 @@ public class TCCLassManager {
 	}
 
 	public static TCCLassManager me() {
-		return me;
+		return getManager("default", true);
 	}
 
 	public static TCMainClassLoader get() {
-		TCMainClassLoader loader = TCGroovyClassLoader.get();
+		TCMainClassLoader loader = TCGroovyClassLoader.get("default");
 		TCCLassManager.me().register(loader);
+		return loader;
+	}
+
+	public static TCCLassManager getManager(String name, boolean createIfNotExists) {
+		Assert.notEmpty(name, "Container name can't be empty");
+		TCCLassManager cm = map.get(name);
+		if (cm == null && createIfNotExists) {
+			synchronized (map) {
+				cm = map.get(name);
+				if (cm == null) {
+					cm = new TCCLassManager();
+					cm.name = name;
+					if (!"default".equals(name)) {
+						cm.loaders.addAll(me().loaders);
+						cm.classMapLoader.putAll(me().classMapLoader);
+						cm.classNameMapScript.putAll(me().classNameMapScript);
+						cm.scriptMapClassLoader.putAll(me().scriptMapClassLoader);
+					}
+					map.put(name, cm);
+				}
+			}
+		}
+		return cm;
+	}
+
+	public static Map<String, TCCLassManager> getManagers() {
+		Map<String, TCCLassManager> result = new HashMap<String, TCCLassManager>();
+		for (Entry<String, TCCLassManager> entry : map.entrySet()) {
+			result.put(entry.getKey(), entry.getValue());
+		}
+		return result;
+	}
+
+	public static TCMainClassLoader getClassLoader(String managerName) {
+		TCCLassManager cm = getManager(managerName, false);
+		Assert.notNull(cm, FCS.get("Container[{0}] can't be null.", managerName));
+		TCMainClassLoader loader = TCGroovyClassLoader.get(managerName);
+		cm.register(loader);
 		return loader;
 	}
 
 	public Class loadClass(String name) throws Exception {
 		if (!loaders.isEmpty()) {
-			return loaders.get(0)[0].loadClass(name);
+			Exception e = null;
+			for (int i = loaders.size() - 1; i > -1; i--) {
+				try {
+					Class clazz = loaders.get(i)[0].loadClass(name);
+					if (clazz != null) {
+						return clazz;
+					}
+				} catch (Exception ee) {
+					e = ee;
+				}
+			}
+			if (e != null) {
+				throw e;
+			}
 		}
 		return null;
 	}
 
 	public void register(TCMainClassLoader loader) {
 		loaders.add(new TCMainClassLoader[] { loader });
+	}
+
+	public boolean containsScriptFile(String scriptFile) {
+		return scriptMapClassLoader.containsKey(scriptFile);
 	}
 
 	public void addClassNameScriptMapping(TCMainClassLoader loader, String scriptFile) {
@@ -114,7 +170,28 @@ public class TCCLassManager {
 			loader.recompile();
 			return loader;
 		}
-		TCMainClassLoader loader = TCGroovyClassLoader.get(file);
+		TCMainClassLoader loader = TCGroovyClassLoader.get(file, name);
+		this.register(loader);
+		loader.recompile();
+		if (loader.isLastCompileSuccess()) {
+			Class[] classes = loader.getLoadedClasses();
+			if (classes == null || classes.length < 1) {
+				return loader;
+			}
+			this.addClassNameScriptMapping(loader, file);
+		}
+		return loader;
+	}
+
+	//new feature 15-07-15
+	public TCMainClassLoader compile(Map fileStruct) {
+		String file = (String) fileStruct.get("url");
+		if (scriptMapClassLoader.get(file) != null) {
+			TCMainClassLoader loader = scriptMapClassLoader.get(file);
+			loader.recompile();
+			return loader;
+		}
+		TCMainClassLoader loader = TCGroovyClassLoader.get(fileStruct, name);
 		this.register(loader);
 		loader.recompile();
 		if (loader.isLastCompileSuccess()) {
@@ -162,11 +239,11 @@ public class TCCLassManager {
 			if (tc_groovy_file == null && tc_jar_path != null && tc_jar_path.length() > 1) {
 				tc_groovy_file = scan_tc_groovy_file(scan_groovy_files_from_jar(app_root, tc_jar_path));
 			}
+			startClassName = startClassName == null || (startClassName = startClassName.trim()).length() < 1 ? "org.iff.groovy.framework.TCStarter"
+					: startClassName;
 			Logger.debug(FCS.get("tc_groovy_file:{0},tc_groovy_framework_start_class:{1}", tc_groovy_file,
 					startClassName));
 			TCCLassManager.me().compile(tc_groovy_file);
-			startClassName = startClassName == null || (startClassName = startClassName.trim()).length() < 1 ? "org.iff.groovy.framework.TCStarter"
-					: startClassName;
 			Class clazz = TCCLassManager.me().get().loadClass(startClassName);
 			GroovyObject groovyObject = (GroovyObject) clazz.newInstance();
 			groovyObject.invokeMethod("start", new Object[0]);
@@ -175,9 +252,16 @@ public class TCCLassManager {
 		}
 	}
 
+	/**
+	 * find the main groovy file: system/framework/TC.groovy
+	 * @param map
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-6-29
+	 */
 	public static String scan_tc_groovy_file(Map map) {
 		String tc_groovy_file = null;
-		Object o = map.get("system/framework");
+		Object o = map.get("/system/framework");
 		if (o == null) {
 		} else if (o instanceof List) {
 			for (Object l : (List) o) {
@@ -197,10 +281,19 @@ public class TCCLassManager {
 		return tc_groovy_file;
 	}
 
+	/**
+	 * scan groovy files from jar, and return file path and files map.
+	 * @param app_root
+	 * @param path
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-6-29
+	 */
 	public static Map scan_groovy_files_from_jar(String app_root, String path) {
 		List<String> list = ResourceHelper.loadResourcesInClassPath(path, ".groovy", "*", null);
+		Logger.debug(FCS.get("[scan_groovy_files_from_jar]files: {0}", list));
 		Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
-		String cleanPath = StringHelper.pathBuild(path + "/", "/");
+		String cleanPath = path;
 		for (String s : list) {
 			String dir = "";
 			if (s.startsWith("jar:")) {
@@ -218,10 +311,20 @@ public class TCCLassManager {
 		return map;
 	}
 
+	/**
+	 * scan groovy files from file system, and return the directory name and files map.
+	 * @param app_root
+	 * @param dir_root
+	 * @param subdirs
+	 * @return
+	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @since 2015-6-29
+	 */
 	public static Map scan_groovy_files_from_filesys(String app_root, String dir_root, List<?> subdirs) {
 		List<String> list = ResourceHelper.loadResourcesInFileSystem(dir_root, ".groovy", "*", null);
+		Logger.debug(FCS.get("[scan_groovy_files_from_filesys]files: {0}", list));
 		Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
-		String cleanPath = StringHelper.pathBuild(dir_root + "/", "/");
+		String cleanPath = dir_root;
 		for (String s : list) {
 			String dir = "";
 			if (s.startsWith("jar:")) {

@@ -7,7 +7,7 @@ class TCStarter{
 	def start(groovyFiles){
 		//
 		system_properties_to_map()
-		properties_file_to_map(TCCache.me().props.tc_properties_filepath ?: 'META-INF/tc-framework.properties', TCCache.me().props.tc_properties_version ?: 'order.loading.configure')
+		properties_file_to_map(TCCache.me().props.tc_properties_filepath ?: 'classpath://META-INF/tc-framework.properties', TCCache.me().props.tc_properties_version ?: 'order.loading.configure')
 		//
 		def app_root=TCCache.me().app_root
 		def tc_jar_path=TCCache.me().props.tc_jar_path
@@ -122,9 +122,9 @@ class TCStarter{
 					if (entryName.startsWith(path) && entryName.endsWith('.groovy')) {
 						def fileName=pathClean(entryName.substring(0,entryName.lastIndexOf('/'))-path)
 						if(fileName in files){
-							files[fileName].add("${protocol}:${filePath.substring(0, filePath.lastIndexOf('!/') + 2)}${entryName}")
+							files[fileName].add(org.iff.infra.util.ResourceHelper.fixUrl("${protocol}:${filePath.substring(0, filePath.lastIndexOf('!/') + 2)}${entryName}"))
 						}else{
-							files[fileName]=["${protocol}:${filePath.substring(0, filePath.lastIndexOf('!/') + 2)}${entryName}"]
+							files[fileName]=[org.iff.infra.util.ResourceHelper.fixUrl("${protocol}:${filePath.substring(0, filePath.lastIndexOf('!/') + 2)}${entryName}")]
 						}
 						TCHelper.debug('JAR: {0}, file: {1}',path,entryName)
 					}
@@ -147,9 +147,9 @@ class TCStarter{
 					scan_dir_groovy_files.put(file.path, file.lastModified())// add for listener
 					TCHelper.debug('Groovy File: {0}, file: {1}',parent,path)
 					if(files[parent]){
-						files[parent].add(path)
+						files[parent].add('file:///'+path)
 					}else{
-						files[parent]=[path]
+						files[parent]=['file:///'+path]
 					}
 				}
 			}

@@ -43,9 +43,11 @@ public class ResourceHelper {
 		if (resPathWithProtocol.startsWith("jar://")) {
 			return loadResourcesInJar(resPathWithProtocol.substring("jar://".length()), fileExt, include, exclude);
 		} else if (resPathWithProtocol.startsWith("classpath://")) {
-			return loadResourcesInClassPath(resPathWithProtocol.substring("classpath://".length()), fileExt, include, exclude);
+			return loadResourcesInClassPath(resPathWithProtocol.substring("classpath://".length()), fileExt, include,
+					exclude);
 		} else if (resPathWithProtocol.startsWith("file://")) {
-			return loadResourcesInFileSystem(resPathWithProtocol.substring("file://".length()), fileExt, include, exclude);
+			return loadResourcesInFileSystem(resPathWithProtocol.substring("file://".length()), fileExt, include,
+					exclude);
 		}
 		return new ArrayList<String>();
 	}
@@ -56,8 +58,8 @@ public class ResourceHelper {
 		try {
 			Enumeration<URL> rs = ResourceHelper.class.getClassLoader().getResources(resPath);
 			while (rs.hasMoreElements()) {
-				URL url = rs.nextElement();
-				String filePath = url.getFile();
+				URL url = rs.nextElement();//jar:file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
+				String filePath = url.getFile();//file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
 				String protocol = url.getProtocol();
 				if ("file".equals(protocol) || "jar".equals(protocol)) {
 					if (filePath.startsWith("file:")) {
@@ -84,9 +86,11 @@ public class ResourceHelper {
 							if (exclude != null && exclude.length() > 0 && wildCardMatch(entryName, exclude)) {
 								continue;
 							}
-							list.add(protocol + ":" + filePath.substring(0, filePath.lastIndexOf("!/") + 2)
-									+ entryName.replaceAll("\\\\", "/"));
+							String urlString = protocol + ":" + filePath.substring(0, filePath.lastIndexOf("!/") + 2)
+									+ entryName.replaceAll("\\\\", "/");
+							list.add(fixUrl(urlString));
 						}
+						jarFile.close();
 					}
 				}
 			}
@@ -132,13 +136,16 @@ public class ResourceHelper {
 							if (exclude != null && exclude.length() > 0 && wildCardMatch(entryName, exclude)) {
 								continue;
 							}
-							list.add(protocol + ":" + filePath.substring(0, filePath.lastIndexOf("!/") + 2)
-									+ entryName.replaceAll("\\\\", "/"));
+
+							String urlString = protocol + ":" + filePath.substring(0, filePath.lastIndexOf("!/") + 2)
+									+ entryName.replaceAll("\\\\", "/");
+							list.add(fixUrl(urlString));
 						}
+						jarFile.close();
 					} else {// is file system in class path
-						String entryName = PlatformHelper.isWindows() ? StringHelper.pathBuild(filePath, "/")
-								.replaceAll("^/|/$", "") : StringHelper.pathBuild(filePath, "/").replaceAll("/$", "");
-						list.addAll(loadResourcesInFileSystem(entryName, fileExt, include, exclude));
+						//String entryName = PlatformHelper.isWindows() ? StringHelper.pathBuild(filePath, "/")
+						//		.replaceAll("^/|/$", "") : StringHelper.pathBuild(filePath, "/").replaceAll("/$", "");
+						list.addAll(loadResourcesInFileSystem(url.toString(), fileExt, include, exclude));
 					}
 				}
 			}
@@ -164,7 +171,12 @@ public class ResourceHelper {
 			final String include, final String exclude) {
 		Set<String> list = new LinkedHashSet<String>(64);
 		java.util.LinkedList<File> linked = new java.util.LinkedList<File>();
-		linked.add(new File(resPath));
+		try {
+			String urlPath = fixUrl(resPath.startsWith("file:") ? resPath : ("file://" + resPath));
+			linked.add(new File(new URL(urlPath).toURI()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		File file = null;
 		while ((file = linked.pollLast()) != null) {
 			if (!file.exists()) {
@@ -195,7 +207,7 @@ public class ResourceHelper {
 				if (exclude != null && exclude.length() > 0 && wildCardMatch(entryName, exclude)) {
 					continue;
 				}
-				list.add(entryName);
+				list.add(entryName.startsWith("/") ? ("file://" + entryName) : ("file:///" + entryName));
 			}
 		}
 		List<String> result = new ArrayList<String>();
@@ -227,6 +239,10 @@ public class ResourceHelper {
 			text = text.substring(idx + card.length());
 		}
 		return true;
+	}
+
+	public static String fixUrl(String urlString) {
+		return StringHelper.fixUrl(urlString);
 	}
 
 	public static void main(String[] args) {

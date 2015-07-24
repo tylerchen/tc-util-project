@@ -39,7 +39,7 @@ class TCIniter{
 class TCStarts{
 	def start(){
 		def list=TCCache.me().framework.starts// data structure=[instance,method]
-		list.each(){
+		list.each{
 			def final start=it
 			Thread.start{
 				TCHelper.debug('[TCStarts]: {0}',start)
