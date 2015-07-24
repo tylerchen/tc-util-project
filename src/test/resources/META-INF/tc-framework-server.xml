@@ -1,0 +1,31 @@
+<server>
+	<containers>
+		<container name="test"
+			groovy_path="file:///media/新加卷/workspace/JeeGalileo/tc-util-project2/src/main/resources/META-INF/tc-framework4/"
+			port="8080"
+			type="web"
+			web_dir="file:///media/新加卷/workspace/JeeGalileo/tc-util-project2/src/test/resources/webapp/">
+			<!-- container: the same as groovy classloader, a TCCLassManager instance 
+				will be treat as a container. name: if name is not specify, default value 
+				is "default". -->
+			<resources>
+				<resource name="db1" type="database" />
+				<!-- resource: define public resource for all application. -->
+			</resources>
+			<applications>
+				<application name="app1" type="web">
+					<settings>
+						<setting name="setting1" type="string" />
+					</settings>
+					<modules>
+						<module name="m1" type="service">
+							<actions>
+								<action name="act1" type="bean" />
+							</actions>
+						</module>
+					</modules>
+				</application>
+			</applications>
+		</container>
+	</containers>
+</server>
