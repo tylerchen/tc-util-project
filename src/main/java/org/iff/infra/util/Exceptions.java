@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2014-3-14 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-3-14 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
 /**
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-3-14
  */
 public class Exceptions {
@@ -18,7 +18,7 @@ public class Exceptions {
 	 * @param message you can use com.foreveross.infra.util.FormatableCharSequence.get
 	 * @param t
 	 * @throws Exception
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-3-14
 	 */
 	public static void exception(CharSequence message, Throwable t)
@@ -34,7 +34,7 @@ public class Exceptions {
 	 * throw Exception without Throwable error
 	 * @param message you can use com.foreveross.infra.util.FormatableCharSequence.get
 	 * @throws Exception
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-3-14
 	 */
 	public static void exception(CharSequence message) throws Exception {
@@ -45,7 +45,7 @@ public class Exceptions {
 	 * throw RuntimeException with Throwable error
 	 * @param message you can use com.foreveross.infra.util.FormatableCharSequence.get
 	 * @param t
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-3-14
 	 */
 	public static void runtime(CharSequence message, Throwable t) {
@@ -60,7 +60,7 @@ public class Exceptions {
 	/**
 	 * throw RuntimeException without Throwable error
 	 * @param message you can use com.foreveross.infra.util.FormatableCharSequence.get
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-3-14
 	 */
 	public static void runtime(CharSequence message) {

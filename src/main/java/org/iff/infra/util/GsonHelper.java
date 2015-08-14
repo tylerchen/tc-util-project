@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2013-2-28 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2013-2-28 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 /**
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2013-2-28
  */
 @SuppressWarnings("unchecked")
@@ -39,7 +39,7 @@ public class GsonHelper {
 	 * @param map
 	 * @param namePath properties split by dot '.', such as: rule.ruleName.
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2013-2-28
 	 */
 	public static <T> T accessMap(Map map, String namePath) {

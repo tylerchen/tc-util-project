@@ -1,13 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2011-12-7 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2011-12-7 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
@@ -15,7 +18,7 @@ import java.net.Socket;
 
 /**
  * A socket util.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2011-12-7
  */
 public class SocketHelper {
@@ -25,7 +28,7 @@ public class SocketHelper {
 	 * @param ip
 	 * @param port
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static boolean test(String ip, int port) {
@@ -50,16 +53,46 @@ public class SocketHelper {
 	 * @param is
 	 * @param notClose
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String getContent(InputStream is, boolean notClose) {
-		StringBuilder sb = new StringBuilder(128);
+		StringBuilder sb = new StringBuilder(102400);
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-			String line = null;
-			while ((line = br.readLine()) != null) {
-				sb.append(line).append("\n");
+			char[] cs = new char[102400];
+			int len = -1;
+			while ((len = br.read(cs)) != -1) {
+				sb.append(cs, 0, len);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (!notClose) {
+					is.close();
+				}
+			} catch (Exception e) {
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * get the input stream byte content.
+	 * @param is
+	 * @param notClose
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
+	public static byte[] getByte(InputStream is, boolean notClose) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(102400);
+		try {
+			byte[] bs = new byte[102400];
+			int len = -1;
+			while ((len = is.read(bs)) != -1) {
+				baos.write(bs, 0, len);
 			}
 		} catch (Exception e) {
 		} finally {
@@ -70,7 +103,19 @@ public class SocketHelper {
 			} catch (Exception e) {
 			}
 		}
-		return sb.toString();
+		return baos.toByteArray();
+	}
+
+	public static void closeWithoutError(Object close) {
+		try {
+			if (close == null) {
+				return;
+			}
+			if (close instanceof Closeable) {
+				((Closeable) close).close();
+			}
+		} catch (Exception e) {
+		}
 	}
 
 	public static void main(String[] args) {

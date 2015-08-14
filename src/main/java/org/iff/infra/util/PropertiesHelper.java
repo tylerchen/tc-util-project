@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2015-4-8 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2015-4-8 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -20,7 +20,7 @@ import java.util.Map.Entry;
 
 /**
  * loading properties files and combine the properties by version.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2015-4-8
  */
 public class PropertiesHelper {
@@ -29,7 +29,7 @@ public class PropertiesHelper {
 	 * load properties files. default versionName=order.loading.configure
 	 * @param resPaths such as: [classpath://META-INF/tc-framework.properties, file:///opt/tc-framework.properties]
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-5-28
 	 */
 	public static Map<String, String> loadPropertyFiles(final String[] resPaths) {
@@ -41,7 +41,7 @@ public class PropertiesHelper {
 	 * @param resPaths such as: [classpath://META-INF/tc-framework.properties, file:///opt/tc-framework.properties]
 	 * @param versionName version name in properties file
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-5-28
 	 */
 	public static Map<String, String> loadPropertyFiles(final String[] resPaths, final String versionName) {
@@ -61,7 +61,7 @@ public class PropertiesHelper {
 	 * @param resPath properties file path, default as: classpath://META-INF/tc-framework.properties
 	 * @param versionName properties file version key name
 	 * @return properties to map
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-4-9
 	 */
 	public static Map<String, String> loadProperties(final String resPath, final String versionName) {
@@ -73,7 +73,7 @@ public class PropertiesHelper {
 	 * @param list
 	 * @param propMap
 	 * @param versionName
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-5-28
 	 */
 	private static void loadPropertyFilesFromUrl(List<String> list, Map<Long, List<Properties>> propMap,
@@ -128,7 +128,7 @@ public class PropertiesHelper {
 	 * combine all properties by version
 	 * @param propMap {version:propeties}
 	 * @param targetMap
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-5-28
 	 */
 	private static void combineProperties(Map<Long, List<Properties>> propMap, Map<String, String> targetMap) {

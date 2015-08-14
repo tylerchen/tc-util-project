@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2015-4-7 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2015-4-7 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 

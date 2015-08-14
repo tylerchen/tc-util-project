@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2014-10-10 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-10-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 /**
  * A validate helper provides a set of utility methods to validate the data.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-10-10
  */
 public class ValidateHelper {
@@ -24,7 +24,7 @@ public class ValidateHelper {
 	 * Verify whether the input is Email
 	 * @param email
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static boolean email(CharSequence email) {

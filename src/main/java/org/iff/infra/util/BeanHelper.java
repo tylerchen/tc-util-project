@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2013-1-31 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2013-1-31 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -17,7 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
  * @since 2013-1-31
  */
 @SuppressWarnings("unchecked")

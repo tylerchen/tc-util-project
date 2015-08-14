@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2014-7-3 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-7-3 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -30,7 +30,7 @@ import org.apache.http.impl.client.HttpClients;
 
 /**
  * A request helper provides a set of utility methods to process the http request.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-7-3
  */
 public class RequestHelper {
@@ -44,7 +44,7 @@ public class RequestHelper {
 	 * @param builder
 	 * @param params
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	protected static URIBuilder setParams(URIBuilder builder, Map<?, ?> params) {
@@ -60,7 +60,7 @@ public class RequestHelper {
 	 * set request header
 	 * @param method
 	 * @param header
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	protected static void setHeader(HttpRequestBase method, Map<?, ?> header) {
@@ -75,7 +75,7 @@ public class RequestHelper {
 	 * execute http method
 	 * @param method
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	protected static RequestResult executeMethod(HttpRequestBase method) {
@@ -99,7 +99,7 @@ public class RequestHelper {
 	 * @param params
 	 * @param header
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static RequestResult get(String url, Map<?, ?> params, Map<?, ?> header) {
@@ -123,7 +123,7 @@ public class RequestHelper {
 	 * @param header
 	 * @param data
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static RequestResult put(String url, Map<?, ?> params, Map<?, ?> header, String data) {
@@ -150,7 +150,7 @@ public class RequestHelper {
 	 * @param header
 	 * @param data
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static RequestResult post(String url, Map<?, ?> params, Map<?, ?> header, String data) {
@@ -176,7 +176,7 @@ public class RequestHelper {
 	 * @param params
 	 * @param header
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static RequestResult delete(String url, Map<?, ?> params, Map<?, ?> header) {
@@ -197,7 +197,7 @@ public class RequestHelper {
 	 * convert respose content to string, default charset UTF-8
 	 * @param response
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String getResponseBodyAsString(HttpResponse response) {

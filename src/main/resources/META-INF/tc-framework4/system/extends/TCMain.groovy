@@ -5,11 +5,10 @@ class TCFilter implements javax.servlet.Filter{
 	def target_prefix
 	def container_name
 	def void init(javax.servlet.FilterConfig filterConfig) throws javax.servlet.ServletException{
-		TCHelper.debug('[TCFilter Init]')
-		println "-----> ${TCCache.me()}"
-		TCCache.me().setByPath('/framework/servlet/'+container_name+'/filter_config', filterConfig)
-		TCCache.me().setByPath('/framework/servlet/'+container_name+'/servlet_context', filterConfig.servletContext)
-		container_name=filterConfig.getServletContext().getInitParameter('container_name')
+		container_name=filterConfig.getServletContext().getInitParameter('container_name') ?: 'default'
+		TCHelper.debug('[TCFilter Init][container_name={0}]', container_name)
+		TCCache.me().setByPath("/framework/servlet/${container_name}/filter_config", filterConfig)
+		TCCache.me().setByPath("/framework/servlet/${container_name}/servlet_context", filterConfig.servletContext)
 		println "filter: container_name=${container_name}"
 		target_prefix = filterConfig.getInitParameter('target_prefix') ?: ''
 		if(!handler){
@@ -53,7 +52,7 @@ class TCFilter implements javax.servlet.Filter{
 				'context':request.contextPath,
 				'resContext':request.contextPath,
 				'appContext':appContext,
-				'servletPath':request.servletPath, 'target':target, 'urlParams':[]])
+				'servletPath':request.servletPath, 'target':target, 'urlParams':[], 'container_name': container_name])
 			if(true==result){
 				return
 			}
@@ -129,20 +128,38 @@ class TCChain{
 class TCActionHandler extends TCChain{
 	def process(params){
 		def url_map=TCGetter.get_url_map()
+		def action_url_map=TCGetter.get_action_url_map(container_name)
 		def target=params?.target
-		if(!params || !target || !url_map){
+		if(!params || !target || !url_map || !action_url_map){
+			println "params=${params}"
+			println "target=${target}"
+			println "url_map=${url_map}"
+			println "action_url_map=${action_url_map}"
 			nextChain.process(params)
 			return false
 		}
 		TCHelper.debug('[ActionHandler] nextChain:{0}, target:{1}', nextChain,target)
-		def actionMap=url_map[target]
-		if(!actionMap){// target=/a/b/c split -> 1: /a/b, [c]; 2: /a, [b,c]; 3: /, [a,b,c]
+		def action_url=action_url_map[target], action_url_params=[], actionMap
+		if(!action_url){// target=/a/b/c split -> 1: /a/b, [c]; 2: /a, [b,c]; 3: /, [a,b,c]
 			def targets=target.split('\\/')
 			for(def i=targets.size()-2;i>-1;i--){
 				def t=targets[0..i].join('/')
+				action_url=action_url_map[t]
+				if(action_url){
+					action_url_params=targets[i+1..-1]
+					break
+				}
+			}
+		}
+		if(action_url_params.isEmpty()){
+			actionMap = url_map[action_url]
+		}else if(action_url){
+			def targets = action_url.split('\\/')+action_url_params
+			for(def i=targets.size()-1;i>-1;i--){
+				def t=targets[0..i].join('/')
 				actionMap=url_map[t]
 				if(actionMap){
-					params.put('urlParams',targets[i+1..-1])
+					params.put('urlParams',targets[i..-1])
 					break
 				}
 			}
@@ -150,10 +167,11 @@ class TCActionHandler extends TCChain{
 		if(actionMap){
 			def actionClazz=TCGetter.get_class_loader().loadClass(actionMap.action)
 			//test the access privileage
-			def config=TCCache.me().'config' ?: [:]
 			def key1='access.'+actionClazz.name+'.'+actionMap.method, key2='access.'+actionClazz.name+'.*'
-			if(!(config[key1]=='true'||config[key2]=='true')){
-				TCHelper.debug('access not permited: {0},{1}',actionClazz.name,config)
+			println "------------>${TCGetter.get_config(key1, container_name)}"
+			println "------------>${TCGetter.get_config(key2, container_name)}"
+			if(!(TCGetter.get_config(key1, container_name)=='true'||TCGetter.get_config(key2, container_name)=='true')){
+				TCHelper.debug('access not permited: {0},\n{1},\n{2}',actionClazz.name, [key1, key2], TCGetter.get_configs())
 				nextChain.process(params)
 				return false
 			}

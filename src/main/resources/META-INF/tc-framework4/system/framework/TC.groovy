@@ -50,14 +50,18 @@ class TCHelper{
         if(p && p.size()>0 && p[-1] in Closure){
 			def info=p.size()>1 ? p[0] : null, error=p.size()>2 ? p[1] : null
             try{
-				def level = info.size()>0 ? info[0] : 'debug', msg = info.size()>1 ? info[1] : ''
-				level = (level in ['debug', 'warn', 'info', 'error', 'trace']) ? level : 'debug'
-				TCHelper."$level"(msg, info.size()>2 ? info[2..-1] : null)
+				if(info){
+					def level = info.size()>0 ? info[0] : 'debug', msg = info.size()>1 ? info[1] : ''
+					level = (level in ['debug', 'warn', 'info', 'error', 'trace']) ? level : 'debug'
+					TCHelper."$level"(msg, info.size()>2 ? info[2..-1] : null)
+				}
                 p[-1](p)
             }catch(e){
-				def level = error?.size()>0 ? error[0] : 'debug', msg = (error?.size()>1 ? error[1] : '{0}' )
-				level = (level in ['debug', 'warn', 'info', 'error', 'trace']) ? level : 'debug'
-				TCHelper."$level"(msg, error?.size()>2 ? (error[2..-1]+[e]) : [e])
+				if(error){
+					def level = error?.size()>0 ? error[0] : 'debug', msg = (error?.size()>1 ? error[1] : '{0}' )
+					level = (level in ['debug', 'warn', 'info', 'error', 'trace']) ? level : 'debug'
+					TCHelper."$level"(msg, error?.size()>2 ? (error[2..-1]+[e]) : [e])
+				}
             }
         }
     }
@@ -193,12 +197,35 @@ class TCHelper{
 	}
 }
 
-class TCProp{}
-TCProp.metaClass.static.propertyMissing   = { String name -> TCCache.me().props.get(name)  }
-class TCConfig{}
-TCConfig.metaClass.static.propertyMissing = { String name -> TCCache.me().config.get(name) }
-
 class TCGetter{
+	def static get_props(container_name=null){
+		if(container_name==null){
+			TCCache.me().getByPath('framework/global/props', true)
+		}else{
+			TCCache.me().getByPath("framework/prop/${container_name}", true)
+		}
+	}
+	def static get_prop(name, container_name=null){
+		if(container_name==null){
+			get_props().get(name)
+		}else{
+			get_props(container_name).get(name) ?: get_props().get(name)
+		}
+	}
+	def static get_configs(container_name=null){
+		if(container_name==null){
+			TCCache.me().getByPath('framework/global/configs', true)
+		}else{
+			TCCache.me().getByPath("framework/config/${container_name}", true)
+		}
+	}
+	def static get_config(name, container_name=null){
+		if(container_name==null){
+			get_configs().get(name)
+		}else{
+			get_configs(container_name).get(name) ?: get_configs().get(name)
+		}
+	}
 	def static get_class_manager(){
 		TCCache.me().getByPath("framework/global/classmanager", true)
 	}
@@ -238,7 +265,7 @@ class TCGetter{
 	def static get_action_map(){
 		TCCache.me().getByPath("framework/global/action", true)
 	}
-	def static get_action_ins(container_name='default'){
+	def static get_action_url_map(container_name='default'){
 		TCCache.me().getByPath("framework/action/${container_name}", true)
 	}
 	def static get_action(action_name, container_name='default'){
@@ -252,17 +279,8 @@ class TCGetter{
 	def static get_url_map(){
 		TCCache.me().getByPath("framework/global/url", true)
 	}
-	def static get_url_ins(container_name='default'){
+	def static get_url_ins(container_name){
 		TCCache.me().getByPath("framework/url/${container_name}", true)
-	}
-	def static get_url(url, container_name='default'){
-		def url_map=get_url_ins(container_name)
-		def url_action = url_map.get(url)
-		if(url_action){
-			return get_class_manager().loadClass(url_action.clazz.name).newInstance()
-		}else if(container_name != 'default'){
-			return get_url(url, 'default')
-		}
 	}
 	def static get_register(){
 		TCCache.me().getByPath('framework/global/register', true)
@@ -453,10 +471,10 @@ class TCDefaultClasses{
 							TCHelper.warn('action name exists: {1}',anno_name)
 						}
 						TCHelper.debug('[parse_actions_event],process action:{0}', name)
+						action_map[anno_name]=[clazz: cls, 'action':name,'context':anno_name]
 						cls.declaredMethods.each{method->
 							def exclude=['invokeMethod','getMetaClass','setMetaClass','setProperty','getProperty']
 							def method_name=method.name, modifiers=method.modifiers, context=anno_name
-							action_map[anno_name]=[clazz: cls, 'action':name,'method':method_name,'context':context]
 							if(method_name.indexOf('$')<0 && !(method_name in exclude) && !java.lang.reflect.Modifier.isStatic(modifiers) && java.lang.reflect.Modifier.isPublic(modifiers)){
 								if('index'==method_name){
 									url_map[context]=[clazz: cls, 'action':name,'method':method_name,'context':context]
@@ -473,7 +491,7 @@ class TCDefaultClasses{
 								cls.metaClass.getConfigs={Object[] ps->
 									if((ps && ps[0]==true) || _configs==null || _configs.size()==0){
 										def prefix=name+'.'
-										TCCache.me().config.findAll{k,v->
+										TCGetter.get_configs().findAll{k,v->
 											if(k.startsWith(prefix)){
 												_configs.put(k.substring(prefix.size()),v)
 											}
@@ -786,7 +804,7 @@ class TCLifeCycleEngine{
 	}
 	def static start(){
 		def bean=TCLifeCycleEngine.get('server')
-		bean.create([map_path: 'server', node_type: 'server', node_name: ''])
+		bean.create([map_path: 'server', node_type: 'server'])
 		bean.process()
 	}
 }
@@ -794,9 +812,10 @@ class TCLifeCycleEngine{
 // @see README-lifecycle.md
 class TCLifeCycleBasic{
 	def children=[]
-	def map_path=''
-	def node_type=''
-	def node_name=''
+	def map_path
+	def node_type
+	def node_name
+	def container_name
 	def config=[:]
 	def get_data(){
 		TCCache.me().getByPath('framework/server_cfg/'+map_path) ?: [:]
@@ -805,6 +824,7 @@ class TCLifeCycleBasic{
 		map_path=cfg.map_path
 		node_type=cfg.node_type
 		node_name=cfg.node_name
+		container_name=cfg.container_name
 	}
 	def process(){
 		TCHelper.debug('TCLifeCycle.process(),{0},{1},{2}',map_path,node_name,node_type)
@@ -834,7 +854,7 @@ class TCLifeCycleBasic{
 				def node_type_child=k.indexOf('@')>-1 ? k.substring(0, k.indexOf('@')) : k
 				def node_name_child=k.indexOf('@')>-1 ? k.substring(k.indexOf('@')+1) : ''
 				def bean=TCLifeCycleEngine.get(node_type_child)
-				bean.create(['node_type': node_type_child,'node_name':node_name_child, 'map_path':map_path+'/'+k])
+				bean.create(['node_type': node_type_child,'node_name':node_name_child, 'map_path':map_path+'/'+k, 'container_name':container_name])
 				children << bean
 			}
 		}
@@ -856,6 +876,8 @@ class TCLifeCycle_container extends TCLifeCycleBasic{
 	def server
 	def create(cfg){
 		super.create(cfg)
+		def data=get_data()
+		container_name=data.name
 	}
 	def create_container(){
 		def data=get_data()
@@ -864,6 +886,7 @@ class TCLifeCycle_container extends TCLifeCycleBasic{
 			server=TCGetter.get_bean('TC_Server',node_name, true)
 			server.container_name=node_name
 			server.web_dir=data.'web_dir'
+			server.port=data.'port'?.toInteger() ?: 8080
 		}
 	}
 	def start(){
@@ -882,38 +905,33 @@ class TCLifeCycle_container extends TCLifeCycleBasic{
 		super.stop()
 	}
 }
+@TCBean(name='TC_LifeCycle_action')
+class TCLifeCycle_action extends TCLifeCycleBasic{
+	def create(cfg){
+		super.create(cfg)
+		add_action_url_map()
+	}
+	def add_action_url_map(){
+		def data=get_data()
+		def action_url_map=TCGetter.get_action_url_map(container_name)
+		action_url_map.put(data.url, data.ref_action)
+		println '--------------================>>>'
+	}
+}
 
 class TCStarter{
 	def system_properties_to_map(){
 		def map=TCHelper.prop2map(System.getProperties()){true}
-		TCCache.me().with{
-			get('props').putAll(map)
-			put("app_root", TCHelper.path_clean(map.app_root))
-		}
-		TCHelper.debug('system_properties_to_map(): {0}', TCCache.me().'props')
+		TCGetter.get_props().putAll(map)
+		TCHelper.debug('system_properties_to_map(): {0}', TCGetter.get_props())
 	}
 	def properties_file_to_map(respath, version){
-		TCCache.me().'config'.putAll(org.iff.infra.util.PropertiesHelper.loadProperties(respath, version))
-		TCHelper.debug('properties_file_to_map(): {0}', TCCache.me().'config')
+		TCGetter.get_configs().putAll(org.iff.infra.util.PropertiesHelper.loadProperties(respath, version))
+		TCHelper.debug('properties_file_to_map(): {0}', TCGetter.get_configs())
 	}
 	
-	/*00.)loading system groovy files TCFramework.groovy*/
-	def load_framework_groovy(){
-		// this lifecycle process in TCCLassManager
-		TCHelper.debug('load_framework_groovy()')
-	}
-	/*01.)loading META-INF/tc-framework.properties*/
-	def load_properties(){
-		system_properties_to_map()
-		properties_file_to_map(TCProp.tc_properties_filepath ?: 'classpath://META-INF/tc-framework.properties', TCProp.tc_properties_version ?: 'order.loading.configure')
-		TCHelper.debug('load_properties()')
-	}
-	
-	/*01.1)initialize every thing*/
+	/*00.0)initialize every thing*/
 	def init(){
-		
-		TCProp.metaClass.static.propertyMissing   = { String name -> TCCache.me().props.get(name)  }
-		TCConfig.metaClass.static.propertyMissing = { String name -> TCCache.me().config.get(name) }
 		
 		TCPathEventBus.regist('dead', TCPathEventBus.dead_event)
 		TCPathEventBus.regist('groovy_change', TCDefaultClasses.class_change_event)
@@ -928,6 +946,19 @@ class TCStarter{
 		
 		TCHelper.debug('init finished...')
 	}
+	
+	/*00.)loading system groovy files TCFramework.groovy*/
+	def load_framework_groovy(){
+		// this lifecycle process in TCCLassManager
+		TCHelper.debug('load_framework_groovy()')
+	}
+	/*01.)loading META-INF/tc-framework.properties*/
+	def load_properties(){
+		system_properties_to_map()
+		properties_file_to_map(TCGetter.get_prop('tc_properties_filepath') ?: 'classpath://META-INF/tc-framework.properties', TCGetter.get_prop('tc_properties_version') ?: 'order.loading.configure')
+		TCHelper.debug('load_properties()')
+	}
+	
 	/*01.2)framework classes*/
 	def process_framework_classes(){
 		def class_manager=TCGetter.get_class_manager()
@@ -950,7 +981,7 @@ class TCStarter{
 
 	/*02.)loading server configure from jar and filesystem*/
 	def load_server_xml(){
-		def server_xmls=TCProp.'tc_server_xml'.split(',')
+		def server_xmls=TCGetter.get_prop('tc_server_xml').split(',')
 		def xmls=[]
 		server_xmls.each{file->
 			xmls.addAll(org.iff.infra.util.ResourceHelper.loadResources(file, 'tc-framework-server.xml', '*', null))
@@ -988,6 +1019,6 @@ class TCStarter{
 		combine_server_cfg()
 		start_server()
 		TCHelper.debug('start()')
-		java.util.concurrent.TimeUnit.SECONDS.sleep(10000)
+		//java.util.concurrent.TimeUnit.SECONDS.sleep(10000)
 	}
 }

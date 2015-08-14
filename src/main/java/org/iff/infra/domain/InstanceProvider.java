@@ -1,15 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2014-7-22 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-7-22 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.domain;
 
 /**
  * the instance provider
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-7-22
  */
 public interface InstanceProvider {
@@ -19,7 +19,7 @@ public interface InstanceProvider {
 	 * @param <T>
 	 * @param beanClass
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-15
 	 */
 	<T> T getInstance(Class<T> beanClass);
@@ -30,7 +30,7 @@ public interface InstanceProvider {
 	 * @param beanClass
 	 * @param beanName
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-15
 	 */
 	<T> T getInstance(Class<T> beanClass, String beanName);
@@ -40,7 +40,7 @@ public interface InstanceProvider {
 	 * @param <T>
 	 * @param beanName
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-15
 	 */
 	<T> T getInstance(String beanName);

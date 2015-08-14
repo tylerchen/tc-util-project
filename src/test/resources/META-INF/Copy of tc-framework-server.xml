@@ -1,0 +1,55 @@
+"cls.metaClass.params=[:]                                                                                           \n"+
+"cls.metaClass._request_params=[:]                                                                                  \n"+
+"cls.metaClass._request_userAgent=[:]                                                                               \n"+
+"if(!cls.metaClass.hasMetaMethod('addUrlParam', [Object,Object] as Class[])){                                       \n"+
+"	cls.metaClass.addUrlParam={key, value->                                                                         \n"+
+"		_request_params.put(key, urlEncode(value))                                                                  \n"+
+"		delegate                                                                                                    \n"+
+"	}                                                                                                               \n"+
+"}                                                                                                                  \n"+
+"if(!cls.metaClass.hasMetaMethod('urlEncode', [Object] as Class[])){                                                \n"+
+"	cls.metaClass.urlEncode={url->                                                                                  \n"+
+"		url ? java.net.URLEncoder.encode(url,'UTF-8') : ''                                                          \n"+
+"	}                                                                                                               \n"+
+"}                                                                                                                  \n"+
+"if(!cls.metaClass.hasMetaMethod('urlDecode', [Object] as Class[])){                                                \n"+
+"	cls.metaClass.urlDecode={url->                                                                                  \n"+
+"		url ? java.net.URLDecoder.decode(url,'UTF-8') : ''                                                          \n"+
+"	}                                                                                                               \n"+
+"}                                                                                                                  \n"+
+"if(!cls.metaClass.hasMetaMethod('redirect', [Object] as Class[])){                                                 \n"+
+"	cls.metaClass.redirect={url->                                                                                   \n"+
+"		if(url && _request_params.size()>0){                                                                        \n"+
+"			if(url.endsWith('?')||url.endsWith('&')){                                                               \n"+
+"				url=url+_request_params.collect{k,v-> k+'='+v}.join('&')                                            \n"+
+"			}else if(url.indexOf('?')>-1){                                                                          \n"+
+"				url=url+'&'+_request_params.collect{k,v-> k+'='+v}.join('&')                                        \n"+
+"			}else{                                                                                                  \n"+
+"				url=url+'?'+_request_params.collect{k,v-> k+'='+v}.join('&')                                        \n"+
+"			}                                                                                                       \n"+
+"		}                                                                                                           \n"+
+"		params.response.sendRedirect(url ? url.toString() : '')                                                     \n"+
+"	}                                                                                                               \n"+
+"}                                                                                                                  \n"+
+"if(!cls.metaClass.hasMetaMethod('forward', [Object] as Class[])){                                                  \n"+
+"	cls.metaClass.forward={url->                                                                                    \n"+
+"		if(url && _request_params.size()>0){                                                                        \n"+
+"			if(url.endsWith('?')||url.endsWith('&')){                                                               \n"+
+"				url=url+_request_params.collect{k,v-> k+'='+v}.join('&')                                            \n"+
+"			}else if(url.indexOf('?')>-1){                                                                          \n"+
+"				url=url+'&'+_request_params.collect{k,v-> k+'='+v}.join('&')                                        \n"+
+"			}else{                                                                                                  \n"+
+"				url=url+'?'+_request_params.collect{k,v-> k+'='+v}.join('&')                                        \n"+
+"			}                                                                                                       \n"+
+"		}                                                                                                           \n"+
+"		params.request.getRequestDispatcher(url ? url.toString() : '').forward(params.request, params.response)     \n"+
+"	}                                                                                                               \n"+
+"}                                                                                                                  \n"+
+"if(!cls.metaClass.hasMetaMethod('userAgent', [] as Class[])){                                                      \n"+
+"	cls.metaClass.userAgent={                                                                                       \n"+
+"		if(_request_userAgent.size()<1){                                                                            \n"+
+"			_request_userAgent << org.iff.infra.util.HttpHelper.userAgent(params.request.getHeader('User-Agent'))   \n"+
+"		}                                                                                                           \n"+
+"		_request_userAgent                                                                                          \n"+
+"	}                                                                                                               \n"+
+"}                                                                                                                  \n"+

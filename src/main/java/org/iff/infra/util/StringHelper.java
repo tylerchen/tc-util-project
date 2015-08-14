@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012-11-21 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2012-11-21 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 /**
  * A string helper provides a set of utility methods to process the data.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2012-11-21
  */
 public final class StringHelper {
@@ -45,7 +45,7 @@ public final class StringHelper {
 	 * concatenate the strings. Null string convert to blank string.
 	 * @param strs
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String concat(String... strs) {
@@ -73,7 +73,7 @@ public final class StringHelper {
 	 * </pre>
 	 * @param str xml or html
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2012-7-12
 	 */
 	public static String replaceXmlChar(String str) {
@@ -109,7 +109,7 @@ public final class StringHelper {
 	 * @param replaces
 	 * @param blank
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2012-7-12
 	 */
 	public static String replaceBlock(String str, Map<String, Object> replaces, String blank) {
@@ -145,7 +145,7 @@ public final class StringHelper {
 	 * @param replaces
 	 * @param blank
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2012-7-12
 	 */
 	public static String replaceBlock(String str, Object[] replaces, String blank) {
@@ -169,7 +169,7 @@ public final class StringHelper {
 	 * concatenate strings with path separator. null value convert to blank string.
 	 * @param paths
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String pathConcat(String... paths) {
@@ -177,11 +177,15 @@ public final class StringHelper {
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
-		for (String path : paths) {
+		for (int i = 0, j = paths.length - 1; i < paths.length; i++) {
+			String path = paths[i];
 			if (path == null) {
 				path = "";
 			}
-			sb.append(path).append(getFileSeparator());
+			sb.append(path);
+			if (i != j) {
+				sb.append(getFileSeparator());
+			}
 		}
 		return pathBuild(sb.toString(), getFileSeparator());
 	}
@@ -197,7 +201,7 @@ public final class StringHelper {
 	 * @param str
 	 * @param fileSeparator
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2012-7-12
 	 */
 	public static String pathBuild(String str, String fileSeparator) {
@@ -230,7 +234,7 @@ public final class StringHelper {
 
 	/**
 	 * @return file or path separator
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String getFileSeparator() {
@@ -241,7 +245,7 @@ public final class StringHelper {
 	 * null value will return the blank string .
 	 * @param value
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String getNotNullValue(Object value) {
@@ -252,7 +256,7 @@ public final class StringHelper {
 	 * reverse the string.
 	 * @param str
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String reverse(String str) {
@@ -265,7 +269,7 @@ public final class StringHelper {
 	/**
 	 * return the uuid string , defualt is 19 length uuid. 
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String uuid() {
@@ -277,7 +281,7 @@ public final class StringHelper {
 	 * @param val
 	 * @param digits
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	private static String digits(long val, int digits) {
@@ -345,7 +349,7 @@ public final class StringHelper {
 	 * @param str
 	 * @param length
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-9-25
 	 */
 	public static String substr(String str, int length) {
@@ -366,7 +370,7 @@ public final class StringHelper {
 	 * </pre>
 	 * @param value
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-8-23
 	 */
 	public static String valueOf(Object value) {
@@ -385,7 +389,7 @@ public final class StringHelper {
 	 * encode uri, use UTF-8 charset.
 	 * @param input
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String encodeURIComponent(String input) {
@@ -414,7 +418,7 @@ public final class StringHelper {
 	 * hex encode the data.
 	 * @param buf
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String getHex(byte buf[]) {
@@ -444,7 +448,7 @@ public final class StringHelper {
 	 * </pre> 
 	 * @param urlString
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-7-16
 	 */
 	public static String fixUrl(String urlString) {

@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2013-2-14 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2013-2-14 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -16,7 +16,7 @@ import com.google.common.collect.Multimap;
 
 /**
  * A Reflect helper provides a set of utility methods to process the java class.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2013-2-14
  */
 public class ReflectHelper {
@@ -72,6 +72,19 @@ public class ReflectHelper {
 
 		try {
 			Class<?> clazz = Class.forName(className);
+			return getMethod(clazz, method, parameterTypes);
+		} catch (Exception e) {
+			Logger.error(FCS.get("[NoMethodFound] className:{0}, method:{1}, parameterTypes:{2}", className, method,
+					parameterTypes));
+		}
+		return null;
+	}
+
+	public static Method getMethod(Class clazz, String method, String... parameterTypes) {
+		try {
+			if (clazz == null) {
+				return null;
+			}
 			parameterTypes = parameterTypes == null ? new String[0] : parameterTypes;
 			for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
 				try {
@@ -99,8 +112,8 @@ public class ReflectHelper {
 				}
 			}
 		} catch (Exception e) {
-			Logger.error(FCS.get("[NoMethodFound] className:{0}, method:{1}, parameterTypes:{2}", className, method,
-					parameterTypes));
+			Logger.error(FCS.get("[NoMethodFound] className:{0}, method:{1}, parameterTypes:{2}", clazz.getName(),
+					method, parameterTypes));
 		}
 		return null;
 	}

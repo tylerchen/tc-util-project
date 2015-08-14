@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2014-8-25 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-8-25 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * A number helper to process Number.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-8-25
  */
 public class NumberHelper {
@@ -24,7 +24,7 @@ public class NumberHelper {
 	 * @param value
 	 * @param defaultValue
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static int getInt(Object value, Number defaultValue) {
@@ -37,7 +37,7 @@ public class NumberHelper {
 	 * @param value
 	 * @param defaultValue
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static long getLong(Object value, Number defaultValue) {
@@ -50,7 +50,7 @@ public class NumberHelper {
 	 * @param value
 	 * @param defaultValue
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static Number get(Object value, Number defaultValue) {

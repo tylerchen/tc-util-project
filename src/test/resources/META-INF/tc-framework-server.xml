@@ -20,7 +20,8 @@
 					<modules>
 						<module name="m1" type="service">
 							<actions>
-								<action name="act1" type="bean" />
+								<action name="act1" url="/aa" ref_action="/test"/>
+								<action name="act2" url="/bb" ref_action="/tools/file_browser"/>
 							</actions>
 						</module>
 					</modules>

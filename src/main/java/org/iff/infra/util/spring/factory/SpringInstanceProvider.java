@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2014-7-22 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-7-22 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util.spring.factory;
 
@@ -26,7 +26,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  *         </listener-class>
  *     </listener>
  * </pre>
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-7-22
  */
 public class SpringInstanceProvider implements InstanceProvider {
@@ -87,7 +87,7 @@ public class SpringInstanceProvider implements InstanceProvider {
 	 * return spring application context, if not created, using the default context provided by SpringContextHelper.
 	 * @see org.iff.infra.util.spring.SpringContextHelper
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-15
 	 */
 	public ApplicationContext getApplicationContext() {

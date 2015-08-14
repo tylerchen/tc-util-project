@@ -10,13 +10,6 @@
 	<dependencies>
 		<!-- test -->
 		<dependency>
-			<groupId>org.iff</groupId>
-			<artifactId>tc-groovy-framework</artifactId>
-			<version>1.0.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/builds/tc-util-project-test.jar</systemPath>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
@@ -242,7 +235,7 @@
 			<version>2.3.20</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- template end-->
+		<!-- template end -->
 		<!-- jdbc driver -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -251,11 +244,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- jdbc driver end -->
-		<!--
-			<dependency> <groupId>org.jasypt</groupId>
-			<artifactId>jasypt</artifactId> <version>1.9.2</version>
-			</dependency>
-		-->
+		<!-- <dependency> <groupId>org.jasypt</groupId> <artifactId>jasypt</artifactId> 
+			<version>1.9.2</version> </dependency> -->
 		<!-- spring framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -331,7 +321,7 @@
 			<version>1.2.2</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- mybatis end-->
+		<!-- mybatis end -->
 		<!-- j2ee standard -->
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -431,6 +421,16 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- encode end -->
+		<dependency>
+			<groupId>org.xeustechnologies</groupId>
+			<artifactId>jcl-core</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.beetl</groupId>
+			<artifactId>beetl-core</artifactId>
+			<version>2.2.3</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>

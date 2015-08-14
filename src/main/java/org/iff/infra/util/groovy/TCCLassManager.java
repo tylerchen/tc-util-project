@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2014-12-26 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-12-26 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util.groovy;
 
@@ -24,7 +24,7 @@ import org.iff.infra.util.Logger;
 import org.iff.infra.util.ResourceHelper;
 
 /**
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-12-26
  */
 public class TCCLassManager {
@@ -256,7 +256,7 @@ public class TCCLassManager {
 	 * find the main groovy file: system/framework/TC.groovy
 	 * @param map
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-6-29
 	 */
 	public static String scan_tc_groovy_file(Map map) {
@@ -286,7 +286,7 @@ public class TCCLassManager {
 	 * @param app_root
 	 * @param path
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-6-29
 	 */
 	public static Map scan_groovy_files_from_jar(String app_root, String path) {
@@ -317,7 +317,7 @@ public class TCCLassManager {
 	 * @param dir_root
 	 * @param subdirs
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-6-29
 	 */
 	public static Map scan_groovy_files_from_filesys(String app_root, String dir_root, List<?> subdirs) {

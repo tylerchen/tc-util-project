@@ -8,8 +8,8 @@ import java.io.*
 
 @TCAction(name="/tools/file_browser")
 class FileBrowserAction{
+	def restrict_path='$$'
 	def static config=[
-			restrict_path: TCCache.me().props.tc_file_browser_path ?: '$$',
 			file_type: [
 				'-': [css:['lib/codemirror.css','addon/hint/show-hint.css','addon/display/fullscreen.css','theme/night.css'], js:['lib/codemirror.js','addon/hint/show-hint.js','addon/display/fullscreen.js'], cfg:[lineNumbers:true,matchBrackets:true,fullScreen:true,theme:'night']],
 				'js': [css:[], js:['mode/javascript/javascript.js','addon/edit/matchbrackets.js','addon/comment/continuecomment.js','addon/comment/comment.js','addon/hint/javascript-hint.js'], cfg:[mode:'text/javascript']],
@@ -24,6 +24,7 @@ class FileBrowserAction{
 		println "params: ${params}"
 		println "params.request.contentType:${params.request.contentType}"
 		println "query string:${params.request.queryString}"
+		restrict_path=TCGetter.get_prop('tc_file_browser_path', params?.'container_name') ?: '$$'
 		def queryString=urlDecode(params.request.queryString)
 		def op, parent, path
 		queryString?.split("&").each{
@@ -39,7 +40,7 @@ class FileBrowserAction{
 			}
 		}
 		println "op=${op}, parent=${parent}, path=${path}"
-		def currentPath=config.restrict_path+(parent?"/${parent}":'')+(path?"/${path}":'')
+		def currentPath=restrict_path+(parent?"/${parent}":'')+(path?"/${path}":'')
 		currentPath=org.iff.infra.util.StringHelper.pathBuild(currentPath, '/')
 		def currentParent=(parent?"/${parent}":'')+(path?"/${path}":'')
 		currentParent=org.iff.infra.util.StringHelper.pathBuild(currentParent, '/')
@@ -357,7 +358,7 @@ class FileBrowserAction{
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		content?.split(",").each{
-			def fileName=config.restrict_path+(parent?"/${parent}":'')+(it?"/${it}":'')
+			def fileName=restrict_path+(parent?"/${parent}":'')+(it?"/${it}":'')
 			fileName=org.iff.infra.util.StringHelper.pathBuild(fileName, '/')
 			println "fileName---->${fileName}"
 			def file=new File(fileName)
@@ -371,12 +372,12 @@ class FileBrowserAction{
 		def request=parse.request, req=parse.req, response=parse.response, currentPath=parse.currentPath, currentParent=parse.currentParent
 		def contextPath=parse.contextPath, resContext=parse.resContext, op=parse.op, parent=parse.parent, path=parse.path, content=parse.content
 		def currentName=request.getParameter('currentName'), newName=request.getParameter('newName')
-		currentName=config.restrict_path+(parent?"/${parent}":'')+(currentName?"/${currentName}":'')
+		currentName=restrict_path+(parent?"/${parent}":'')+(currentName?"/${currentName}":'')
 		currentName=org.iff.infra.util.StringHelper.pathBuild(currentName, '/')
 		println "currentName---->${currentName}"
 		def file=new File(currentName)
 		if(newName && file.exists() && !file.isDirectory()){
-			def fileName=config.restrict_path+(parent?"/${parent}":'')+(newName?"/${newName}":'')
+			def fileName=restrict_path+(parent?"/${parent}":'')+(newName?"/${newName}":'')
 			fileName=org.iff.infra.util.StringHelper.pathBuild(fileName, '/')
 			println "newName---->${newName}"
 			def renameTo=new File(fileName)

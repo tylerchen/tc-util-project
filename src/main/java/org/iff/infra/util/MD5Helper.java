@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2014-8-25 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-8-25 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -11,7 +11,7 @@ import java.security.MessageDigest;
 
 /**
  * A md5 helper.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-8-25
  */
 public class MD5Helper {
@@ -19,7 +19,7 @@ public class MD5Helper {
 	 * String to md5 string
 	 * @param inStr
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String string2MD5(String inStr) {
@@ -53,7 +53,7 @@ public class MD5Helper {
 	 * encrypt md5 string
 	 * @param inStr
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static String convertMD5(String inStr) {
@@ -70,7 +70,7 @@ public class MD5Helper {
 	 * generate 32-bit md5
 	 * @param inStr
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static byte[] md5(String inStr) {

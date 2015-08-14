@@ -1,14 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2015-2-11 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2015-2-11 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
@@ -18,7 +21,7 @@ import java.util.jar.JarEntry;
 
 /**
  * Find the resources from jar or classpath or file system.
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2015-2-11
  */
 public class ResourceHelper {
@@ -35,16 +38,21 @@ public class ResourceHelper {
 	 * @param include
 	 * @param exclude
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-4-20
 	 */
 	public static List<String> loadResources(final String resPathWithProtocol, final String fileExt,
 			final String include, final String exclude) {
+		return loadResources(resPathWithProtocol, fileExt, include, exclude, ResourceHelper.class.getClassLoader());
+	}
+
+	public static List<String> loadResources(final String resPathWithProtocol, final String fileExt,
+			final String include, final String exclude, ClassLoader cl) {
 		if (resPathWithProtocol.startsWith("jar://")) {
-			return loadResourcesInJar(resPathWithProtocol.substring("jar://".length()), fileExt, include, exclude);
+			return loadResourcesInJar(resPathWithProtocol.substring("jar://".length()), fileExt, include, exclude, cl);
 		} else if (resPathWithProtocol.startsWith("classpath://")) {
 			return loadResourcesInClassPath(resPathWithProtocol.substring("classpath://".length()), fileExt, include,
-					exclude);
+					exclude, cl);
 		} else if (resPathWithProtocol.startsWith("file://")) {
 			return loadResourcesInFileSystem(resPathWithProtocol.substring("file://".length()), fileExt, include,
 					exclude);
@@ -54,12 +62,17 @@ public class ResourceHelper {
 
 	public static List<String> loadResourcesInJar(final String resPath, final String fileExt, final String include,
 			final String exclude) {
+		return loadResourcesInJar(resPath, fileExt, include, exclude, ResourceHelper.class.getClassLoader());
+	}
+
+	public static List<String> loadResourcesInJar(final String resPath, final String fileExt, final String include,
+			final String exclude, ClassLoader cl) {
 		Set<String> list = new LinkedHashSet<String>(64);
 		try {
-			Enumeration<URL> rs = ResourceHelper.class.getClassLoader().getResources(resPath);
+			Enumeration<URL> rs = cl.getResources(resPath);
 			while (rs.hasMoreElements()) {
 				URL url = rs.nextElement();//jar:file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
-				String filePath = url.getFile();//file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
+				String filePath = new URLDecoder().decode(url.getFile(), "UTF-8");//file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
 				String protocol = url.getProtocol();
 				if ("file".equals(protocol) || "jar".equals(protocol)) {
 					if (filePath.startsWith("file:")) {
@@ -104,12 +117,17 @@ public class ResourceHelper {
 
 	public static List<String> loadResourcesInClassPath(final String resPath, final String fileExt,
 			final String include, final String exclude) {
+		return loadResourcesInClassPath(resPath, fileExt, include, exclude, ResourceHelper.class.getClassLoader());
+	}
+
+	public static List<String> loadResourcesInClassPath(final String resPath, final String fileExt,
+			final String include, final String exclude, ClassLoader cl) {
 		Set<String> list = new LinkedHashSet<String>(64);
 		try {
-			Enumeration<URL> rs = ResourceHelper.class.getClassLoader().getResources(resPath);
+			Enumeration<URL> rs = cl.getResources(resPath);
 			while (rs.hasMoreElements()) {
 				URL url = rs.nextElement();
-				String filePath = url.getFile();
+				String filePath = new URLDecoder().decode(url.getFile(), "UTF-8");
 				String protocol = url.getProtocol();
 				if ("file".equals(protocol) || "jar".equals(protocol)) {
 					if (filePath.startsWith("file:")) {
@@ -164,7 +182,7 @@ public class ResourceHelper {
 	 * @param include the wild card to match the file, example: META-INF/&#42;/test.properties
 	 * @param exclude the wild card to match the file exclude, example: META-INF/&#42;_test.properties
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-4-8
 	 */
 	public static List<String> loadResourcesInFileSystem(final String resPath, final String fileExt,
@@ -215,12 +233,72 @@ public class ResourceHelper {
 		return result;
 	}
 
+	public static List<String> loadResourcesInFileSystemJar(final String resPath, final String fileExt,
+			final String include, final String exclude) {
+		Set<String> list = new LinkedHashSet<String>(64);
+		try {
+			String preDir = "";
+			{
+				int index = resPath.indexOf("!/");
+				if (index > -1) {
+					preDir = resPath.substring(index + 2, resPath.length());
+				}
+			}
+			File file = null;
+			{
+				String realPath = resPath;
+				if (resPath.startsWith("jar:")) {
+					realPath = resPath.substring(4);
+				}
+				if (realPath.indexOf("!/") > -1) {
+					realPath = realPath.substring(0, realPath.indexOf("!/"));
+				}
+				if (realPath.startsWith("file:///")) {
+					file = new File(new URL(realPath).toURI());
+				} else {
+					file = new File(realPath);
+				}
+			}
+			java.util.jar.JarFile jarFile = new java.util.jar.JarFile(file);
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
+				if (entry.isDirectory()) {
+					continue;
+				}
+				String entryName = entry.getName();
+				if (preDir.length() > 0 && !entryName.startsWith(preDir)) {
+					continue;
+				}
+				if (!(fileExt == null || fileExt.length() < 1 || "*".equals(fileExt) || entryName.endsWith(fileExt))) {
+					continue;
+				}
+				if (include != null && include.length() > 0 && !"*".equals(include)
+						&& !wildCardMatch(entryName, include)) {
+					continue;
+				}
+				if (exclude != null && exclude.length() > 0 && wildCardMatch(entryName, exclude)) {
+					continue;
+				}
+				String urlString = resPath.substring(0, resPath.lastIndexOf("!/") + 2)
+						+ entryName.replaceAll("\\\\", "/");
+				list.add(fixUrl(urlString));
+			}
+			jarFile.close();
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		}
+		List<String> result = new ArrayList<String>();
+		result.addAll(list);
+		return result;
+	}
+
 	/**
 	 * test the text match the wild char "*"
 	 * @param text    example: helloworld
 	 * @param pattern example: hell*world
 	 * @return 
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-4-8
 	 */
 	public static boolean wildCardMatch(String text, String pattern) {
@@ -245,9 +323,31 @@ public class ResourceHelper {
 		return StringHelper.fixUrl(urlString);
 	}
 
+	public static byte[] getByte(String url) {
+		try {
+			return SocketHelper.getByte(new URL(url).openStream(), false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static String getText(String url) {
+		try {
+			return SocketHelper.getContent(new URL(url).openStream(), false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public static void main(String[] args) {
-		System.out.println(loadResources("jar://META-INF/tc-framework-test", ".groovy", "*", "*/TCMain.groovy"));
-		System.out.println(loadResources("classpath://META-INF", ".groovy", "*", "*/TCMain.groovy"));
-		System.out.println(loadResources("file://g:/bak/app_root/webapp", ".xml", "", ""));
+		//System.out.println(loadResources("jar://META-INF/tc-framework-test", ".groovy", "*", "*/TCMain.groovy"));
+		//System.out.println(loadResources("classpath://META-INF", ".groovy", "*", "*/TCMain.groovy"));
+		//System.out.println(loadResources("file://media/新加卷/workspace/JeeGalileo/tc-util-project2", ".xml", "", ""));
+		System.out
+				.println(loadResourcesInFileSystemJar(
+						"jar:file:///media/新加卷/workspace/JeeGalileo/tc-util-project2/builds/tc-util-project-1.0.1.jar!/org/iff/infra/test",
+						"*", "*", null));
 	}
 }

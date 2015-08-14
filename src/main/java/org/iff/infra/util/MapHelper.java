@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2014-2-26 @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a>.
+ * Copyright (c) 2014-2-26 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
- *     <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> - initial API and implementation
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
 package org.iff.infra.util;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * A Map helper
- * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-2-26
  */
 public class MapHelper {
@@ -24,7 +24,7 @@ public class MapHelper {
 	 * </pre>
 	 * @param params
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-3-14
 	 */
 	public static Map toMap(Object... params) {
@@ -45,7 +45,7 @@ public class MapHelper {
 	 * @param map
 	 * @param params
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-3-14
 	 */
 	public static Map fillMap(Map map, Object... params) {
@@ -63,7 +63,7 @@ public class MapHelper {
 	 * @param map
 	 * @param path
 	 * @return
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static Object getByPath(Map map, String path) {
@@ -91,7 +91,7 @@ public class MapHelper {
 	 * @param map
 	 * @param path
 	 * @param value
-	 * @author <a href="mailto:iffiff1@hotmail.com">Tyler Chen</a> 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2015-2-6
 	 */
 	public static void setByPath(Map map, String path, Object value) {
