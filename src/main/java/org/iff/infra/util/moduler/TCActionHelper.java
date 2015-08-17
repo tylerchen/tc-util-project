@@ -38,6 +38,7 @@ public class TCActionHelper {
 			actionHelper.setRequest(request);
 			actionHelper.setResponse(response);
 		}
+		ThreadLocalHelper.set("actionHelper", actionHelper);
 		return actionHelper;
 	}
 

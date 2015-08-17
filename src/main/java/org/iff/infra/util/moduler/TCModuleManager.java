@@ -9,12 +9,15 @@ package org.iff.infra.util.moduler;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.iff.infra.util.FCS;
 import org.iff.infra.util.Logger;
 import org.iff.infra.util.StringHelper;
@@ -112,6 +115,9 @@ public class TCModuleManager {
 				add(name, module);
 			}
 		}
+		{//start listener
+			TCModuleReload.start(basePath);
+		}
 		return this;
 	}
 
@@ -134,6 +140,52 @@ public class TCModuleManager {
 
 	public String getBasePath() {
 		return basePath;
+	}
+
+	public static class TCModuleReload implements Runnable {
+		private Map<String, Long> fileTimestamps = new HashMap<String, Long>();
+		private String basePath;
+
+		public static TCModuleReload start(String basePath) {
+			TCModuleReload mr = new TCModuleReload();
+			mr.basePath = basePath;
+			new Thread(mr).start();
+			return mr;
+		}
+
+		public void run() {
+			while (true) {
+				try {
+					Collection<File> files = org.apache.commons.io.FileUtils.listFiles(new File(basePath),
+							TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+					for (File file : files) {
+						String absolutePath = file.getAbsolutePath();
+						long lastModified = file.lastModified();
+						if (fileTimestamps.get(absolutePath) == null) {
+							fileTimestamps.put(absolutePath, lastModified);
+						} else if (fileTimestamps.get(absolutePath).longValue() != lastModified) {
+							fileTimestamps.put(absolutePath, lastModified);
+							String substring = absolutePath.substring(basePath.length());
+							substring = substring.startsWith("/") ? substring.substring(1) : substring;
+							String moduleName = substring.substring(0, substring.indexOf('/'));
+							if (absolutePath.endsWith(".groovy") || absolutePath.endsWith(".jar")
+									|| absolutePath.endsWith(".class")) {
+								System.out.println("-------moduleName-------->" + moduleName);
+								TCModuleManager.me().reload(moduleName);
+							} else if (absolutePath.indexOf("/META-INF/resource/") > -1) {
+								String resourcePath = substring.substring(substring.indexOf("/META-INF/resource/")
+										+ "/META-INF/resource/".length());
+								System.out.println("-------resourcePath-------->" + resourcePath);
+								TCModuleManager.me().get(moduleName).reloadResource(resourcePath);
+							}
+						}
+					}
+					TimeUnit.SECONDS.sleep(5);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public static void main(String[] args) {

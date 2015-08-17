@@ -42,7 +42,7 @@ import org.xeustechnologies.jcl.ProxyClassLoader;
  * @since Aug 2, 2015
  */
 public class TCModule {
-
+	private Object lock = this;
 	private String name;
 	private String basePath;
 	private boolean commonModule = false;
@@ -73,94 +73,97 @@ public class TCModule {
 		return m;
 	}
 
-	public synchronized void load() {
-		System.out.println("----------->" + basePath);
-		try {
-			if (basePath.startsWith("jar:")) {//jar:file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
-				{// load module xml
-					List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath + "META-INF/",
-							"tcmodule.xml", "tcmodule.xml", null);
-					for (String resource : resources) {
-						XmlHelper.parseXmlToMap(moduleConfig, resource);
+	public void load() {
+		synchronized (lock) {
+			System.out.println("----------->" + basePath);
+			try {
+				if (basePath.startsWith("jar:")) {//jar:file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
+					{// load module xml
+						List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath + "META-INF/",
+								"tcmodule.xml", "tcmodule.xml", null);
+						for (String resource : resources) {
+							XmlHelper.parseXmlToMap(moduleConfig, resource);
+						}
 					}
-				}
-				{// load jar lib
-					List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath + "META-INF/lib/",
-							".jar", "*", null);
-					for (String s : resources) {
-						System.out.println("Load jar lib:" + s);
-						classLoader.add(new URL(s).openStream());
+					{// load jar lib
+						List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(
+								basePath + "META-INF/lib/", ".jar", "*", null);
+						for (String s : resources) {
+							System.out.println("Load jar lib:" + s);
+							classLoader.add(new URL(s).openStream());
+						}
 					}
-				}
-				{// load classes
-					classLoader.add(basePath.substring("jar:file://".length(), basePath.length() - 2));
-				}
-				{// load resource
-					String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/",
-							"META-INF/resource/");
-					List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath
-							+ "META-INF/resource/", "*", "*", null);
-					for (String url : resources) {
-						if (url.startsWith(resDir)) {
-							resourceMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
+					{// load classes
+						classLoader.add(basePath.substring("jar:file://".length(), basePath.length() - 2));
+					}
+					{// load resource
+						String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/",
+								"META-INF/resource/");
+						List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath
+								+ "META-INF/resource/", "*", "*", null);
+						for (String url : resources) {
+							if (url.startsWith(resDir)) {
+								resourceMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
+							}
+						}
+					}
+					{// load groovy
+						String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/",
+								"META-INF/groovy/");
+						List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath
+								+ "META-INF/groovy/", ".groovy", "*", null);
+						for (String url : resources) {
+							if (url.startsWith(resDir)) {
+								groovyMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
+							}
+						}
+					}
+				} else if (basePath.startsWith("file:")) {
+					{// load module xml
+						String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/", "META-INF/");
+						List<String> resources = ResourceHelper.loadResources(resDir, "tcmodule.xml", "tcmodule.xml",
+								null);
+						for (String resource : resources) {
+							XmlHelper.parseXmlToMap(moduleConfig, resource);
+						}
+					}
+					{// load jar lib
+						List<String> resources = ResourceHelper.loadResources(basePath, ".jar", "*", null);
+						for (String s : resources) {
+							classLoader.add(new URL(s).openStream());
+						}
+					}
+					{// load classes
+						classLoader.add(new URL(basePath));
+					}
+					{// load resources
+						String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/",
+								"META-INF/resource/");
+						List<String> resources = ResourceHelper.loadResources(resDir, "*", "*", null);
+						for (String url : resources) {
+							if (url.startsWith(resDir)) {
+								resourceMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
+							}
+						}
+					}
+					{// load groovy
+						String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/",
+								"META-INF/groovy/");
+						List<String> resources = ResourceHelper.loadResources(resDir, ".groovy", "*", null);
+						for (String url : resources) {
+							if (url.startsWith(resDir)) {
+								groovyMap.put(url, MapHelper.toMap("url", url));
+							}
 						}
 					}
 				}
-				{// load groovy
-					String resDir = StringHelper
-							.concat(basePath, basePath.endsWith("/") ? "" : "/", "META-INF/groovy/");
-					List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath + "META-INF/groovy/",
-							".groovy", "*", null);
-					for (String url : resources) {
-						if (url.startsWith(resDir)) {
-							groovyMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
-						}
-					}
-				}
-			} else if (basePath.startsWith("file:")) {
-				{// load module xml
-					String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/", "META-INF/");
-					List<String> resources = ResourceHelper.loadResources(resDir, "tcmodule.xml", "tcmodule.xml", null);
-					for (String resource : resources) {
-						XmlHelper.parseXmlToMap(moduleConfig, resource);
-					}
-				}
-				{// load jar lib
-					List<String> resources = ResourceHelper.loadResources(basePath, ".jar", "*", null);
-					for (String s : resources) {
-						classLoader.add(new URL(s).openStream());
-					}
-				}
-				{// load classes
-					classLoader.add(new URL(basePath));
-				}
-				{// load resources
-					String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/",
-							"META-INF/resource/");
-					List<String> resources = ResourceHelper.loadResources(resDir, "*", "*", null);
-					for (String url : resources) {
-						if (url.startsWith(resDir)) {
-							resourceMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
-						}
-					}
-				}
-				{// load groovy
-					String resDir = StringHelper
-							.concat(basePath, basePath.endsWith("/") ? "" : "/", "META-INF/groovy/");
-					List<String> resources = ResourceHelper.loadResources(resDir, ".groovy", "*", null);
-					for (String url : resources) {
-						if (url.startsWith(resDir)) {
-							groovyMap.put(url, MapHelper.toMap("url", url));
-						}
-					}
-				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			initGroovy();
+			initBeans();
+			initActions();
 		}
-		initGroovy();
-		initBeans();
-		initActions();
 	}
 
 	protected void initGroovy() {
@@ -344,24 +347,40 @@ public class TCModule {
 		}
 	}
 
-	public synchronized void reload() {
-		try {
-			System.out.println("On Reload........");
-			resourceMap.clear();
-			groovyMap.clear();
-			beans.clear();
-			actions.clear();
-			classLoader = new JarClassLoader();
-			if (groovyLoader != null) {
-				SocketHelper.closeWithoutError(groovyLoader.getClassLoader());
+	public void reload() {
+		synchronized (lock) {
+			try {
+				System.out.println("On Reload........");
+				resourceMap.clear();
+				groovyMap.clear();
+				beans.clear();
+				actions.clear();
+				classLoader = new JarClassLoader();
+				if (groovyLoader != null) {
+					SocketHelper.closeWithoutError(groovyLoader.getClassLoader());
+				}
+				groovyLoader = null;
+				moduleConfig.clear();
+				load();
+				System.out.println("Reload Finished.");
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			groovyLoader = null;
-			moduleConfig.clear();
-			load();
-			System.out.println("Reload Finished.");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+	}
+
+	public TCModule reloadResource(String resourcePath) {
+		Map map = resourceMap.get(resourcePath);
+		if (map != null) {
+			map.put("text", null);
+			map.put("byte", null);
+		} else if (!isCommonModule()) {
+			TCModule module = TCModuleManager.me().getCommonModule();
+			if (module != null) {
+				module.reload();
+			}
+		}
+		return this;
 	}
 
 	public String getResource(String resourcePath) {
