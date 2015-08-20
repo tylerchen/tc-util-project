@@ -16,6 +16,7 @@ import java.util.Arrays;
 /**
  * A scroll-able byte array output stream for holding the recently content, specially for console output. 
  * double buffer design to reduce the array copy times.
+ * default 10MBytes buffer.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2015-2-17
  */

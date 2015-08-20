@@ -18,11 +18,35 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * <pre>
+ * parse xml file to map structure.
+ * usage:
+ * parseXmlToMap(new LinkedHashMap(), "file:///path/to/xml.xml")
+ * OR
+ * parseXmlToMap(new LinkedHashMap(), "/path/to/xml.xml")
+ * example:
+ * 1. xml file
+ *   <root><nodes><node name="a"><html>htmlcontent</html></node><node name="b" type="c"></node></nodes></root>
+ * 2. convert to map:
+ *   {root : {nodes : {node@a: {name:a, html: htmlcontent, node@b: {name: b, type: c}}}}}
+ * SO:
+ * a) the same element MUST contains a "name" property, and "name" property value can not contain "@" character
+ * b) if a element contains a no property element, such as "html", will treat as a property of parent element. 
+ * c) if you pass the same map to the parameter map, and invoke many times, the map value will be overwrite.
+ * </pre>
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Aug 11, 2015
  */
 public class XmlHelper {
 
+	/**
+	 * parse the xml structure to map.
+	 * @param xml you can pass the exists map or null value.
+	 * @param file file path, can start with "file://" or just the file system path.
+	 * @return xml file map structure.
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Aug 18, 2015
+	 */
 	public static Map parseXmlToMap(Map xml, String file) {
 		try {
 			xml = xml == null ? new LinkedHashMap() : xml;

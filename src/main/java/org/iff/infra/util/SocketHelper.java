@@ -18,6 +18,15 @@ import java.net.Socket;
 
 /**
  * A socket util.
+ * <pre>
+ * Usage:
+ * 1) test("localhost", 80): if return true, the port is accessable.
+ * b) getContent(new FileInputStream(file), false): return the text read from input stream with utf-8 encoding, 
+ * and close input stream after reading.
+ * c) getByte(new FileInputStream(file), false): return the bytes read from input stream, 
+ * and close input stream after reading.
+ * d) closeWithoutError(Closeable close): close object implements Closeable without throw Exception event pass the nullable value.
+ * </pre>
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2011-12-7
  */
@@ -40,10 +49,7 @@ public class SocketHelper {
 		} catch (Exception e) {
 			System.out.println(e);
 		} finally {
-			try {
-				client.close();
-			} catch (Exception e) {
-			}
+			closeWithoutError(client);
 		}
 		return false;
 	}
@@ -106,6 +112,12 @@ public class SocketHelper {
 		return baos.toByteArray();
 	}
 
+	/**
+	 * close the Closeable object, without any exception.
+	 * @param close
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Aug 18, 2015
+	 */
 	public static void closeWithoutError(Object close) {
 		try {
 			if (close == null) {

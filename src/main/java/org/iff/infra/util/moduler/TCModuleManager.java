@@ -8,14 +8,13 @@
 package org.iff.infra.util.moduler;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.iff.infra.util.FCS;
@@ -27,6 +26,8 @@ import org.iff.infra.util.StringHelper;
  * @since Aug 2, 2015
  */
 public class TCModuleManager {
+	/** read write lock to prevent reading when writing data. **/
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private static TCModuleManager me;
 
 	private Map<String, TCModule> moduleManager = new LinkedHashMap<String, TCModule>();
@@ -50,90 +51,128 @@ public class TCModuleManager {
 	}
 
 	public TCModuleManager add(String name, TCModule module) {
-		if (moduleManager.containsKey(name)) {
-			Logger.warn(FCS.get("Module name:{0}, is exists!", name));
+		try {
+			lock.writeLock().lock();
+			if (moduleManager.containsKey(name)) {
+				Logger.warn(FCS.get("Module name:{0}, is exists!", name));
+			}
+			moduleManager.put(name, module);
+		} finally {
+			lock.writeLock().unlock();
 		}
-		moduleManager.put(name, module);
 		return this;
 	}
 
 	public String[] getModules() {
-		return moduleManager.keySet().toArray(new String[0]);
+		try {
+			lock.readLock().lock();
+			return moduleManager.keySet().toArray(new String[0]);
+		} finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	public TCModuleManager load() {
-		File file = new File(basePath);
-		{// load commond module
-			File f = new File(file, "commonModule");
-			String name = "commonModule";
-			if (f.exists() && f.isDirectory()) {
-				TCModule module = TCModule.create(
-						name,
-						StringHelper.concat("file://", basePath.startsWith("/") ? "" : "/", basePath,
-								basePath.endsWith("/") ? "" : "/", name));
-				module.load();
-				add(name, module);
-			} else {
-				f = new File(file, "commonModule.jar");
-				if (f.exists() && f.isFile()) {
-					TCModule module = TCModule.create(
-							name,
-							StringHelper.concat("jar:file://", basePath.startsWith("/") ? "" : "/", basePath,
-									basePath.endsWith("/") ? "" : "/", name, ".jar!/"));
-					module.load();
-					add(name, module);
-				} else {
+		try {
+			lock.writeLock().lock();
+			File file = new File(basePath);
+			{// load commond module
+				File f = new File(file, "commonModule");
+				String name = "commonModule";
+				if (f.exists() && f.isDirectory()) {
 					TCModule module = TCModule.create(
 							name,
 							StringHelper.concat("file://", basePath.startsWith("/") ? "" : "/", basePath,
 									basePath.endsWith("/") ? "" : "/", name));
 					module.load();
 					add(name, module);
+				} else {
+					f = new File(file, "commonModule.jar");
+					if (f.exists() && f.isFile()) {
+						TCModule module = TCModule.create(name, StringHelper.concat("jar:file://",
+								basePath.startsWith("/") ? "" : "/", basePath, basePath.endsWith("/") ? "" : "/", name,
+								".jar!/"));
+						module.load();
+						add(name, module);
+					} else {
+						TCModule module = TCModule.create(
+								name,
+								StringHelper.concat("file://", basePath.startsWith("/") ? "" : "/", basePath,
+										basePath.endsWith("/") ? "" : "/", name));
+						module.load();
+						add(name, module);
+					}
 				}
 			}
-		}
-		for (File f : file.listFiles()) {
-			String name = f.getName();
-			boolean isCommonModule = "commonModule".equals(name) || "commonModule.jar".equals(name);
-			if (isCommonModule) {
-				continue;
+			for (File f : file.listFiles()) {
+				String name = f.getName();
+				boolean isCommonModule = "commonModule".equals(name) || "commonModule.jar".equals(name);
+				if (isCommonModule) {
+					continue;
+				}
+				if (f.isDirectory()) {
+					TCModule module = TCModule.create(
+							name,
+							StringHelper.concat("file://", basePath.startsWith("/") ? "" : "/", basePath,
+									basePath.endsWith("/") ? "" : "/", name));
+					module.load();
+					add(name, module);
+				} else if (f.isFile() && name.endsWith(".jar")) {
+					name = name.substring(0, name.length() - 4);
+					TCModule module = TCModule.create(
+							name,
+							StringHelper.concat("jar:file://", basePath.startsWith("/") ? "" : "/", basePath,
+									basePath.endsWith("/") ? "" : "/", name, ".jar!/"));
+					module.load();
+					add(name, module);
+				}
 			}
-			if (f.isDirectory()) {
-				TCModule module = TCModule.create(
-						name,
-						StringHelper.concat("file://", basePath.startsWith("/") ? "" : "/", basePath,
-								basePath.endsWith("/") ? "" : "/", name));
-				module.load();
-				add(name, module);
-			} else if (f.isFile() && name.endsWith(".jar")) {
-				name = name.substring(0, name.length() - 4);
-				TCModule module = TCModule.create(
-						name,
-						StringHelper.concat("jar:file://", basePath.startsWith("/") ? "" : "/", basePath,
-								basePath.endsWith("/") ? "" : "/", name, ".jar!/"));
-				module.load();
-				add(name, module);
+			{//start listener
+				TCModuleReload.start(basePath);
 			}
-		}
-		{//start listener
-			TCModuleReload.start(basePath);
+		} finally {
+			lock.writeLock().unlock();
 		}
 		return this;
 	}
 
-	public TCModule reload(String name) {
-		TCModule module = moduleManager.get(name);
-		if (module != null) {
-			module.reload();
+	public TCModuleManager reload() {
+		try {
+			lock.writeLock().lock();
+			for (TCModule module : moduleManager.values()) {
+				module.release();
+			}
+			moduleManager.clear();
+			load();
+		} finally {
+			lock.writeLock().unlock();
 		}
-		return module;
+		return this;
+	}
+
+	public TCModuleManager reload(String name) {
+		try {
+			lock.writeLock().lock();
+			TCModule module = moduleManager.get(name);
+			if (module != null) {
+				module.reload();
+			}
+		} finally {
+			lock.writeLock().unlock();
+		}
+		return this;
 	}
 
 	public TCModule getCommonModule() {
-		for (Entry<String, TCModule> entry : moduleManager.entrySet()) {
-			if (entry.getValue().isCommonModule()) {
-				return entry.getValue();
+		try {
+			lock.readLock().lock();
+			for (Entry<String, TCModule> entry : moduleManager.entrySet()) {
+				if (entry.getValue().isCommonModule()) {
+					return entry.getValue();
+				}
 			}
+		} finally {
+			lock.readLock().unlock();
 		}
 		return null;
 	}

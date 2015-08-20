@@ -53,8 +53,6 @@ public class TCActionHandler {
 						Object value = actionInvoker.invoke(new Object[0]);
 						if (value != null && value instanceof TCRender) {
 							((TCRender) value).render();
-						} else {
-							writer.write("<html><body><h1>" + value + "</h1></body></html>");
 						}
 					} catch (Exception e) {
 						e.printStackTrace(writer);

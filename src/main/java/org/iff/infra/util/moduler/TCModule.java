@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -42,7 +43,7 @@ import org.xeustechnologies.jcl.ProxyClassLoader;
  * @since Aug 2, 2015
  */
 public class TCModule {
-	private Object lock = this;
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private String name;
 	private String basePath;
 	private boolean commonModule = false;
@@ -73,8 +74,31 @@ public class TCModule {
 		return m;
 	}
 
+	public void release() {
+		try {
+			lock.writeLock().lock();
+			System.out.println("On release........");
+			resourceMap.clear();
+			groovyMap.clear();
+			beans.clear();
+			actions.clear();
+			classLoader = new JarClassLoader();
+			if (groovyLoader != null) {
+				SocketHelper.closeWithoutError(groovyLoader.getClassLoader());
+			}
+			groovyLoader = null;
+			moduleConfig.clear();
+			System.out.println("Release Finished.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
 	public void load() {
-		synchronized (lock) {
+		try {
+			lock.writeLock().lock();
 			System.out.println("----------->" + basePath);
 			try {
 				if (basePath.startsWith("jar:")) {//jar:file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
@@ -163,6 +187,8 @@ public class TCModule {
 			initGroovy();
 			initBeans();
 			initActions();
+		} finally {
+			lock.writeLock().unlock();
 		}
 	}
 
@@ -238,7 +264,7 @@ public class TCModule {
 					//[clazz: cls, class_name: name, name: anno_name, order: anno_order, url:events.file_struct.url, instance: null]
 					beans.put(annotation.name(), MapHelper.toMap("className", clazz.getName(), "name",
 							annotation.name(), "order", annotation.order(), "instance", null));
-					System.out.println(beans.get(annotation.name()));
+					//System.out.println(beans.get(annotation.name()));
 				}
 			}
 		} catch (Exception e) {
@@ -250,7 +276,7 @@ public class TCModule {
 				if (!key.endsWith(".class")) {
 					continue;
 				}
-				System.out.println(key.substring(0, key.length() - 6).replaceAll("/", "."));
+				//System.out.println(key.substring(0, key.length() - 6).replaceAll("/", "."));
 				String className = key.substring(0, key.length() - 6).replaceAll("/", ".");
 				Class<?> clazz = classLoader.loadClass(className, false);
 				TCBean annotation = clazz.getAnnotation(TCBean.class);
@@ -282,6 +308,9 @@ public class TCModule {
 								true, "setProperty", true, "getProperty", true);
 						String name = method.getName();
 						int modifiers = method.getModifiers();
+						if (name.indexOf("$") > -1) {
+							continue;
+						}
 						if (exclude.containsKey(name)) {
 							continue;
 						}
@@ -302,7 +331,7 @@ public class TCModule {
 						}
 					}
 					actions.put(annotation.name(), url);
-					System.out.println(actions.get(annotation.name()));
+					//System.out.println(actions.get(annotation.name()));
 				}
 			}
 		} catch (Exception e) {
@@ -314,7 +343,7 @@ public class TCModule {
 				if (!key.endsWith(".class")) {
 					continue;
 				}
-				System.out.println(key.substring(0, key.length() - 6).replaceAll("/", "."));
+				//System.out.println(key.substring(0, key.length() - 6).replaceAll("/", "."));
 				String className = key.substring(0, key.length() - 6).replaceAll("/", ".");
 				Class<?> clazz = classLoader.loadClass(className, false);
 				TCAction annotation = clazz.getAnnotation(TCAction.class);
@@ -328,6 +357,9 @@ public class TCModule {
 							true, "setProperty", true, "getProperty", true);
 					String name = method.getName();
 					int modifiers = method.getModifiers();
+					if (name.indexOf("$") > -1) {
+						continue;
+					}
 					if (exclude.containsKey(name)) {
 						continue;
 					}
@@ -348,169 +380,210 @@ public class TCModule {
 	}
 
 	public void reload() {
-		synchronized (lock) {
-			try {
-				System.out.println("On Reload........");
-				resourceMap.clear();
-				groovyMap.clear();
-				beans.clear();
-				actions.clear();
-				classLoader = new JarClassLoader();
-				if (groovyLoader != null) {
-					SocketHelper.closeWithoutError(groovyLoader.getClassLoader());
-				}
-				groovyLoader = null;
-				moduleConfig.clear();
-				load();
-				System.out.println("Reload Finished.");
-			} catch (Exception e) {
-				e.printStackTrace();
+		try {
+			lock.writeLock().lock();
+			System.out.println("On Reload........");
+			resourceMap.clear();
+			groovyMap.clear();
+			beans.clear();
+			actions.clear();
+			classLoader = new JarClassLoader();
+			if (groovyLoader != null) {
+				SocketHelper.closeWithoutError(groovyLoader.getClassLoader());
 			}
+			groovyLoader = null;
+			moduleConfig.clear();
+			load();
+			System.out.println("Reload Finished.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			lock.writeLock().unlock();
 		}
 	}
 
 	public TCModule reloadResource(String resourcePath) {
-		Map map = resourceMap.get(resourcePath);
-		if (map != null) {
-			map.put("text", null);
-			map.put("byte", null);
-		} else if (!isCommonModule()) {
-			TCModule module = TCModuleManager.me().getCommonModule();
-			if (module != null) {
-				module.reload();
+		try {
+			lock.writeLock().lock();
+			Map map = resourceMap.get(resourcePath);
+			if (map != null) {
+				map.put("text", null);
+				map.put("byte", null);
+			} else if (!isCommonModule()) {
+				TCModule module = TCModuleManager.me().getCommonModule();
+				if (module != null) {
+					module.reload();
+				}
 			}
+		} finally {
+			lock.writeLock().unlock();
 		}
 		return this;
 	}
 
 	public String getResource(String resourcePath) {
-		String resource = (String) resourceMap.get(resourcePath).get("url");
-		if (resource == null && !isCommonModule()) {
-			TCModule module = TCModuleManager.me().getCommonModule();
-			if (module != null) {
-				resource = module.getResource(resourcePath);
+		try {
+			lock.readLock().lock();
+			String resource = (String) resourceMap.get(resourcePath).get("url");
+			if (resource == null && !isCommonModule()) {
+				TCModule module = TCModuleManager.me().getCommonModule();
+				if (module != null) {
+					resource = module.getResource(resourcePath);
+				}
 			}
+			return resource;
+		} finally {
+			lock.readLock().unlock();
 		}
-		return resource;
 	}
 
 	public String getResourceText(String resourcePath) {
-		Map map = resourceMap.get(resourcePath);
-		String text = null;
-		if (map != null) {
-			text = (String) map.get("text");
-			if (text == null) {
-				text = ResourceHelper.getText((String) map.get("url"));
-				map.put("text", text);
-			}
-		} else if (!isCommonModule()) {
-			TCModule module = TCModuleManager.me().getCommonModule();
-			if (module != null) {
-				text = module.getResourceText(resourcePath);
-			}
-		}
-		return text;
-	}
-
-	public byte[] getResourceByte(String resourcePath) {
-		Map map = resourceMap.get(resourcePath);
-		byte[] bs = null;
-		if (map != null) {
-			bs = (byte[]) map.get("byte");
-			if (bs == null) {
-				bs = ResourceHelper.getByte((String) map.get("url"));
-				map.put("byte", bs);
-			}
-		} else if (!isCommonModule()) {
-			TCModule module = TCModuleManager.me().getCommonModule();
-			if (module != null) {
-				bs = module.getResourceByte(resourcePath);
-			}
-		}
-		return bs;
-	}
-
-	public <T> T getBean(String name) {
-		Map map = beans.get(name);
-		Object instance = null;
-		if (map != null) {
-			instance = map.get("instance");
-			if (instance == null) {
-				instance = factory.create(classLoader, (String) map.get("className"));
-				map.put("instance", instance);
-			}
-		} else if (!isCommonModule()) {
-			TCModule module = TCModuleManager.me().getCommonModule();
-			if (module != null) {
-				instance = module.getBean(name);
-			}
-		}
-		return (T) instance;
-	}
-
-	public boolean containsActionContext(String context) {
-		boolean contains = actions.containsKey(context);
-		if (!contains) {
-			if (!isCommonModule()) {
-				TCModule module = TCModuleManager.me().getCommonModule();
-				if (module != null) {
-					contains = module.containsActionContext(context);
-				}
-			}
-		}
-		return contains;
-	}
-
-	public TCActionInvoker getAction(String context, String methodName, Map params) {
-		Map map = actions.get(context);
-		TCActionInvoker actionInvoker = null;
-		if (map != null) {
-			Method method = (Method) map.get(methodName);
-			if (method != null) {
-				actionInvoker = new TCActionInvoker(method, map.get("@className").toString(), classLoader, params);
-			}
-		} else if (!isCommonModule()) {
-			TCModule module = TCModuleManager.me().getCommonModule();
-			if (module != null) {
-				actionInvoker = module.getAction(context, methodName, params);
-			}
-		}
-		if (actionInvoker != null) {
-			params.put("actionContext", context.startsWith("/") ? context.substring(1) : context);
-		}
-		return actionInvoker;
-	}
-
-	public TCActionInvoker getAction(String target, Map params) {
-		TCActionInvoker actionInvoker = getAction(target, "index", params);
-		if (actionInvoker != null) {
-			return actionInvoker;
-		}
-		String[] split = target.split("\\/");
-		String context = target;
-		for (int i = split.length - 1; i > -1; i--) {
-			context = StringHelper.pathConcat(Arrays.copyOfRange(split, 0, i));
-			System.out.println(Arrays.toString(split) + ":Context: " + context);
-			Map map = actions.get(context);
+		try {
+			lock.writeLock().lock();
+			Map map = resourceMap.get(resourcePath);
+			String text = null;
 			if (map != null) {
-				params.put("urlParams", Arrays.copyOfRange(split, i + 1, split.length));
-				Method m = "@className".equals(split[i]) ? null : (Method) map.get(split[i]);
-				if (m != null) {
-					actionInvoker = new TCActionInvoker(m, map.get("@className").toString(), classLoader, params);
-					break;
+				text = (String) map.get("text");
+				if (text == null) {
+					text = ResourceHelper.getText((String) map.get("url"));
+					map.put("text", text);
 				}
 			} else if (!isCommonModule()) {
 				TCModule module = TCModuleManager.me().getCommonModule();
 				if (module != null) {
-					actionInvoker = module.getAction(target, params);
-					break;
+					text = module.getResourceText(resourcePath);
 				}
 			}
+			return text;
+		} finally {
+			lock.writeLock().unlock();
 		}
-		if (actionInvoker != null) {
-			params.put("actionContext", context.startsWith("/") ? context.substring(1) : context);
+	}
+
+	public byte[] getResourceByte(String resourcePath) {
+		try {
+			lock.writeLock().lock();
+			Map map = resourceMap.get(resourcePath);
+			byte[] bs = null;
+			if (map != null) {
+				bs = (byte[]) map.get("byte");
+				if (bs == null) {
+					bs = ResourceHelper.getByte((String) map.get("url"));
+					map.put("byte", bs);
+				}
+			} else if (!isCommonModule()) {
+				TCModule module = TCModuleManager.me().getCommonModule();
+				if (module != null) {
+					bs = module.getResourceByte(resourcePath);
+				}
+			}
+			return bs;
+		} finally {
+			lock.writeLock().unlock();
 		}
-		return actionInvoker;
+	}
+
+	public <T> T getBean(String name) {
+		try {
+			lock.writeLock().lock();
+			Map map = beans.get(name);
+			Object instance = null;
+			if (map != null) {
+				instance = map.get("instance");
+				if (instance == null) {
+					instance = factory.create(classLoader, (String) map.get("className"));
+					map.put("instance", instance);
+				}
+			} else if (!isCommonModule()) {
+				TCModule module = TCModuleManager.me().getCommonModule();
+				if (module != null) {
+					instance = module.getBean(name);
+				}
+			}
+			return (T) instance;
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	public boolean containsActionContext(String context) {
+		try {
+			lock.writeLock().lock();
+			boolean contains = actions.containsKey(context);
+			if (!contains) {
+				if (!isCommonModule()) {
+					TCModule module = TCModuleManager.me().getCommonModule();
+					if (module != null) {
+						contains = module.containsActionContext(context);
+					}
+				}
+			}
+			return contains;
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	public TCActionInvoker getAction(String context, String methodName, Map params) {
+		try {
+			lock.writeLock().lock();
+			Map map = actions.get(context);
+			TCActionInvoker actionInvoker = null;
+			if (map != null) {
+				Method method = (Method) map.get(methodName);
+				if (method != null) {
+					actionInvoker = new TCActionInvoker(method, map.get("@className").toString(), classLoader, params);
+				}
+			} else if (!isCommonModule()) {
+				TCModule module = TCModuleManager.me().getCommonModule();
+				if (module != null) {
+					actionInvoker = module.getAction(context, methodName, params);
+				}
+			}
+			if (actionInvoker != null) {
+				params.put("actionContext", context.startsWith("/") ? context.substring(1) : context);
+			}
+			return actionInvoker;
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	public TCActionInvoker getAction(String target, Map params) {
+		try {
+			lock.writeLock().lock();
+			TCActionInvoker actionInvoker = getAction(target, "index", params);
+			if (actionInvoker != null) {
+				return actionInvoker;
+			}
+			String[] split = target.split("\\/");
+			String context = target;
+			for (int i = split.length - 1; i > -1; i--) {
+				context = StringHelper.pathConcat(Arrays.copyOfRange(split, 0, i));
+				//System.out.println(Arrays.toString(split) + ":Context: " + context);
+				Map map = actions.get(context);
+				if (map != null) {
+					params.put("urlParams", Arrays.copyOfRange(split, i + 1, split.length));
+					Method m = "@className".equals(split[i]) ? null : (Method) map.get(split[i]);
+					if (m != null) {
+						actionInvoker = new TCActionInvoker(m, map.get("@className").toString(), classLoader, params);
+						break;
+					}
+				} else if (!isCommonModule()) {
+					TCModule module = TCModuleManager.me().getCommonModule();
+					if (module != null) {
+						actionInvoker = module.getAction(target, params);
+						break;
+					}
+				}
+			}
+			if (actionInvoker != null) {
+				params.put("actionContext", context.startsWith("/") ? context.substring(1) : context);
+			}
+			return actionInvoker;
+		} finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	public static class TCActionInvoker {
@@ -655,19 +728,39 @@ public class TCModule {
 	}
 
 	public JarClassLoader getClassLoader() {
-		return classLoader;
+		try {
+			lock.writeLock().lock();
+			return classLoader;
+		} finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	public JclObjectFactory getFactory() {
-		return factory;
+		try {
+			lock.writeLock().lock();
+			return factory;
+		} finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	public Map<String, Map> getBeans() {
-		return beans;
+		try {
+			lock.writeLock().lock();
+			return beans;
+		} finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	public Map<String, Map> getActions() {
-		return actions;
+		try {
+			lock.writeLock().lock();
+			return actions;
+		} finally {
+			lock.writeLock().unlock();
+		}
 	}
 
 	public static final String actionMethod = ""
