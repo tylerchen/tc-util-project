@@ -262,8 +262,10 @@ public class TCModule {
 						continue;
 					}
 					//[clazz: cls, class_name: name, name: anno_name, order: anno_order, url:events.file_struct.url, instance: null]
-					beans.put(annotation.name(), MapHelper.toMap("className", clazz.getName(), "name",
-							annotation.name(), "order", annotation.order(), "instance", null));
+					beans.put(
+							annotation.name(),
+							MapHelper.toMap("className", clazz.getName(), "name", annotation.name(), "type",
+									annotation.type(), "order", annotation.order(), "instance", null));
 					//System.out.println(beans.get(annotation.name()));
 				}
 			}
@@ -284,8 +286,8 @@ public class TCModule {
 					continue;
 				}
 				//[clazz: cls, class_name: name, name: anno_name, order: anno_order, url:events.file_struct.url, instance: null]
-				beans.put(annotation.name(), MapHelper.toMap("className", className, "name", annotation.name(),
-						"order", annotation.order(), "instance", null));
+				beans.put(annotation.name(), MapHelper.toMap("className", className, "name", annotation.name(), "type",
+						annotation.type(), "order", annotation.order(), "instance", null));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

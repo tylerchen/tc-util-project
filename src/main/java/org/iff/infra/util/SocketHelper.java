@@ -8,7 +8,6 @@
 package org.iff.infra.util;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.InputStream;

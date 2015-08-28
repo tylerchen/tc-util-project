@@ -8,7 +8,10 @@
 package org.iff.infra.util.moduler;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -23,9 +26,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.iff.infra.util.ContentType;
 import org.iff.infra.util.MapHelper;
+import org.iff.infra.util.ReflectHelper;
+import org.iff.infra.util.RegisterHelper;
 import org.iff.infra.util.SocketHelper;
 import org.iff.infra.util.StringHelper;
 import org.iff.infra.util.moduler.TCActionHandler.TCChain;
+import org.iff.infra.util.moduler.TCRenderManager.TCRender;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -63,6 +69,10 @@ public class TCFilter implements Filter {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		String target = request.getServletPath();
+		if (target.length() < 1 || "/".equals(target)) {
+			TCActionHelper.create(request, response).redirect(TCApplication.me().getProp("tc_webcome_file"));
+			return;
+		}
 		if (targetPrefix.length() > 0) {
 			if (target.length() >= targetPrefix.length()) {
 				target = target.substring(targetPrefix.length());
@@ -79,12 +89,24 @@ public class TCFilter implements Filter {
 				target = target.substring(indexOf);
 			}
 		}
+		if (moduleName.length() < 1 || (target.length() < 1 && moduleName.indexOf(".") > 0)) {
+			TCActionHelper.create(request, response).redirect(TCApplication.me().getProp("tc_webcome_file"));
+			return;
+		}
 		if (target.startsWith("/css/") || target.startsWith("/js/") || target.startsWith("/images/")) {
 			String contentType = ContentType.getContentType(target);
 			if (target.endsWith(".css") || target.endsWith(".js")) {
 				response.setContentType(contentType);
-				response.getWriter().write(TCModuleManager.me().get(moduleName).getResourceText(target.substring(1)));
+				String resourceText = TCModuleManager.me().get(moduleName).getResourceText(target.substring(1));
+				if (resourceText != null) {
+					response.getWriter().write(resourceText);
+				}
 				SocketHelper.closeWithoutError(response.getWriter());
+			} else {
+				response.setContentType(contentType);
+				response.getOutputStream().write(
+						TCModuleManager.me().get(moduleName).getResourceByte(target.substring(1)));
+				SocketHelper.closeWithoutError(response.getOutputStream());
 			}
 			return;
 		}
@@ -92,29 +114,64 @@ public class TCFilter implements Filter {
 		if (appContext.endsWith("/")) {
 			appContext = appContext.substring(0, appContext.length() - 1);
 		}
-		if (target.endsWith(".btl")) {
-			new TCRenderManager.TCBeetlRender(target, MapHelper.toMap("request", request, "response", response,
-					"context", request.getContextPath(), "appContext", appContext, "actionContext", target,
-					"servletPath", request.getServletPath(), "target", target, "urlParams", new ArrayList<String>(),
-					"filterConfig", this.filterConfig, "servletCotext", this.servletContext, "targetPrefix",
-					targetPrefix, "moduleName", moduleName)).render();
-			return;
+		// url=/app-context/target-prefix/module-context/action/method.subfix/urlparameters
+		int dotIndex = target.indexOf('.');
+		String subfix = "";
+		String view = target;
+		List<String> urlParams = new ArrayList<String>();
+		if (dotIndex > -1) {
+			int splashIndex = target.indexOf('/', dotIndex);
+			if (splashIndex > -1) {
+				subfix = target.substring(dotIndex + 1, splashIndex);
+				view = target.substring(0, splashIndex);
+				urlParams.addAll(Arrays.asList(target.substring(splashIndex + 1).split("\\/")));
+			} else {
+				subfix = target.substring(dotIndex + 1);
+			}
 		}
-		if (target.endsWith(".gsp") || target.endsWith(".ftl") || target.endsWith(".jsp")) {
+		Map params = MapHelper.toMap("request", request, "response", response, "context", request.getContextPath(),
+				"appContext", appContext, "actionContext", target, "servletPath", request.getServletPath(), "target",
+				target, "urlParams", urlParams, "filterConfig", this.filterConfig, "servletCotext",
+				this.servletContext, "targetPrefix", targetPrefix, "moduleName", moduleName);
+		if (subfix.equals("html") || subfix.equals("htm")) {
+			response.setContentType("text/html; charset=UTF-8");
+			if (render(subfix, view, params)) {
+				return;
+			}
+		} else if (subfix.equals("btl")) {
+			response.setContentType("text/html; charset=UTF-8");
+			if (!render(subfix, view, params)) {
+				new TCRenderManager.TCBeetlRender(view, params).render();
+			}
+			return;
+		} else if (subfix.equals("ftl")) {
+			response.setContentType("text/html; charset=UTF-8");
+			if (!render(subfix, view, params)) {
+				new TCRenderManager.TCFreemarkerRender(view, params).render();
+			}
+			return;
+		} else if (subfix.equals("gsp")) {
+			response.setContentType("text/html; charset=UTF-8");
+			if (!render(subfix, view, params)) {
+				new TCRenderManager.TCGroovyRender(view, params).render();
+			}
+			return;
+		} else if (subfix.equals("jsp")) {
+			response.setContentType("text/html; charset=UTF-8");
 			chain.doFilter(request, response);
 			return;
 		}
-		if (target.endsWith(".html") || target.endsWith("/") || target.indexOf(".") < 0) {
+		if (subfix.equals("html") || subfix.equals("htm") || target.endsWith("/") || target.indexOf(".") < 0) {
+			response.setContentType("text/html; charset=UTF-8");
 			if (target.endsWith("/")) {
 				target = target.substring(0, target.length() - 1);
 			}
 			if (target.endsWith(".html")) {
 				target = target.substring(0, target.length() - 5);
 			}
-			Map params = MapHelper.toMap("request", request, "response", response, "context", request.getContextPath(),
-					"appContext", appContext, "actionContext", target, "servletPath", request.getServletPath(),
-					"target", target, "urlParams", new ArrayList<String>(), "filterConfig", this.filterConfig,
-					"servletCotext", this.servletContext, "targetPrefix", targetPrefix, "moduleName", moduleName);
+			if (target.endsWith(".htm")) {
+				target = target.substring(0, target.length() - 4);
+			}
 			handler.process(params);
 			return;
 		}
@@ -125,4 +182,20 @@ public class TCFilter implements Filter {
 
 	}
 
+	public boolean render(String subfix, String target, Map params) {
+		try {
+			Object object = RegisterHelper.get("TCRender", subfix);
+			if (object != null && TCRender.class.isAssignableFrom(object.getClass())) {
+				Constructor<?> constructor = ReflectHelper.getConstructor(object.getClass(), "java.lang.String",
+						"java.util.Map");
+				if (constructor != null) {
+					TCRender render = (TCRender) constructor.newInstance(target, params);
+					render.render();
+					return true;
+				}
+			}
+		} catch (Exception e) {
+		}
+		return false;
+	}
 }

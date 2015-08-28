@@ -51,7 +51,6 @@ public class TCServer {
 					WebAppContext webApp = new WebAppContext();
 					webApp.setContextPath(getContenxt());
 					webApp.addFilter("org.iff.infra.util.moduler.TCFilter", "/*", null);
-					webApp.addServlet("groovy.servlet.TemplateServlet", "*.gsp");
 					webApp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 					webApp.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
 					// webApp.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "false"));

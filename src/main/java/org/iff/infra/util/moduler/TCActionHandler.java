@@ -54,6 +54,9 @@ public class TCActionHandler {
 						if (value != null && value instanceof TCRender) {
 							((TCRender) value).render();
 						}
+						if (response.getContentType() == null || response.getContentType().length() < 1) {
+							response.setContentType("text/html; charset=UTF-8");
+						}
 					} catch (Exception e) {
 						e.printStackTrace(writer);
 					} finally {

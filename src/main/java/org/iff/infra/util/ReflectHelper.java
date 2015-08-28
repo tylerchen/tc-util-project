@@ -39,6 +39,15 @@ public class ReflectHelper {
 	public static Constructor<?> getConstructor(String className, String... parameterTypes) {
 		try {
 			Class<?> clazz = Class.forName(className);
+			return getConstructor(clazz, parameterTypes);
+		} catch (Exception e) {
+			Logger.error(FCS.get("[NoConstructorFound] className:{0}, parameterTypes:{1}", className, parameterTypes));
+		}
+		return null;
+	}
+
+	public static Constructor<?> getConstructor(Class clazz, String... parameterTypes) {
+		try {
 			if (parameterTypes == null || parameterTypes.length < 1) {
 				try {
 					return clazz.getConstructor();
@@ -63,7 +72,8 @@ public class ReflectHelper {
 				}
 			}
 		} catch (Exception e) {
-			Logger.error(FCS.get("[NoConstructorFound] className:{0}, parameterTypes:{1}", className, parameterTypes));
+			Logger.error(FCS.get("[NoConstructorFound] className:{0}, parameterTypes:{1}", clazz.getName(),
+					parameterTypes));
 		}
 		return null;
 	}

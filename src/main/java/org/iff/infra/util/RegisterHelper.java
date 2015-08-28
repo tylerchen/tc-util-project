@@ -1,5 +1,6 @@
 package org.iff.infra.util;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class RegisterHelper {
 		if (registors == null) {
 			registors = new LinkedHashMap<String, Object>();
 		}
-		return registors;
+		return Collections.unmodifiableMap(registors);
 	}
 
 	public static Object get(String type, String name) {

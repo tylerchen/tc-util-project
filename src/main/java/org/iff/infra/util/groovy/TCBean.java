@@ -24,5 +24,7 @@ public @interface TCBean {
 
 	String name() default "";
 
+	String type() default "bean";
+
 	int order() default 0;
 }

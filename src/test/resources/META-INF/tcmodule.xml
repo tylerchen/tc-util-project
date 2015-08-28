@@ -1,2 +1,20 @@
-<tcmodule type="share">
+<tcmodule>
+	<menus>
+		<menu name="home" display-name="首页" order="1" link="">
+			<sub-menus>
+				<sub-menu name="desktop" display-name="桌面" order="1">
+					<menu-items>
+						<menu-item name="user-home" display-name="用户首页" order="1"
+							link="" />
+					</menu-items>
+				</sub-menu>
+				<sub-menu name="act-mgt" display-name="帐号管理" order="2">
+					<menu-items>
+						<menu-item name="chg-password" display-name="修改密码"
+							order="1" link="" />
+					</menu-items>
+				</sub-menu>
+			</sub-menus>
+		</menu>
+	</menus>
 </tcmodule>

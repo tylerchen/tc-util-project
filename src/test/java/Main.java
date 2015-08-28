@@ -21,6 +21,7 @@ public class Main {
 		System.setProperty("tc_context", "/");
 		System.setProperty("tc_app_path", "/home/tyler/Desktop/work-temp/test");
 		System.setProperty("tc_file_browser_path", "/home/tyler/Desktop/work-temp/test");
+		System.setProperty("tc_webcome_file", "commonModule/test");
 		TCApplication.me().loadSystemProperties().initByConf().initModule();
 	}
 

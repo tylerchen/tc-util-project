@@ -22,10 +22,17 @@ import java.util.Arrays;
  */
 public class ScrollableByteArrayOutputStream extends ByteArrayOutputStream {
 
+	/**
+	 * create buffer with 10MB (*2) size.
+	 */
 	public ScrollableByteArrayOutputStream() {
 		this(1024 * 1024 * 10 * 2);//10Mbytes // * 2 for double buffer
 	}
 
+	/**
+	 * create buffer with the size (*2).
+	 * @param size
+	 */
 	public ScrollableByteArrayOutputStream(int size) {
 		super(size * 2);// * 2 for double buffer
 	}
