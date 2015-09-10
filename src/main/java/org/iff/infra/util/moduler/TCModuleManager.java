@@ -10,13 +10,16 @@ package org.iff.infra.util.moduler;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.iff.infra.util.EventBusHelper;
 import org.iff.infra.util.FCS;
 import org.iff.infra.util.Logger;
 import org.iff.infra.util.StringHelper;
@@ -207,15 +210,29 @@ public class TCModuleManager {
 							String substring = absolutePath.substring(basePath.length());
 							substring = substring.startsWith("/") ? substring.substring(1) : substring;
 							String moduleName = substring.substring(0, substring.indexOf('/'));
+							Set<String> resourceFolders = new HashSet<String>();
 							if (absolutePath.endsWith(".groovy") || absolutePath.endsWith(".jar")
 									|| absolutePath.endsWith(".class")) {
 								System.out.println("-------moduleName-------->" + moduleName);
 								TCModuleManager.me().reload(moduleName);
+								String resourcePath = substring.substring(substring.indexOf("/META-INF/")
+										+ "/META-INF/".length());
+								resourceFolders.add(getFolder(resourcePath));
 							} else if (absolutePath.indexOf("/META-INF/resource/") > -1) {
 								String resourcePath = substring.substring(substring.indexOf("/META-INF/resource/")
-										+ "/META-INF/resource/".length());
+										+ "/META-INF/resource".length());
 								System.out.println("-------resourcePath-------->" + resourcePath);
 								TCModuleManager.me().get(moduleName).reloadResource(resourcePath);
+								resourceFolders.add(getFolder(resourcePath));
+							} else if (absolutePath.indexOf("/META-INF/I18N/") > -1) {
+								String resourcePath = substring.substring(substring.indexOf("/META-INF/I18N/")
+										+ "/META-INF/I18N".length());
+								System.out.println("-------I18N-------->" + resourcePath);
+								TCModuleManager.me().get(moduleName).reloadResource(resourcePath);
+								resourceFolders.add(getFolder(resourcePath));
+							}
+							for (String path : resourceFolders) {
+								EventBusHelper.me().asyncEvent(path, "CHANGE");
 							}
 						}
 					}
@@ -224,6 +241,10 @@ public class TCModuleManager {
 					e.printStackTrace();
 				}
 			}
+		}
+
+		private String getFolder(String resourcePath) {
+			return StringHelper.trim(StringHelper.cutOff("/" + resourcePath, "/"), "/");
 		}
 	}
 

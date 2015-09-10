@@ -9,14 +9,15 @@ package org.iff.infra.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * loading properties files and combine the properties by version.
@@ -90,7 +91,7 @@ public class PropertiesHelper {
 				Properties prop = new Properties();
 				{
 					is = new FileInputStream(file);
-					prop.load(is);
+					prop.load(new StringReader(SocketHelper.getContent(is, false)));
 				}
 				Long version = 0L;
 				{

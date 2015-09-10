@@ -66,11 +66,12 @@ public class TCFilter implements Filter {
 			ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
+		TCActionHelper actionHelper = TCActionHelper.create(request, response);
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		String target = request.getServletPath();
 		if (target.length() < 1 || "/".equals(target)) {
-			TCActionHelper.create(request, response).redirect(TCApplication.me().getProp("tc_webcome_file"));
+			actionHelper.redirect(TCApplication.me().getProp("tc_webcome_file"));
 			return;
 		}
 		if (targetPrefix.length() > 0) {
@@ -90,14 +91,19 @@ public class TCFilter implements Filter {
 			}
 		}
 		if (moduleName.length() < 1 || (target.length() < 1 && moduleName.indexOf(".") > 0)) {
-			TCActionHelper.create(request, response).redirect(TCApplication.me().getProp("tc_webcome_file"));
+			actionHelper.redirect(TCApplication.me().getProp("tc_webcome_file"));
 			return;
 		}
-		if (target.startsWith("/css/") || target.startsWith("/js/") || target.startsWith("/images/")) {
+		TCModule tcModule = TCModuleManager.me().get(moduleName);
+		if (tcModule == null) {
+			return;
+		}
+		if (target.startsWith("/css/") || target.startsWith("/js/") || target.startsWith("/images/")
+				|| target.startsWith("/fonts/")) {
 			String contentType = ContentType.getContentType(target);
 			if (target.endsWith(".css") || target.endsWith(".js")) {
 				response.setContentType(contentType);
-				String resourceText = TCModuleManager.me().get(moduleName).getResourceText(target.substring(1));
+				String resourceText = tcModule.getResourceText(target.startsWith("/") ? target : ("/" + target));
 				if (resourceText != null) {
 					response.getWriter().write(resourceText);
 				}
@@ -105,7 +111,7 @@ public class TCFilter implements Filter {
 			} else {
 				response.setContentType(contentType);
 				response.getOutputStream().write(
-						TCModuleManager.me().get(moduleName).getResourceByte(target.substring(1)));
+						tcModule.getResourceByte(target.startsWith("/") ? target : ("/" + target)));
 				SocketHelper.closeWithoutError(response.getOutputStream());
 			}
 			return;
@@ -132,12 +138,19 @@ public class TCFilter implements Filter {
 		Map params = MapHelper.toMap("request", request, "response", response, "context", request.getContextPath(),
 				"appContext", appContext, "actionContext", target, "servletPath", request.getServletPath(), "target",
 				target, "urlParams", urlParams, "filterConfig", this.filterConfig, "servletCotext",
-				this.servletContext, "targetPrefix", targetPrefix, "moduleName", moduleName);
-		if (subfix.equals("html") || subfix.equals("htm")) {
+				this.servletContext, "targetPrefix", targetPrefix, "moduleName", moduleName, "tcmodule", tcModule);
+		if (target.startsWith("/WEB-INF/") || target.startsWith("WEB-INF/")) {
 			response.setContentType("text/html; charset=UTF-8");
-			if (render(subfix, view, params)) {
-				return;
+			if (!render("html", "403.html", params)) {
+				new TCRenderManager.TCFreemarkerRender("403.html", params).render();
 			}
+			return;
+		} else if (subfix.equals("html") || subfix.equals("htm")) {
+			response.setContentType("text/html; charset=UTF-8");
+			if (!render(subfix, view, params)) {
+				new TCRenderManager.TCFreemarkerRender(view, params).render();
+			}
+			return;
 		} else if (subfix.equals("btl")) {
 			response.setContentType("text/html; charset=UTF-8");
 			if (!render(subfix, view, params)) {
@@ -160,17 +173,31 @@ public class TCFilter implements Filter {
 			response.setContentType("text/html; charset=UTF-8");
 			chain.doFilter(request, response);
 			return;
+		} else if (subfix.length() > 0) {
+			String contentType = ContentType.getContentType(subfix);
+			response.setContentType(contentType);
+			if (!render(subfix, view, params)) {
+				if (contentType.indexOf("text") > -1 || contentType.indexOf("html") > -1) {
+					String resourceText = tcModule.getResourceText(target.startsWith("/") ? target : ("/" + target));
+					if (resourceText != null) {
+						response.getWriter().write(resourceText);
+					}
+					SocketHelper.closeWithoutError(response.getWriter());
+				} else {
+					response.getOutputStream().write(
+							tcModule.getResourceByte(target.startsWith("/") ? target : ("/" + target)));
+					SocketHelper.closeWithoutError(response.getOutputStream());
+				}
+			}
+			return;
 		}
-		if (subfix.equals("html") || subfix.equals("htm") || target.endsWith("/") || target.indexOf(".") < 0) {
+		if (target.endsWith("/") || target.indexOf(".") < 0) {
 			response.setContentType("text/html; charset=UTF-8");
 			if (target.endsWith("/")) {
 				target = target.substring(0, target.length() - 1);
 			}
-			if (target.endsWith(".html")) {
-				target = target.substring(0, target.length() - 5);
-			}
-			if (target.endsWith(".htm")) {
-				target = target.substring(0, target.length() - 4);
+			if (subfix.length() > 0) {
+				target = target.substring(0, target.length() - (subfix.length() + 1));
 			}
 			handler.process(params);
 			return;

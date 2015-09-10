@@ -1,13 +1,30 @@
 package org.iff.infra.util;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class EventBusHelper {
-	private static Map<String, Map<String, EventProcess>> defaultBus = new LinkedHashMap<String, Map<String, EventProcess>>();
+	private static EventBusHelper me = new EventBusHelper();
+	private Map<String, Map<String, EventProcess>> defaultBus = Collections
+			.synchronizedMap(new LinkedHashMap<String, Map<String, EventProcess>>());
 
-	public static boolean setDefaultBus(LinkedHashMap<String, Map<String, EventProcess>> bus) {
+	EventBusHelper() {
+		init();
+	}
+
+	public static EventBusHelper me() {
+		return me;
+	}
+
+	public void init() {
+		if (!defaultBus.containsKey("deadEvent")) {
+			regist("deadEvent", new DeadEventProcessor());
+		}
+	}
+
+	public boolean setDefaultBus(LinkedHashMap<String, Map<String, EventProcess>> bus) {
 		if (defaultBus.isEmpty()) {
 			defaultBus = bus;
 			return true;
@@ -15,16 +32,9 @@ public class EventBusHelper {
 		return false;
 	}
 
-	public static void addDeadEvent() {
-		if (!defaultBus.containsKey("deadEvent")) {
-			regist("deadEvent", new DeadEventProcessor());
-		}
-	}
-
-	public static boolean regist(String eventPath, EventProcess processor) {
+	public boolean regist(String eventPath, EventProcess processor) {
 		Assert.notBlank(eventPath, "[EventBusHelper.regist]:eventPath is required!");
 		Assert.notNull(processor, "[EventBusHelper.regist]:processor is required!");
-		addDeadEvent();
 		Map<String, EventProcess> processors = defaultBus.get(eventPath);
 		if (processors == null) {
 			processors = new LinkedHashMap<String, EventProcess>();
@@ -34,13 +44,13 @@ public class EventBusHelper {
 		return true;
 	}
 
-	public static boolean unregist(String eventPath) {
+	public boolean unregist(String eventPath) {
 		Assert.notBlank(eventPath, "[EventBusHelper.regist]:eventPath is required!");
 		Map<String, EventProcess> remove = defaultBus.remove(eventPath);
 		return remove != null;
 	}
 
-	public static boolean unregist(String eventPath, EventProcess processor) {
+	public boolean unregist(String eventPath, EventProcess processor) {
 		Assert.notBlank(eventPath, "[EventBusHelper.regist]:eventPath is required!");
 		Assert.notNull(processor, "[EventBusHelper.regist]:processor is required!");
 		Map<String, EventProcess> processors = defaultBus.get(eventPath);
@@ -51,7 +61,7 @@ public class EventBusHelper {
 		return false;
 	}
 
-	public static boolean unregist(String eventPath, String processorName) {
+	public boolean unregist(String eventPath, String processorName) {
 		Assert.notBlank(eventPath, "[EventBusHelper.regist]:eventPath is required!");
 		Assert.notBlank(processorName, "[EventBusHelper.regist]:processorName is required!");
 		Map<String, EventProcess> processors = defaultBus.get(eventPath);
@@ -62,7 +72,7 @@ public class EventBusHelper {
 		return false;
 	}
 
-	public static void asyncEvent(final String eventPath, final Object events) {
+	public EventBusHelper asyncEvent(final String eventPath, final Object events) {
 		final Map<String, EventProcess> processors = defaultBus.get(eventPath);
 		if (processors != null && !processors.isEmpty()) {
 			for (final Entry<String, EventProcess> entry : processors.entrySet()) {
@@ -76,12 +86,13 @@ public class EventBusHelper {
 					}
 				}.start();
 			}
-		} else {
+		} else if (!"deadEvent".endsWith(eventPath)) {
 			asyncEvent("deadEvent", MapHelper.toMap("sourceEventPath", eventPath, "sourceEvent", events));
 		}
+		return this;
 	}
 
-	public static void syncEvent(final String eventPath, final Object events) {
+	public EventBusHelper syncEvent(final String eventPath, final Object events) {
 		final Map<String, EventProcess> processors = defaultBus.get(eventPath);
 		if (processors != null && !processors.isEmpty()) {
 			for (final Entry<String, EventProcess> entry : processors.entrySet()) {
@@ -91,9 +102,10 @@ public class EventBusHelper {
 					Logger.debug(FCS.get("[EventBusHelper.sync_event]:eventPath={0}", eventPath), e);
 				}
 			}
-		} else {
+		} else if (!"deadEvent".endsWith(eventPath)) {
 			syncEvent("deadEvent", MapHelper.toMap("sourceEventPath", eventPath, "sourceEvent", events));
 		}
+		return this;
 	}
 
 	public static interface EventProcess {

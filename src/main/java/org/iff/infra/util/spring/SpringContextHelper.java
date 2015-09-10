@@ -41,10 +41,6 @@ public class SpringContextHelper implements ApplicationContextAware {
 		return applicationContext;
 	}
 
-	public static String hello(String test) {
-		return "HHHHeloll:" + test;
-	}
-
 	/**
 	 * 获取对象
 	 * 

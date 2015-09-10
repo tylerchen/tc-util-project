@@ -34,6 +34,7 @@ import org.iff.infra.util.StringHelper;
 import org.iff.infra.util.XmlHelper;
 import org.iff.infra.util.groovy.TCAction;
 import org.iff.infra.util.groovy.TCBean;
+import org.iff.infra.util.spring.SpringContextHelper;
 import org.xeustechnologies.jcl.JarClassLoader;
 import org.xeustechnologies.jcl.JclObjectFactory;
 import org.xeustechnologies.jcl.ProxyClassLoader;
@@ -127,7 +128,8 @@ public class TCModule {
 								+ "META-INF/resource/", "*", "*", null);
 						for (String url : resources) {
 							if (url.startsWith(resDir)) {
-								resourceMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
+								resourceMap.put(StringHelper.pathConcat("/", url.substring(resDir.length())),
+										MapHelper.toMap("url", url));
 							}
 						}
 					}
@@ -138,7 +140,8 @@ public class TCModule {
 								+ "META-INF/groovy/", ".groovy", "*", null);
 						for (String url : resources) {
 							if (url.startsWith(resDir)) {
-								groovyMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
+								groovyMap.put(StringHelper.pathConcat("/", url.substring(resDir.length())),
+										MapHelper.toMap("url", url));
 							}
 						}
 					}
@@ -166,7 +169,8 @@ public class TCModule {
 						List<String> resources = ResourceHelper.loadResources(resDir, "*", "*", null);
 						for (String url : resources) {
 							if (url.startsWith(resDir)) {
-								resourceMap.put(url.substring(resDir.length()), MapHelper.toMap("url", url));
+								resourceMap.put(StringHelper.pathConcat("/", url.substring(resDir.length())),
+										MapHelper.toMap("url", url));
 							}
 						}
 					}
@@ -176,11 +180,13 @@ public class TCModule {
 						List<String> resources = ResourceHelper.loadResources(resDir, ".groovy", "*", null);
 						for (String url : resources) {
 							if (url.startsWith(resDir)) {
-								groovyMap.put(url, MapHelper.toMap("url", url));
+								groovyMap.put(StringHelper.pathConcat("/", url.substring(resDir.length())),
+										MapHelper.toMap("url", url));
 							}
 						}
 					}
 				}
+				System.out.println(resourceMap);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -200,9 +206,8 @@ public class TCModule {
 			groovyLoader = new TCGroovyProxyClassLoader();
 			classLoader.addLoader(groovyLoader);
 			Map<String, List<String>> pathUrlMap = new HashMap<String, List<String>>();
-			String prefix = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/", "META-INF/groovy/");
 			for (String url : groovyMap.keySet()) {
-				String dir = url.substring(prefix.length());
+				String dir = url;
 				dir = dir.substring(0, dir.lastIndexOf("/"));
 				List<String> list = pathUrlMap.get(dir);
 				if (list == null) {
@@ -211,7 +216,7 @@ public class TCModule {
 				}
 				list.add(url);
 			}
-			String[] order = new String[] { "common", "module", "server", "view" };
+			String[] order = new String[] { "common", "module", "service", "view" };
 			List<String> orderList = new ArrayList<String>();
 			for (String o : order) {
 				orderList.clear();
@@ -439,6 +444,16 @@ public class TCModule {
 		}
 	}
 
+	public List<String> findResources(String resourcePathWithwildCardMatch) {
+		List<String> result = new ArrayList<String>(32);
+		for (String key : resourceMap.keySet()) {
+			if (ResourceHelper.wildCardMatch(key, resourcePathWithwildCardMatch)) {
+				result.add(key);
+			}
+		}
+		return result;
+	}
+
 	public String getResourceText(String resourcePath) {
 		try {
 			lock.writeLock().lock();
@@ -501,6 +516,8 @@ public class TCModule {
 				if (module != null) {
 					instance = module.getBean(name);
 				}
+			} else if (SpringContextHelper.getApplicationContext() != null) {
+				instance = SpringContextHelper.getBean(name);
 			}
 			return (T) instance;
 		} finally {
@@ -763,6 +780,10 @@ public class TCModule {
 		} finally {
 			lock.writeLock().unlock();
 		}
+	}
+
+	public Map<String, Map> getModuleConfig() {
+		return Collections.unmodifiableMap(moduleConfig);
 	}
 
 	public static final String actionMethod = ""

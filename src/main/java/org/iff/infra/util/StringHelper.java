@@ -470,6 +470,67 @@ public final class StringHelper {
 		return urlString;
 	}
 
+	public static String cutTo(String source, String toCut) {
+		if (source == null || source.length() < 1) {
+			return source;
+		}
+		int index = source.indexOf(toCut);
+		return index > -1 ? (source.substring(index + toCut.length())) : source;
+	}
+
+	public static String cutOff(String source, String toCut) {
+		if (source == null || source.length() < 1) {
+			return source;
+		}
+		int index = source.lastIndexOf(toCut);
+		return index > -1 ? (source.substring(0, index)) : source;
+	}
+
+	public static String trim(String source, String toTrim) {
+		if (source == null || source.length() < 1) {
+			return source;
+		}
+		return trimRight(trimLeft(source, toTrim), toTrim);
+	}
+
+	public static String trimRight(String source, String toTrim) {
+		if (source == null || source.length() < 1) {
+			return source;
+		}
+		int index = source.length() - 1;
+		boolean breakPoint = false;
+		while (!breakPoint && index > -1) {
+			for (int i = toTrim.length() - 1; i > -1; i--) {
+				if (toTrim.charAt(i) != source.charAt(index)) {
+					index = index + (toTrim.length() - 1 - i);
+					breakPoint = true;
+					break;
+				}
+				index--;
+			}
+		}
+		return index < 1 ? source : source.substring(0, index + 1);
+	}
+
+	public static String trimLeft(String source, String toTrim) {
+		if (source == null || source.length() < 1) {
+			return source;
+		}
+		int index = 0;
+		boolean breakPoint = false;
+		while (!breakPoint && index < source.length()) {
+			for (int i = 0; i < toTrim.length(); i++) {
+				if (toTrim.charAt(i) != source.charAt(index)) {
+					index = index - i;
+					breakPoint = true;
+					break;
+				}
+				index++;
+			}
+		}
+		return index < 1 ? source : source.substring(index);
+	}
+
 	public static void main(String[] args) {
 		System.out.println(pathBuild("file:///g:/a/b/c", "/"));
 		System.out.println(subUniCodeString("我ABC汉DEF", 60));
@@ -486,6 +547,11 @@ public final class StringHelper {
 			System.out.print(i);
 			System.out.print(',');
 		}
+		//
+		System.out.println("==================");
+		System.out.println(trimLeft("aaaaaaaTestaaaaa", "aa"));
+		System.out.println(trimRight("aaaaaaTestaaaaaaaaaaa", "aaa"));
+		System.out.println(trim("aaaaaaaTestaaaaaaaa", "aaa"));
 	}
 
 }

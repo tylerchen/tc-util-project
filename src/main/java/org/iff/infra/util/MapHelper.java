@@ -7,8 +7,12 @@
  ******************************************************************************/
 package org.iff.infra.util;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A Map helper
@@ -118,5 +122,63 @@ public class MapHelper {
 			}
 		}
 		tmp.put(paths[paths.length - 1], value);
+	}
+
+	/**
+	 * <pre>
+	 * combine to map values.
+	 * Usage:
+	 * Map map1 = toMap("aaa", 123, "bbb", 123);
+	 * Map map2 = toMap("aaaa", 123, "bbb", toMap("AAA", "123", "BBBB", toMap("@@@", "333")));
+	 * System.out.println(combine(map1, map2));
+	 * Result:
+	 * {aaa=123, bbb={AAA=123, BBBB={@@@=333}}, aaaa=123}
+	 * </pre>
+	 * @param beCombineMap
+	 * @param toCombineMap
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Aug 28, 2015
+	 */
+	public static Map combine(Map beCombineMap, Map toCombineMap) {
+		List<Map> p1 = new ArrayList<Map>(128);
+		List<Map> p2 = new ArrayList<Map>(128);
+		{
+			p1.add(beCombineMap);
+			p2.add(toCombineMap);
+		}
+		while (!p2.isEmpty()) {
+			Map map1 = p1.remove(p1.size() - 1);
+			Map map2 = p2.remove(p2.size() - 1);
+			for (Entry entry : (Set<Entry>) map2.entrySet()) {
+				if (entry.getValue() instanceof Map) {
+					Object object = map1.get(entry.getKey());
+					if (object == null) {
+						object = new LinkedHashMap();
+						map1.put(entry.getKey(), object);
+						{
+							p1.add((Map) object);
+							p2.add((Map) entry.getValue());
+						}
+					} else if (!(object instanceof Map)) {
+						Logger.warn(FCS.get("[MapHelper.combine][ISNOTMAP][{0}][Result will be overwrite]",
+								entry.getKey()));
+						object = new LinkedHashMap();
+						map1.put(entry.getKey(), object);
+						{
+							p1.add((Map) object);
+							p2.add((Map) entry.getValue());
+						}
+					}
+				} else {
+					map1.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+		return beCombineMap;
+	}
+
+	public static void main(String[] args) {
+
 	}
 }

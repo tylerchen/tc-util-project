@@ -7,18 +7,13 @@
  ******************************************************************************/
 package org.iff.infra.util.moduler;
 
-import groovy.servlet.ServletBinding;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +26,8 @@ import org.beetl.core.Template;
 import org.beetl.core.resource.StringTemplateResource;
 import org.beetl.ext.web.WebRender;
 import org.iff.infra.util.SocketHelper;
+
+import freemarker.ext.beans.BeansWrapper;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -105,6 +102,8 @@ public class TCRenderManager {
 			if (config == null) {
 				try {
 					config = org.beetl.core.Configuration.defaultConfiguration();
+					config.setStatementStart("<!--#");
+					config.setStatementEnd("#-->");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -123,11 +122,11 @@ public class TCRenderManager {
 					protected void modifyTemplate(Template template, String key, HttpServletRequest request,
 							HttpServletResponse response, Object... args) {
 						if (args != null && args[0] instanceof Map) {
+							template.binding("params", args[0]);
+							template.binding("request", ((Map) args[0]).get("request"));
+							template.binding("response", ((Map) args[0]).get("response"));
 							Enumeration<String> attrs = ((HttpServletRequest) ((Map) args[0]).get("request"))
 									.getAttributeNames();
-							for (Entry entry : (Set<Entry>) ((Map) args[0]).entrySet()) {
-								template.binding(entry.getKey().toString(), entry.getValue());
-							}
 							while (attrs.hasMoreElements()) {
 								String attrName = attrs.nextElement();
 								template.binding(attrName, request.getAttribute(attrName));
@@ -137,7 +136,7 @@ public class TCRenderManager {
 				};
 				renders.put(moduleName, webRender);
 			}
-			webRender.render(view.startsWith("/") ? view.substring(1) : view, request, response, params);
+			webRender.render(view.startsWith("/") ? view : ("/" + view), request, response, params);
 		}
 	}
 
@@ -179,6 +178,9 @@ public class TCRenderManager {
 		public static final String encoding = "UTF-8";
 		public static final String contentType = "text/html; charset=UTF-8";
 		private static Map<String, freemarker.template.Configuration> configs = new HashMap<String, freemarker.template.Configuration>();
+		private static final BeansWrapper beansWrapper = new freemarker.ext.beans.BeansWrapperBuilder(
+				freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS).build();
+		private static final freemarker.template.TemplateModel helper = beansWrapper.getStaticModels();
 
 		public TCFreemarkerRender(String view, Map params) {
 			super(view, params);
@@ -186,11 +188,13 @@ public class TCRenderManager {
 
 		public freemarker.template.Configuration getConfig(String moduleName, ServletContext servletContext) {
 			freemarker.template.Configuration config = null;
-			config = new freemarker.template.Configuration();
+			config = new freemarker.template.Configuration(
+					freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 			config.setServletContextForTemplateLoading(servletContext, "/");
-			config.setTemplateUpdateDelay(0);
+			config.setTemplateUpdateDelayMilliseconds(0);
 			config.setTemplateExceptionHandler(freemarker.template.TemplateExceptionHandler.RETHROW_HANDLER);
-			config.setObjectWrapper(freemarker.template.ObjectWrapper.BEANS_WRAPPER);
+
+			config.setObjectWrapper(beansWrapper);
 			config.setDefaultEncoding(encoding);
 			config.setOutputEncoding(encoding);
 			config.setLocale(java.util.Locale.CHINA);
@@ -210,7 +214,10 @@ public class TCRenderManager {
 			Enumeration<String> attrs = request.getAttributeNames();
 			Map root = new HashMap();
 			{
-				root.putAll(params);
+				root.put("params", params);
+				root.put("request", request);
+				root.put("response", response);
+				root.put("helper", helper);
 			}
 			while (attrs.hasMoreElements()) {
 				String attrName = attrs.nextElement();
@@ -223,8 +230,7 @@ public class TCRenderManager {
 					config = getConfig(moduleName, (ServletContext) params.get("servletCotext"));
 					configs.put(moduleName, config);
 				}
-				freemarker.template.Template template = config.getTemplate(view.startsWith("/") ? view.substring(1)
-						: view);
+				freemarker.template.Template template = config.getTemplate(view);
 				writer = response.getWriter();
 				template.process(root, writer); // Merge the data-model and the template
 			} catch (Exception e) {
@@ -247,7 +253,7 @@ public class TCRenderManager {
 		}
 
 		public Object findTemplateSource(String name) throws IOException {
-			return TCModuleManager.me().get(moduleName).getResourceText(name);
+			return TCModuleManager.me().get(moduleName).getResourceText(name.startsWith("/") ? name : ("/" + name));
 		}
 
 		public long getLastModified(Object templateSource) {
@@ -273,17 +279,23 @@ public class TCRenderManager {
 		public void render() {
 			HttpServletRequest request = (HttpServletRequest) params.get("request");
 			HttpServletResponse response = (HttpServletResponse) params.get("response");
-			ServletContext servletContext = (ServletContext) params.get("servletCotext");
 			String moduleName = (String) params.get("moduleName");
 			groovy.text.Template template = null;
 			PrintWriter writer = null;
 			try {
 				writer = response.getWriter();
 				template = engine.createTemplate(TCModuleManager.me().get(moduleName)
-						.getResourceText(view.startsWith("/") ? view.substring(1) : view));
-				ServletBinding binding = new ServletBinding(request, response, servletContext);
-				for (Entry entry : (Set<Entry>) params.entrySet()) {
-					binding.setVariable(entry.getKey().toString(), entry.getValue());
+						.getResourceText(view.startsWith("/") ? view : ("/" + view)));
+				groovy.lang.Binding binding = new groovy.lang.Binding();
+				{
+					binding.setVariable("params", params);
+					binding.setVariable("request", request);
+					binding.setVariable("response", response);
+					Enumeration<String> attrs = request.getAttributeNames();
+					while (attrs.hasMoreElements()) {
+						String attrName = attrs.nextElement();
+						binding.setVariable(attrName, request.getAttribute(attrName));
+					}
 				}
 				template.make(binding.getVariables()).writeTo(writer);
 				response.flushBuffer();
