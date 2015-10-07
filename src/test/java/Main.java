@@ -1,5 +1,5 @@
 import org.iff.infra.util.moduler.TCApplication;
-import org.iff.infra.util.moduler.TCModuleManager;
+import org.iff.infra.util.moduler.TCServer;
 
 /*******************************************************************************
  * Copyright (c) 2014-7-3 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
@@ -17,6 +17,12 @@ import org.iff.infra.util.moduler.TCModuleManager;
 public class Main {
 
 	public static void main(String[] args) {
+		System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/commonModule");
+		TCServer server = TCServer.create(8080, "/");
+		server.start();
+	}
+
+	public static void main4(String[] args) {
 		System.setProperty("tc_port", "8080");
 		System.setProperty("tc_context", "/");
 		System.setProperty("tc_app_path", "/home/tyler/Desktop/work-temp/test");

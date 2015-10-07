@@ -50,7 +50,8 @@ public class TCServer {
 					ServerConnector connector = new ServerConnector(server);
 					WebAppContext webApp = new WebAppContext();
 					webApp.setContextPath(getContenxt());
-					webApp.addFilter("org.iff.infra.util.moduler.TCFilter", "/*", null);
+					//webApp.addFilter("org.iff.infra.util.moduler.TCFilter", "/*", null);
+					webApp.addFilter("org.iff.infra.util.groovy2.TCGroovyLoaderFilter", "/*", null);
 					webApp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 					webApp.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
 					// webApp.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "false"));

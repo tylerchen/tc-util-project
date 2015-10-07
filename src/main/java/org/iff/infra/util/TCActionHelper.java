@@ -5,7 +5,7 @@
  * Contributors:
  *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
  ******************************************************************************/
-package org.iff.infra.util.moduler;
+package org.iff.infra.util;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -16,9 +16,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.iff.infra.util.HttpHelper;
-import org.iff.infra.util.ThreadLocalHelper;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
