@@ -110,12 +110,12 @@ public class TCGroovyLoaderFilter implements Filter {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		String target = request.getServletPath();
+		String appContext = StringHelper.pathConcat(request.getContextPath(), targetPrefix);
+		if (appContext.endsWith("/")) {
+			appContext = appContext.substring(0, appContext.length() - 1);
+		}
 		{//setting groovy loader
 			ThreadLocalHelper.set("groovyLoader", loader);
-		}
-		if (target.length() < 1 || "/".equals(target)) {
-			actionHelper.redirect(welcomeFile);
-			return;
 		}
 		if (targetPrefix.length() > 0) {
 			if (target.length() >= targetPrefix.length()) {
@@ -124,6 +124,10 @@ public class TCGroovyLoaderFilter implements Filter {
 			if (!target.startsWith("/")) {
 				target = "/" + target;
 			}
+		}
+		if (target.length() < 1 || "/".equals(target)) {
+			actionHelper.redirect(StringHelper.concat(appContext, "/", welcomeFile));
+			return;
 		}
 		if (target.startsWith("/css/") || target.startsWith("/js/") || target.startsWith("/images/")
 				|| target.startsWith("/fonts/")) {
@@ -137,15 +141,13 @@ public class TCGroovyLoaderFilter implements Filter {
 				SocketHelper.closeWithoutError(response.getWriter());
 			} else {
 				response.setContentType(contentType);
-				response.getOutputStream()
-						.write(loader.getResourceByte(target.startsWith("/") ? target : ("/" + target)));
+				byte[] resourceByte = loader.getResourceByte(target.startsWith("/") ? target : ("/" + target));
+				if (resourceByte != null && resourceByte.length > 0) {
+					response.getOutputStream().write(resourceByte);
+				}
 				SocketHelper.closeWithoutError(response.getOutputStream());
 			}
 			return;
-		}
-		String appContext = StringHelper.pathConcat(request.getContextPath(), targetPrefix);
-		if (appContext.endsWith("/")) {
-			appContext = appContext.substring(0, appContext.length() - 1);
 		}
 		// url=/app-context/target-prefix/module-context/action/method.subfix/urlparameters
 		int dotIndex = target.indexOf('.');
@@ -211,8 +213,10 @@ public class TCGroovyLoaderFilter implements Filter {
 					}
 					SocketHelper.closeWithoutError(response.getWriter());
 				} else {
-					response.getOutputStream()
-							.write(loader.getResourceByte(target.startsWith("/") ? target : ("/" + target)));
+					byte[] resourceByte = loader.getResourceByte(target.startsWith("/") ? target : ("/" + target));
+					if (resourceByte != null && resourceByte.length > 0) {
+						response.getOutputStream().write(resourceByte);
+					}
 					SocketHelper.closeWithoutError(response.getOutputStream());
 				}
 			}

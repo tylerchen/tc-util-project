@@ -162,8 +162,8 @@ public class TCGroovyLoader {
 							}
 							{// load resource
 								String resDir = StringHelper.concat("jar:", basePath, "!/META-INF/resource/");
-								List<String> resources = ResourceHelper
-										.loadResourcesInFileSystemJar(basePath + "META-INF/resource/", "*", "*", null);
+								List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(resDir, "*", "*",
+										null);
 								for (String url : resources) {
 									for (String resPath : pathSet) {
 										if (url.startsWith(resPath)) {
@@ -177,7 +177,7 @@ public class TCGroovyLoader {
 							}
 							{// load groovy
 								String resDir = StringHelper.concat("jar:", basePath, "!/META-INF/groovy/");
-								List<String> resources = ResourceHelper.loadResources(resDir, ".groovy", "*", null);
+								List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(resDir, ".groovy", "*", null);
 								for (String url : resources) {
 									for (String resPath : pathSet) {
 										if (url.startsWith(resPath)) {

@@ -50,8 +50,14 @@ public class XmlHelper {
 	public static Map parseXmlToMap(Map xml, String file) {
 		try {
 			xml = xml == null ? new LinkedHashMap() : xml;
-			Node node = new XmlParser().parse(file.startsWith("file:") ? new File(new URL(file).toURI()) : new File(
-					file));
+			Node node = null;
+			if (file.startsWith("jar:")) {
+				node = new XmlParser().parse(file);
+			} else if (file.startsWith("file:")) {
+				node = new XmlParser().parse(file);
+			} else {
+				node = new XmlParser().parse(new File(file));
+			}
 			xml.put(node.name(), xml.get(node.name()) == null ? new LinkedHashMap() : xml.get(node.name()));
 			List<Node> list = new ArrayList<Node>(128);
 			List<Map> level = new ArrayList<Map>(128);
@@ -90,8 +96,9 @@ public class XmlHelper {
 	}
 
 	public static void main(String[] args) {
-		System.out
-				.println(parseXmlToMap(null,
-						"file:///media/新加卷/workspace/JeeGalileo/tc-util-project2/src/test/resources/webapp/open-report/open-report-reports.xml"));
+		System.out.println(
+				parseXmlToMap(null, "jar:file:///Users/zhaochen/Desktop/share/test/hello.jar!/META-INF/tcmodule.xml"));
+		System.out.println(
+				parseXmlToMap(null, "file:///Users/zhaochen/Desktop/share/test/commonModule/META-INF/tcmodule.xml"));
 	}
 }

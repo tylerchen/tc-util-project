@@ -17,7 +17,8 @@ import org.iff.infra.util.moduler.TCServer;
 public class Main {
 
 	public static void main(String[] args) {
-		System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/commonModule");
+		//System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/commonModule");
+		System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/hello.jar");
 		TCServer server = TCServer.create(8080, "/");
 		server.start();
 	}
