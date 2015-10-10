@@ -177,7 +177,8 @@ public class TCGroovyLoader {
 							}
 							{// load groovy
 								String resDir = StringHelper.concat("jar:", basePath, "!/META-INF/groovy/");
-								List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(resDir, ".groovy", "*", null);
+								List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(resDir, ".groovy",
+										"*", null);
 								for (String url : resources) {
 									for (String resPath : pathSet) {
 										if (url.startsWith(resPath)) {
@@ -237,6 +238,9 @@ public class TCGroovyLoader {
 					Logger.warn(FCS.get("parse basePath error {0}", basePaths), e);
 				}
 			}
+			Logger.debug(FCS.get("tcmodule.xml:{0}", moduleConfig));
+			Logger.debug(FCS.get("resource:{0}", resourceMap.keySet()));
+			Logger.debug(FCS.get("groovy:{0}", groovyMap.keySet()));
 			initGroovy();
 			initBeans();
 			initActions();

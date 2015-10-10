@@ -32,30 +32,4 @@ public class GsonHelper {
 		Gson gson = JsonHelper.GSON;
 		return gson.toJson(o);
 	}
-
-	/**
-	 * Access Map Object.
-	 * @param <T>
-	 * @param map
-	 * @param namePath properties split by dot '.', such as: rule.ruleName.
-	 * @return
-	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2013-2-28
-	 */
-	public static <T> T accessMap(Map map, String namePath) {
-		if (map == null || namePath == null || map.isEmpty() || namePath.length() < 1) {
-			return (T) null;
-		}
-		String[] names = namePath.split("\\.");
-		Object value = null;
-		Map tempMap = map;
-		for (String name : names) {
-			value = tempMap.get(name);
-			if (value == null || !(value instanceof Map)) {
-				break;
-			}
-			tempMap = (Map) value;
-		}
-		return (T) value;
-	}
 }

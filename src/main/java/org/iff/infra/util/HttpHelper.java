@@ -105,7 +105,7 @@ public class HttpHelper {
 		try {
 			URL url = new URL(request);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			String content = "{\"user\": \"kimchy\", \"postDate\": \"2009-11-15T14:12:12\", \"message\": \"Another tweet, will it be indexed?\" }";
+			String content = data;
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
 			connection.setInstanceFollowRedirects(false);
@@ -249,13 +249,12 @@ public class HttpHelper {
 		}
 		{
 			map.put("os", os);
-			MapHelper.fillMap(map, "isWindows", "windows".equals(os), "isMac", "mac".equals(os), "isUnix", "unix"
-					.equals(os), "isAndroid", "android".equals(os), "isIphone", "iphone".equals(os));
+			MapHelper.fillMap(map, "isWindows", "windows".equals(os), "isMac", "mac".equals(os), "isUnix",
+					"unix".equals(os), "isAndroid", "android".equals(os), "isIphone", "iphone".equals(os));
 			map.put("browser", browser);
-			MapHelper.fillMap(map, "isIE", browser.startsWith("IE-"), "isSafari",
-					browser.startsWith("Safari-"), "isOpera", browser.startsWith("Opera-"), "isChrome", browser
-							.startsWith("Chrome-"), "isNetscape", browser.startsWith("Netscape-"), "isFirefox", browser
-							.startsWith("Firefox-"));
+			MapHelper.fillMap(map, "isIE", browser.startsWith("IE-"), "isSafari", browser.startsWith("Safari-"),
+					"isOpera", browser.startsWith("Opera-"), "isChrome", browser.startsWith("Chrome-"), "isNetscape",
+					browser.startsWith("Netscape-"), "isFirefox", browser.startsWith("Firefox-"));
 		}
 		return map;
 	}
