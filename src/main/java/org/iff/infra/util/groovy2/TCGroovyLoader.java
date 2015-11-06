@@ -13,6 +13,7 @@ import groovy.lang.GroovyShell;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -29,10 +30,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.iff.infra.domain.InstanceProvider;
 import org.iff.infra.util.Assert;
+import org.iff.infra.util.Exceptions;
 import org.iff.infra.util.FCS;
 import org.iff.infra.util.Logger;
 import org.iff.infra.util.MapHelper;
+import org.iff.infra.util.RegisterHelper;
 import org.iff.infra.util.ResourceHelper;
 import org.iff.infra.util.SocketHelper;
 import org.iff.infra.util.StringHelper;
@@ -70,6 +74,10 @@ public class TCGroovyLoader {
 		{
 			m.setName(name);
 			m.setBasePaths(basePaths);
+		}
+		{
+			RegisterHelper.regist(InstanceProvider.class.getName(), MapHelper.toMap("name",
+					TCGroovyInstanceProvider.class.getSimpleName(), "value", TCGroovyInstanceProvider.create(m)));
 		}
 		return m;
 	}
@@ -359,7 +367,7 @@ public class TCGroovyLoader {
 						continue;
 					}
 					//[clazz: cls, 'action':name,'method':method_name,'context':context]
-					Map<String, Object> url = new HashMap<String, Object>();
+					Map<String, Object> actionMap = new HashMap<String, Object>();
 					for (Method method : clazz.getDeclaredMethods()) {
 						Map<?, ?> exclude = MapHelper.toMap("invokeMethod", true, "getMetaClass", true, "setMetaClass",
 								true, "setProperty", true, "getProperty", true);
@@ -377,9 +385,9 @@ public class TCGroovyLoader {
 						if (!Modifier.isPublic(modifiers)) {
 							continue;
 						}
-						url.put(name, method);
+						actionMap.put(name, method);
 					}
-					url.put("@className", clazz.getName());
+					actionMap.put("@className", clazz.getName());
 					{
 						if (GroovyObject.class.isAssignableFrom(clazz)) {
 							GroovyShell shell = new GroovyShell();
@@ -387,7 +395,7 @@ public class TCGroovyLoader {
 							shell.evaluate(actionMethod);
 						}
 					}
-					actions.put(annotation.name(), url);
+					actions.put(annotation.name(), actionMap);
 					//System.out.println(actions.get(annotation.name()));
 				}
 			}
@@ -726,6 +734,29 @@ public class TCGroovyLoader {
 				config.addCompilationCustomizers(customizer);
 			}
 			return config;
+		}
+	}
+
+	public static class TCGroovyInstanceProvider implements InstanceProvider {
+		TCGroovyLoader loader = null;
+
+		public static TCGroovyInstanceProvider create(TCGroovyLoader loader) {
+			TCGroovyInstanceProvider provider = new TCGroovyInstanceProvider();
+			provider.loader = loader;
+			return provider;
+		}
+
+		public <T> T getInstance(Class<T> beanClass) {
+			Exceptions.runtime("Not Support!");
+			return null;
+		}
+
+		public <T> T getInstance(Class<T> beanClass, String beanName) {
+			return (T) loader.getBean(beanName);
+		}
+
+		public <T> T getInstance(String beanName) {
+			return (T) loader.getBean(beanName);
 		}
 	}
 

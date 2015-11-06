@@ -7,6 +7,8 @@
  ******************************************************************************/
 package org.iff.infra.domain;
 
+import org.iff.infra.util.MapHelper;
+import org.iff.infra.util.RegisterHelper;
 import org.iff.infra.util.spring.SpringContextHelper;
 import org.iff.infra.util.spring.factory.SpringInstanceProvider;
 
@@ -38,8 +40,13 @@ public class InstanceFactory {
 	 * @since 2015-2-15
 	 */
 	public static InstanceProvider getInstanceProvider() {
-		if (instanceProvider == null && SpringContextHelper.getApplicationContext() != null) {
-			instanceProvider = new SpringInstanceProvider(SpringContextHelper.getApplicationContext());
+		if (instanceProvider == null) {
+			instanceProvider = new InstanceProviderDelegate();
+			if (SpringContextHelper.getApplicationContext() != null) {
+				RegisterHelper.regist(InstanceProvider.class.getName(),
+						MapHelper.toMap("name", SpringInstanceProvider.class.getSimpleName(), "value",
+								new SpringInstanceProvider(SpringContextHelper.getApplicationContext())));
+			}
 		}
 		return instanceProvider;
 	}

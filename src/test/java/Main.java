@@ -1,3 +1,8 @@
+import java.util.concurrent.TimeUnit;
+
+import org.iff.infra.domain.InstanceFactory;
+import org.iff.infra.util.ReflectHelper;
+import org.iff.infra.util.SocketHelper;
 import org.iff.infra.util.moduler.TCApplication;
 import org.iff.infra.util.moduler.TCServer;
 
@@ -17,10 +22,22 @@ import org.iff.infra.util.moduler.TCServer;
 public class Main {
 
 	public static void main(String[] args) {
-		//System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/commonModule");
-		System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/hello.jar");
+		System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/commonModule");
+		//System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/hello.jar");
 		TCServer server = TCServer.create(8080, "/");
 		server.start();
+		while (true) {
+			try {
+				TimeUnit.SECONDS.sleep(1);
+				if (SocketHelper.test("localhost", 8080)) {
+					Object instance = InstanceFactory.getInstance("TC_COM_RT_string");
+					Object invoke = ReflectHelper.invoke(instance, "returnType", "test", "111");
+					System.err.println("instance:" + instance + ", value:" + invoke);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static void main4(String[] args) {

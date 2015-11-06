@@ -43,11 +43,12 @@ import org.iff.infra.util.ReflectHelper;
 import org.iff.infra.util.RegisterHelper;
 import org.iff.infra.util.SocketHelper;
 import org.iff.infra.util.StringHelper;
-import org.iff.infra.util.TCActionHelper;
+import org.iff.infra.util.ActionHelper;
 import org.iff.infra.util.ThreadLocalHelper;
 import org.iff.infra.util.groovy2.TCGroovyLoader.TCActionInvoker;
 
 import freemarker.ext.beans.BeansWrapper;
+import freemarker.template.SimpleHash;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -106,7 +107,7 @@ public class TCGroovyLoaderFilter implements Filter {
 			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
-		TCActionHelper actionHelper = TCActionHelper.create(request, response);
+		ActionHelper actionHelper = ActionHelper.create(request, response);
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		String target = request.getServletPath();
@@ -167,7 +168,7 @@ public class TCGroovyLoaderFilter implements Filter {
 		Map params = MapHelper.toMap("request", request, "response", response, "context", request.getContextPath(),
 				"appContext", appContext, "actionContext", target, "servletPath", request.getServletPath(), "target",
 				target, "urlParams", urlParams, "filterConfig", this.filterConfig, "servletCotext", this.servletContext,
-				"targetPrefix", targetPrefix, "tcmodule", loader);
+				"targetPrefix", targetPrefix, "loader", loader);
 		if (target.startsWith("/WEB-INF/") || target.startsWith("WEB-INF/")) {
 			response.setContentType("text/html; charset=UTF-8");
 			if (!render("html", "403.html", params)) {
@@ -487,6 +488,7 @@ public class TCGroovyLoaderFilter implements Filter {
 				config.setTimeFormat("HH:mm:ss");
 				config.setDateTimeFormat("yyyy-MM-dd HH:mm:ss");
 				config.setTemplateLoader(new TCFreeMarkerTemplateLoader());
+				//config.setAllSharedVariables(new SimpleHash(this.freemarkerVariables, config.getObjectWrapper()));
 			}
 			return config;
 		}

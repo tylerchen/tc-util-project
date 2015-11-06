@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.iff.infra.util.BeanHelper;
 
+@SuppressWarnings("serial")
 @XmlRootElement(name = "Page")
-public class Page extends org.apache.ibatis.session.RowBounds implements
-		Serializable, Cloneable {
+public class Page implements Serializable, Cloneable {
 	private static int PAGE_SIZE_DEFAULT = 10; // 显示数目
 	private int pageSize = PAGE_SIZE_DEFAULT; // 当页显示数目
 	private int totalCount; // 总记录数
@@ -23,8 +23,7 @@ public class Page extends org.apache.ibatis.session.RowBounds implements
 	public Page() {
 	}
 
-	public static Page pageable(int pageSize, int currentPage, int totalCount,
-			List rows) {
+	public static Page pageable(int pageSize, int currentPage, int totalCount, List rows) {
 		Page page = new Page();
 		pageSize = pageSize < 1 ? PAGE_SIZE_DEFAULT : pageSize;
 		page.setPageSize(pageSize);
@@ -115,8 +114,7 @@ public class Page extends org.apache.ibatis.session.RowBounds implements
 		List list = new ArrayList(this.rows.size());
 		for (Object o : this.rows) {
 			try {
-				list.add(BeanHelper.copyProperties(voClass.getConstructor()
-						.newInstance(), o));
+				list.add(BeanHelper.copyProperties(voClass.getConstructor().newInstance(), o));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -137,7 +135,7 @@ public class Page extends org.apache.ibatis.session.RowBounds implements
 
 	@Override
 	public String toString() {
-		return "Pages [currentPage=" + currentPage + ", pageSize=" + pageSize
-				+ ", rows=" + rows + ", totalCount=" + totalCount + "]";
+		return "Pages [currentPage=" + currentPage + ", pageSize=" + pageSize + ", rows=" + rows + ", totalCount="
+				+ totalCount + "]";
 	}
 }

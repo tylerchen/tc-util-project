@@ -10,9 +10,13 @@ package org.iff.infra.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
+import groovy.lang.GroovyObject;
 
 /**
  * A Reflect helper provides a set of utility methods to process the java class.
@@ -72,8 +76,8 @@ public class ReflectHelper {
 				}
 			}
 		} catch (Exception e) {
-			Logger.error(FCS.get("[NoConstructorFound] className:{0}, parameterTypes:{1}", clazz.getName(),
-					parameterTypes));
+			Logger.error(
+					FCS.get("[NoConstructorFound] className:{0}, parameterTypes:{1}", clazz.getName(), parameterTypes));
 		}
 		return null;
 	}
@@ -138,7 +142,8 @@ public class ReflectHelper {
 		if (obj == null || fieldName == null) {
 			return null;
 		}
-		for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {
+		for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass
+				.getSuperclass()) {
 			try {
 				return superClass.getDeclaredField(fieldName);
 			} catch (Exception e) {
@@ -180,7 +185,8 @@ public class ReflectHelper {
 	@SuppressWarnings("unchecked")
 	public static <T> T getValueByFieldType(Object obj, Class<T> fieldType) {
 		Object value = null;
-		for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {
+		for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass
+				.getSuperclass()) {
 			try {
 				Field[] fields = superClass.getDeclaredFields();
 				for (Field f : fields) {
@@ -229,5 +235,32 @@ public class ReflectHelper {
 		} catch (Exception e) {
 		}
 		return false;
+	}
+
+	public static Object invoke(Object instance, String methodName, Object... args) {
+		Assert.notNull(instance, "args [instance] is required!");
+		Assert.notBlank(methodName, "args [methodName] is required!");
+		try {
+			if (instance instanceof GroovyObject) {
+				GroovyObject go = (GroovyObject) instance;
+				return go.invokeMethod(methodName, args);
+			} else {//static invoke
+				List<String> argsType = new ArrayList<String>();
+				if (args != null) {
+					for (Object arg : args) {
+						argsType.add(arg.getClass().getName());
+					}
+				}
+				Method method = getMethod((Class) instance, methodName, argsType.toArray(new String[argsType.size()]));
+				if (instance instanceof Class) {
+					return method.invoke(null, args);
+				} else {
+					return method.invoke(instance, args);
+				}
+			}
+		} catch (Exception e) {
+			Exceptions.runtime(FCS.get("invoke method {0} error.", methodName), e);
+		}
+		return null;
 	}
 }

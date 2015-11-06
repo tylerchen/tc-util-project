@@ -17,7 +17,7 @@ import javax.inject.Inject;
 
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
-import org.iff.infra.com.dayatang.domain.InstanceFactory;
+import org.iff.infra.domain.InstanceFactory;
 import org.iff.infra.util.mybatis.plugin.Page;
 import org.iff.infra.util.mybatis.service.RepositoryService;
 
@@ -58,9 +58,9 @@ public class MybatisRepositoryServiceImpl implements RepositoryService {
 		if (params == null) {
 			list = sqlSession.selectList(queryDsl);
 		} else {
-			RowBounds rowBounds = getObjectByType(RowBounds.class, params);
-			if (rowBounds != null) {
-				list = sqlSession.selectList(queryDsl, params, rowBounds);
+			Page page = getObjectByType(Page.class, params);
+			if (page != null) {
+				list = sqlSession.selectList(queryDsl, params, new RowBounds(page.getOffset(), page.getLimit()));
 			} else {
 				list = sqlSession.selectList(queryDsl, params);
 			}
@@ -102,6 +102,8 @@ public class MybatisRepositoryServiceImpl implements RepositoryService {
 	private <T> T getObjectByType(Class<T> type, Object params) {
 		if (params == null) {
 			return null;
+		} else if (type.isInstance(params)) {
+			return (T) params;
 		} else if (params.getClass().isArray()) {
 			for (Object obj : (Object[]) params) {
 				if (type.isInstance(obj)) {
@@ -117,7 +119,7 @@ public class MybatisRepositoryServiceImpl implements RepositoryService {
 		} else if (params instanceof Map<?, ?>) {
 			for (Entry<?, ?> entry : ((Map<?, ?>) params).entrySet()) {
 				if (type.isInstance(entry.getValue())) {
-					return (T) (RowBounds) entry.getValue();
+					return (T) entry.getValue();
 				}
 			}
 		}

@@ -30,7 +30,7 @@ import org.iff.infra.util.ReflectHelper;
 import org.iff.infra.util.RegisterHelper;
 import org.iff.infra.util.SocketHelper;
 import org.iff.infra.util.StringHelper;
-import org.iff.infra.util.TCActionHelper;
+import org.iff.infra.util.ActionHelper;
 import org.iff.infra.util.moduler.TCActionHandler.TCChain;
 import org.iff.infra.util.moduler.TCRenderManager.TCRender;
 
@@ -63,11 +63,11 @@ public class TCFilter implements Filter {
 		}
 	}
 
-	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException,
-			ServletException {
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+			throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) resp;
-		TCActionHelper actionHelper = TCActionHelper.create(request, response);
+		ActionHelper actionHelper = ActionHelper.create(request, response);
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		String target = request.getServletPath();
@@ -111,8 +111,8 @@ public class TCFilter implements Filter {
 				SocketHelper.closeWithoutError(response.getWriter());
 			} else {
 				response.setContentType(contentType);
-				response.getOutputStream().write(
-						tcModule.getResourceByte(target.startsWith("/") ? target : ("/" + target)));
+				response.getOutputStream()
+						.write(tcModule.getResourceByte(target.startsWith("/") ? target : ("/" + target)));
 				SocketHelper.closeWithoutError(response.getOutputStream());
 			}
 			return;
@@ -138,8 +138,8 @@ public class TCFilter implements Filter {
 		}
 		Map params = MapHelper.toMap("request", request, "response", response, "context", request.getContextPath(),
 				"appContext", appContext, "actionContext", target, "servletPath", request.getServletPath(), "target",
-				target, "urlParams", urlParams, "filterConfig", this.filterConfig, "servletCotext",
-				this.servletContext, "targetPrefix", targetPrefix, "moduleName", moduleName, "tcmodule", tcModule);
+				target, "urlParams", urlParams, "filterConfig", this.filterConfig, "servletCotext", this.servletContext,
+				"targetPrefix", targetPrefix, "moduleName", moduleName, "tcmodule", tcModule);
 		if (target.startsWith("/WEB-INF/") || target.startsWith("WEB-INF/")) {
 			response.setContentType("text/html; charset=UTF-8");
 			if (!render("html", "403.html", params)) {
@@ -185,8 +185,8 @@ public class TCFilter implements Filter {
 					}
 					SocketHelper.closeWithoutError(response.getWriter());
 				} else {
-					response.getOutputStream().write(
-							tcModule.getResourceByte(target.startsWith("/") ? target : ("/" + target)));
+					response.getOutputStream()
+							.write(tcModule.getResourceByte(target.startsWith("/") ? target : ("/" + target)));
 					SocketHelper.closeWithoutError(response.getOutputStream());
 				}
 			}

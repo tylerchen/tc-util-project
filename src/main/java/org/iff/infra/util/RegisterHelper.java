@@ -31,7 +31,7 @@ public class RegisterHelper {
 			Map<String, Object> registors = registerBus.get(type);
 			if (registors == null) {
 				registors = new LinkedHashMap<String, Object>();
-				registerBus.put(type, value);
+				registerBus.put(type, registors);
 			}
 			registors.put((String) value.get("name"), value.get("value"));
 			return true;

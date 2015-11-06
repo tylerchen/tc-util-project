@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Aug 9, 2015
  */
-public class TCActionHelper {
+public class ActionHelper {
 
 	private static final String urlCharset = "UTF-8";
 	private HttpServletRequest request = null;
@@ -29,8 +29,8 @@ public class TCActionHelper {
 	private Map<String, Object> userAgent = new HashMap<String, Object>();
 	private Map<String, Object> requestParams = new LinkedHashMap<String, Object>();
 
-	public static TCActionHelper create(HttpServletRequest request, HttpServletResponse response) {
-		TCActionHelper actionHelper = new TCActionHelper();
+	public static ActionHelper create(HttpServletRequest request, HttpServletResponse response) {
+		ActionHelper actionHelper = new ActionHelper();
 		{
 			actionHelper.setRequest(request);
 			actionHelper.setResponse(response);
@@ -39,8 +39,8 @@ public class TCActionHelper {
 		return actionHelper;
 	}
 
-	public static TCActionHelper get() {
-		TCActionHelper actionHelper = ThreadLocalHelper.get("actionHelper");
+	public static ActionHelper get() {
+		ActionHelper actionHelper = ThreadLocalHelper.get("actionHelper");
 		if (actionHelper == null) {
 			Map params = ThreadLocalHelper.get("params");
 			actionHelper = create((HttpServletRequest) params.get("request"),
@@ -72,12 +72,12 @@ public class TCActionHelper {
 		return "";
 	}
 
-	public TCActionHelper addUrlParam(String key, Object value) {
+	public ActionHelper addUrlParam(String key, Object value) {
 		requestParams.put(key, urlEncode(value == null ? null : String.valueOf(value)));
 		return this;
 	}
 
-	public TCActionHelper forward(String url) {
+	public ActionHelper forward(String url) {
 		if (url != null && url.length() > 0 && requestParams.size() > 0) {
 			StringBuilder sb = new StringBuilder(512).append(url);
 			if (url.endsWith("?") || url.endsWith("&")) {
@@ -100,7 +100,7 @@ public class TCActionHelper {
 		return this;
 	}
 
-	public TCActionHelper redirect(String url) {
+	public ActionHelper redirect(String url) {
 		if (url != null && url.length() > 0 && requestParams.size() > 0) {
 			StringBuilder sb = new StringBuilder(512).append(url);
 			if (url.endsWith("?") || url.endsWith("&")) {

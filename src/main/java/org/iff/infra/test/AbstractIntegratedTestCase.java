@@ -3,8 +3,8 @@ package org.iff.infra.test;
 import javax.sql.DataSource;
 
 import org.dbunit.operation.DatabaseOperation;
-import org.iff.infra.com.dayatang.domain.InstanceFactory;
-import org.iff.infra.com.dayatang.spring.factory.SpringInstanceProvider;
+import org.iff.infra.domain.InstanceFactory;
+import org.iff.infra.util.spring.factory.SpringInstanceProvider;
 
 public abstract class AbstractIntegratedTestCase extends Dbunit {
 
