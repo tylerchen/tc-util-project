@@ -7,8 +7,11 @@
  ******************************************************************************/
 package org.iff.infra.util.freemarker.model;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.iff.infra.util.FCS;
+import org.iff.infra.util.Logger;
 import org.iff.infra.util.freemarker.FreeMarkerConfiguration;
 import org.iff.infra.util.freemarker.FreeMarkerTemplateModel;
 
@@ -50,6 +53,7 @@ public class HelperMethod implements TemplateMethodModelEx {
 				return templateModel;
 			}
 		}
+		Logger.warn(FCS.get("class not found, for arguments: {0}", Arrays.toString(arguments.toArray())));
 		return null;
 	}
 }
