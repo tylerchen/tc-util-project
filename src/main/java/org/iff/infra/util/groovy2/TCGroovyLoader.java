@@ -13,7 +13,6 @@ import groovy.lang.GroovyShell;
 
 import java.io.File;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;

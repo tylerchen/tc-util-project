@@ -41,12 +41,13 @@ public class InstanceFactory {
 	 */
 	public static InstanceProvider getInstanceProvider() {
 		if (instanceProvider == null) {
-			instanceProvider = new InstanceProviderDelegate();
+			/*instanceProvider = new InstanceProviderDelegate();
 			if (SpringContextHelper.getApplicationContext() != null) {
 				RegisterHelper.regist(InstanceProvider.class.getName(),
 						MapHelper.toMap("name", SpringInstanceProvider.class.getSimpleName(), "value",
 								new SpringInstanceProvider(SpringContextHelper.getApplicationContext())));
-			}
+			}*/
+			instanceProvider = new SpringInstanceProvider(SpringContextHelper.getApplicationContext());
 		}
 		return instanceProvider;
 	}

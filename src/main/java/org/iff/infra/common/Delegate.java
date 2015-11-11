@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) Nov 5, 2015 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) Oct 13, 2015 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -9,9 +9,16 @@ package org.iff.infra.common;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since Nov 5, 2015
+ * @since Oct 13, 2015
  */
-public interface Updateable<T> {
+public interface Delegate {
 
-	T update(Object params);
+	/**
+	 * return the support
+	 * @param o
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Oct 13, 2015
+	 */
+	boolean support(Object o);
 }

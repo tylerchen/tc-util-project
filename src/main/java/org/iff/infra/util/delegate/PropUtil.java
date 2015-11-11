@@ -10,6 +10,7 @@ package org.iff.infra.util.delegate;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.iff.infra.common.Delegate;
 import org.iff.infra.util.RegisterHelper;
 
 /**
