@@ -16,7 +16,6 @@ import org.iff.infra.util.ResourceHelper;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
 import freemarker.template.Version;
 
 /**
