@@ -9,6 +9,7 @@ package org.iff.infra.util;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -77,6 +78,37 @@ public class ActionHelper {
 		return this;
 	}
 
+	public String urlParamToString(String url) {
+		if (url != null && url.length() > 0 && requestParams.size() > 0) {
+			StringBuilder sb = new StringBuilder(512).append(url);
+			if (url.endsWith("?") || url.endsWith("&")) {
+			} else if (url.indexOf('?') > -1) {
+				sb.append('&');
+			} else {
+				sb.append('?');
+			}
+			for (Entry<String, Object> entry : requestParams.entrySet()) {
+				sb.append(entry.getKey()).append('=').append(entry.getValue()).append('&');
+			}
+			sb.setLength(sb.length() - 1);
+			url = sb.toString();
+		}
+		return url;
+	}
+
+	public String urlParamToString() {
+		String url = null;
+		if (requestParams.size() > 0) {
+			StringBuilder sb = new StringBuilder(512);
+			for (Entry<String, Object> entry : requestParams.entrySet()) {
+				sb.append(entry.getKey()).append('=').append(entry.getValue()).append('&');
+			}
+			sb.setLength(sb.length() - 1);
+			url = sb.toString();
+		}
+		return url;
+	}
+
 	public ActionHelper forward(String url) {
 		if (url != null && url.length() > 0 && requestParams.size() > 0) {
 			StringBuilder sb = new StringBuilder(512).append(url);
@@ -128,6 +160,18 @@ public class ActionHelper {
 			userAgent.putAll(HttpHelper.userAgent(request.getHeader("User-Agent")));
 		}
 		return userAgent;
+	}
+
+	public Map<String, Object> requestParameterToMap() {
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		if (request != null) {
+			Enumeration<String> names = request.getParameterNames();
+			while (names.hasMoreElements()) {
+				String name = names.nextElement();
+				map.put(name, request.getParameter(name));
+			}
+		}
+		return map;
 	}
 
 	public HttpServletRequest getRequest() {
