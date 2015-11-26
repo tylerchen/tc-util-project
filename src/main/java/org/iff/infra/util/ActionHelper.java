@@ -51,6 +51,33 @@ public class ActionHelper {
 		return actionHelper;
 	}
 
+	public static String fixQueryString(String queryString, String... removeParams) {
+		if (queryString == null || queryString.length() < 1) {
+			return queryString;
+		}
+		Map<String, String> map = new HashMap<String, String>();
+		{
+			if (removeParams != null) {
+				for (String rp : removeParams) {
+					map.put(rp, rp);
+				}
+			}
+		}
+		StringBuilder sb = new StringBuilder(queryString.length());
+		String[] params = queryString.split("&");
+		for (String p : params) {
+			String name = p.indexOf('=') > -1 ? p.substring(0, p.indexOf('=')) : p;
+			if (!map.containsKey(name)) {
+				sb.append(p).append('&');
+				map.put(name, name);
+			}
+		}
+		if (sb.length() > 0) {
+			sb.setLength(sb.length() - 1);
+		}
+		return sb.toString();
+	}
+
 	public String urlEncode(String url) {
 		if (url != null && url.length() > 0) {
 			try {

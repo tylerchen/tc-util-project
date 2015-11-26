@@ -62,3 +62,9 @@ ${style}
 <#list .globals.tmcss as css>
 ${css}
 </#list>
+
+<#macro testt class name>
+	${class}-${name}
+</#macro>
+
+aaaa: <@testt class="aaa" name="bbb" />

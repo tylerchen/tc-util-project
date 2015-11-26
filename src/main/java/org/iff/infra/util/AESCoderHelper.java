@@ -131,7 +131,7 @@ public class AESCoderHelper {
 	public static byte[] decrypt(byte[] data, byte[] key) throws Exception {
 		return decrypt(data, key, DEFAULT_CIPHER_ALGORITHM);
 	}
-
+	
 	/**
 	 * 解密
 	 *
@@ -240,5 +240,8 @@ public class AESCoderHelper {
 			System.out.println("10000 spend time:" + (System.currentTimeMillis() - start));
 		}
 		System.out.println(MD5Helper.md5("hello").length);
+		System.out.println("=====");
+		System.out.println("加密后数据: hexStr:" + new String(Hex.encodeHex(encrypt("1234567890123".getBytes(), KEY))));
+		System.out.println("加密后数据: hexStr:" + encryptString("1234567890123"));
 	}
 }
