@@ -1,4 +1,4 @@
-package org.iff.infra.validation;
+package org.iff.infra.util.validation;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.validator.routines.DateValidator;

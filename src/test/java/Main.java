@@ -6,6 +6,8 @@ import org.iff.infra.util.SocketHelper;
 import org.iff.infra.util.moduler.TCApplication;
 import org.iff.infra.util.moduler.TCServer;
 
+import net.sf.cglib.beans.BeanCopier;
+
 /*******************************************************************************
  * Copyright (c) 2014-7-3 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
@@ -22,6 +24,11 @@ import org.iff.infra.util.moduler.TCServer;
 public class Main {
 
 	public static void main(String[] args) {
+		BeanCopier.create(ModelPropertyVO.class, ModelProperty.class, false).copy(new ModelPropertyVO(),
+				new ModelProperty(), null);
+	}
+
+	public static void main5(String[] args) {
 		System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/commonModule");
 		//System.setProperty("tc_base_paths", "file:///Users/zhaochen/Desktop/share/test/hello.jar");
 		TCServer server = TCServer.create(8080, "/");

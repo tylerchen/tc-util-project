@@ -1,4 +1,4 @@
-package org.iff.infra.validation;
+package org.iff.infra.util.validation;
 
 import org.springframework.validation.Errors;
 

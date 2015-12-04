@@ -36,6 +36,21 @@ public class TestFreemarkerDirective {
 
 			config.setDirectivePath("org.iff.infra.util.freemarker.model");
 
+			Template template = config.getTemplate("test_file_output.ftl", "UTF-8");
+			template.process(MapHelper.toMap("test", "123"), new PrintWriter(System.out));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main2(String[] args) {
+		try {
+			FreeMarkerConfiguration config = new FreeMarkerConfiguration();
+			config.setDirectoryForTemplateLoading(
+					new File("/Users/zhaochen/dev/workspace/cocoa/tc-util-project/src/test/resources/ftl"));
+
+			config.setDirectivePath("org.iff.infra.util.freemarker.model");
+
 			Template template = config.getTemplate("mvel.ftl", "UTF-8");
 			template.process(MapHelper.toMap("test", "123"), new PrintWriter(System.out));
 		} catch (Exception e) {

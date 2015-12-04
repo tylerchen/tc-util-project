@@ -35,6 +35,10 @@ public abstract class GenericXStreamProvider<T> implements MessageBodyReader<T>,
 
 	public GenericXStreamProvider() {
 	}
+	
+	private void hello(String aa){
+		System.out.println(aa);
+	}
 
 	public GenericXStreamProvider(XStream xstream) {
 		this.xstream = xstream;

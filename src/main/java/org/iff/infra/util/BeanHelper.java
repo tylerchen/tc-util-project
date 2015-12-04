@@ -9,8 +9,19 @@ package org.iff.infra.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -37,6 +48,8 @@ import com.google.gson.GsonBuilder;
 public class BeanHelper {
 
 	private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+	private static final Map<String, Map<String, Method>> cacheMehtod = new HashMap<String, Map<String, Method>>();
+	private static final Map<String, Map<String, Field>> cacheField = new HashMap<String, Map<String, Field>>();
 
 	private static final ObjectMapper mapper = new ObjectMapper()
 			.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -99,7 +112,189 @@ public class BeanHelper {
 		return (T) fromJson;
 	}
 
-	public static void main(String[] args) {
+	private static <T> T copyPlainObjectProperties(Object dest, Object orig) {
+		String destClassName = dest.getClass().getName();
+		String origClassName = orig.getClass().getName();
+		{
+			Map<String, Method> destMethod = cacheMehtod.get(destClassName);
+			Map<String, Method> origMethod = cacheMehtod.get(origClassName);
+			for (Entry<String, Method> entry : destMethod.entrySet()) {
+				if (entry.getKey().charAt(0) != 's') {
+					continue;
+				}
+				String setterName = "g" + entry.getKey().substring(1);
+				Method setter = origMethod.get(setterName);
+				if (setter == null) {
+					continue;
+				}
+
+			}
+		}
+
+		return (T) dest;
+	}
+
+	private static boolean isPlainClass(Class<?> clazz) {
+		if (cacheMehtod.containsKey(clazz.getName())) {
+			return true;
+		}
+		Map<String, Field> fieldMap = new LinkedHashMap<String, Field>();
+		{
+			while (clazz != Object.class && !clazz.isInterface()) {
+				Field[] fields = clazz.getDeclaredFields();
+				for (Field f : fields) {
+					if (!fieldMap.containsKey(f.getName())) {
+						fieldMap.put(f.getName(), f);
+					}
+				}
+				clazz = clazz.getSuperclass();
+			}
+		}
+		Map<String, Method> methodMap = new LinkedHashMap<String, Method>();
+		{
+			while (clazz != Object.class && !clazz.isInterface()) {
+				Method[] methods = clazz.getMethods();
+				for (Method m : methods) {
+					String name = m.getName();
+					if (!methodMap.containsKey(name)) {
+						if (name.startsWith("set") && name.length() > 3) {
+							Class<?> dc = m.getParameterTypes().length == 1 ? m.getParameterTypes()[0] : null;
+							Type type = m.getGenericParameterTypes().length == 1 ? m.getGenericParameterTypes()[0]
+									: null;
+							if (dc != null && (isPrimitive(dc) || isPrimitiveArray(dc) || isSimpleType(dc)
+									|| isSimpleTypeArray(dc) || (type != null && isSimpleCollection(dc, type))
+									|| (type != null && isSimpleMap(dc, type)))) {
+								methodMap.put(name, m);
+							} else {
+								return false;
+							}
+						} else if (name.startsWith("get") && name.length() > 3) {
+							Class<?> dc = m.getReturnType();
+							Type type = m.getGenericReturnType();
+							if (dc != null && (isPrimitive(dc) || isPrimitiveArray(dc) || isSimpleType(dc)
+									|| isSimpleTypeArray(dc) || (type != null && isSimpleCollection(dc, type))
+									|| (type != null && isSimpleMap(dc, type)))) {
+								methodMap.put(name, m);
+							} else {
+								return false;
+							}
+						} else if (name.startsWith("is")
+								&& (m.getReturnType() == boolean.class || m.getReturnType() == Boolean.class)
+								&& name.length() > 2) {
+							methodMap.put(name, m);
+						} else {
+							return false;
+						}
+					}
+				}
+				clazz = clazz.getSuperclass();
+			}
+		}
+		cacheMehtod.put(clazz.getName(), methodMap);
+		{
+			for (Entry<String, Method> m : methodMap.entrySet()) {
+				String name = m.getKey();
+				name = name.startsWith("get") || name.startsWith("set") ? name.substring(3)
+						: (name.startsWith("is") ? name.substring(2) : "");
+				if (name.length() < 1) {
+					continue;
+				}
+				if (fieldMap.containsKey(name) || fieldMap.containsKey((name = StringUtils.uncapitalize(name)))) {
+					fieldMap.remove(name);
+				}
+			}
+		}
+		cacheField.put(clazz.getName(), fieldMap);
+		return true;
+	}
+
+	private static boolean isPrimitive(Class<?> clazz) {
+		return clazz.isPrimitive();
+	}
+
+	private static boolean isSimpleType(Class<?> clazz) {
+		return Number.class.isAssignableFrom(clazz) || CharSequence.class.isAssignableFrom(clazz)
+				|| java.util.Date.class.isAssignableFrom(clazz) || Boolean.class.isAssignableFrom(clazz)
+				|| Character.class.isAssignableFrom(clazz) || Byte.class.isAssignableFrom(clazz);
+	}
+
+	private static boolean isPrimitiveArray(Class<?> clazz) {
+		String name = clazz.getName();
+		// byte[] --> [B, char[] --> [C, short[] --> [S, int[] --> [I, long[] --> [J, float[] --> [F, double[] --> [D, boolean[] -->[Z
+		return clazz.isArray() && name.length() == 2 && name.charAt(0) == '[';
+	}
+
+	private static boolean isSimpleTypeArray(Class<?> clazz) {
+		if (!clazz.isArray()) {
+			return false;
+		}
+		String name = clazz.getName();
+		// [Ljava.lang.Byte;, [Ljava.lang.Character;, [Ljava.lang.Short;, [Ljava.lang.Integer;, [Ljava.lang.Long;, [Ljava.lang.Float;, [Ljava.lang.Double;, [Ljava.lang.Boolean;
+		try {
+			name = name.substring(2, name.length() - 1);
+			clazz = Class.forName(name);
+			return isSimpleType(clazz);
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	private static boolean isSimpleCollection(Class<?> clazz, Type type) {
+		if (!Collection.class.isAssignableFrom(clazz) && !ParameterizedType.class.isInstance(type)) {
+			return false;
+		}
+		try {
+			ParameterizedType pType = (ParameterizedType) type;
+			type = pType.getActualTypeArguments()[0];
+			WildcardType wType = (WildcardType) type;
+			return isSimpleType((Class<?>) wType.getUpperBounds()[0]);
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	private static boolean isSimpleMap(Class<?> clazz, Type type) {
+		if (!Map.class.isAssignableFrom(clazz) && !ParameterizedType.class.isInstance(type)) {
+			return false;
+		}
+		try {
+			ParameterizedType pType = (ParameterizedType) type;
+			for (Type t : pType.getActualTypeArguments()) {
+				WildcardType wType = (WildcardType) t;
+				if (!isSimpleType((Class<?>) wType.getUpperBounds()[0])) {
+					return false;
+				}
+			}
+			return true;
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	public static void main2(String[] args) {
+		//System.out.println(Arrays.asList(1,2,3,4,5).toArray(new byte[0]));
+		System.out.println(Number.class.isAssignableFrom(int.class));
+		System.out.println(isSimpleTypeArray(new Byte[0].getClass()));
+		System.out.println((new byte[0]).getClass().getName());
+		System.out.println((new byte[0]).getClass().getName());
+		System.out.println((new char[0]).getClass().getName());
+		System.out.println((new short[0]).getClass().getName());
+		System.out.println((new int[0]).getClass().getName());
+		System.out.println((new long[0]).getClass().getName());
+		System.out.println((new float[0]).getClass().getName());
+		System.out.println((new double[0]).getClass().getName());
+		System.out.println((new boolean[0]).getClass().getName());
+		System.out.println((new Byte[0]).getClass().getName());
+		System.out.println((new Character[0]).getClass().getName());
+		System.out.println((new Short[0]).getClass().getName());
+		System.out.println((new Integer[0]).getClass().getName());
+		System.out.println((new Long[0]).getClass().getName());
+		System.out.println((new Float[0]).getClass().getName());
+		System.out.println((new Double[0]).getClass().getName());
+		System.out.println((new Boolean[0]).getClass().getName());
+	}
+
+	public static void main1(String[] args) {
 		B b = new B();
 		C c = new C();
 		b.print();
