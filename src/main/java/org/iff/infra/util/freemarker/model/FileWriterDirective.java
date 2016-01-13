@@ -46,71 +46,43 @@ public class FileWriterDirective implements TemplateDirectiveModel {
 			throw new TemplateException("Missing name parameter for filewirter directive", env);
 		}
 		try {
+			String fileExt = "";
+			String fileName = "";
+			String filePath = "";
+			int lastIndex1 = name.lastIndexOf('/');
+			int lastIndex2 = name.lastIndexOf('.');
+			if ((lastIndex1 > -1 && lastIndex1 < lastIndex2) || (lastIndex1 < 0 && lastIndex2 > -1)) {// ex: aa/bb.c
+				fileExt = name.substring(lastIndex2);
+				name = name.substring(0, lastIndex2);
+			}
 			if ("java".equalsIgnoreCase(type)) {
-				if (name.toLowerCase().endsWith(".java")) {
-					name = name.substring(0, name.length() - ".java".length()).replaceAll("\\.", "/") + ".java";
+				name = name.replaceAll("\\.", "/");
+			}
+			{
+				lastIndex1 = name.lastIndexOf('/');
+				if (lastIndex1 > -1) {
+					fileName = name.substring(lastIndex1 + 1) + fileExt;
+					filePath = StringHelper.pathConcat(basedir, name.substring(0, lastIndex1));
+				} else {
+					fileName = name + fileExt;
+					filePath = StringHelper.pathConcat(basedir, "/");
 				}
 			}
-			name = StringHelper.pathBuild(name, "/");
+
 			FileOutputStream fos = null;
 			try {
-				File parentDir = new File(StringHelper.pathConcat(basedir,
-						name.lastIndexOf('/') > -1 ? name.substring(0, name.lastIndexOf('/')) : name));
+				File parentDir = new File(filePath);
 				parentDir.mkdirs();
-				fos = new FileOutputStream(new File(parentDir,
-						name.lastIndexOf('/') > -1 ? name.substring(name.lastIndexOf('/') + 1) : name));
+				fos = new FileOutputStream(new File(parentDir, fileName));
 				StringWriter stringWriter = new StringWriter(10240);
 				body.render(stringWriter);
-				fos.write(stringWriter.toString().getBytes());
+				fos.write(stringWriter.toString().getBytes("UTF-8"));
 			} finally {
 				SocketHelper.closeWithoutError(fos);
 			}
 		} catch (Exception e) {
 			throw new TemplateException(e, env);
 		}
-		//		{
-		//			String cssCode = "";
-		//			if (body != null) {
-		//				StringWriter stringWriter = new StringWriter(512);
-		//				body.render(stringWriter);
-		//				cssCode = stringWriter.toString().trim();
-		//			}
-		//			if (cssCode.length() > 0) {
-		//				TemplateModel model = env.getGlobalVariable("tmcss");
-		//				if (model == null || !(model instanceof SimpleSequence)) {
-		//					model = new SimpleSequence(new ArrayList(), env.getConfiguration().getObjectWrapper());
-		//				}
-		//				{
-		//					((SimpleSequence) model).add(cssCode);
-		//				}
-		//				env.setGlobalVariable("tmcss", model);
-		//			}
-		//		}
-		//		{
-		//			TemplateModel model = env.getGlobalVariable("tmstyle");
-		//			if (model == null || !(model instanceof SimpleSequence)) {
-		//				model = new SimpleSequence(new ArrayList(), env.getConfiguration().getObjectWrapper());
-		//			}
-		//			if (required != null && required.length() > 0) {
-		//				String[] split = required.split(",");
-		//				for (String s : split) {
-		//					s = s.trim();
-		//					int size = ((SimpleSequence) model).size();
-		//					boolean contains = false;
-		//					for (int i = 0; i < size; i++) {
-		//						TemplateModel tm = ((SimpleSequence) model).get(i);
-		//						if (s.equals(tm.toString())) {
-		//							contains = true;
-		//							break;
-		//						}
-		//					}
-		//					if (!contains) {
-		//						((SimpleSequence) model).add(s);
-		//					}
-		//				}
-		//			}
-		//			env.setGlobalVariable("tmstyle", model);
-		//		}
 	}
 
 	private String getParameterName(Map params, String name) {

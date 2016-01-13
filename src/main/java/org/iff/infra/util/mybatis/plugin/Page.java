@@ -16,6 +16,7 @@ public class Page implements Serializable, Cloneable {
 	private int totalCount; // 总记录数
 	private int currentPage; // 当前页
 	private int offset; // 记录偏移量
+	private boolean offsetPage = false;
 
 	/** 分页结果 */
 	private List rows = new ArrayList();
@@ -31,7 +32,7 @@ public class Page implements Serializable, Cloneable {
 		page.setCurrentPage(currentPage);
 		totalCount = totalCount < -1 ? 0 : totalCount;
 		page.setTotalCount(totalCount);
-		rows = rows == null ? new ArrayList() : rows;
+		rows = rows == null ? page.getRows() : rows;
 		page.setRows(rows);
 		return page;
 	}
@@ -42,13 +43,14 @@ public class Page implements Serializable, Cloneable {
 		page.setOffset(offset);
 		pageSize = pageSize < 1 ? PAGE_SIZE_DEFAULT : pageSize;
 		page.setPageSize(pageSize);
-		rows = rows == null ? new ArrayList() : rows;
+		rows = rows == null ? page.getRows() : rows;
 		page.setRows(rows);
+		page.offsetPage = true;
 		return page;
 	}
 
 	public boolean isOffsetPage() {
-		return totalCount == 0 && offset >= 0;
+		return offsetPage;
 	}
 
 	public int getOffset() {

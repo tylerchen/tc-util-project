@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
+import com.esotericsoftware.reflectasm.MethodAccess;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -50,6 +51,7 @@ public class BeanHelper {
 	private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 	private static final Map<String, Map<String, Method>> cacheMehtod = new HashMap<String, Map<String, Method>>();
 	private static final Map<String, Map<String, Field>> cacheField = new HashMap<String, Map<String, Field>>();
+	private static final Map<Object, MethodAccess> cacheMethodAccess = new HashMap<Object, MethodAccess>();
 
 	private static final ObjectMapper mapper = new ObjectMapper()
 			.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -111,6 +113,20 @@ public class BeanHelper {
 		Object fromJson = GSON.fromJson(GSON.toJsonTree(orig), clazz);
 		return (T) fromJson;
 	}
+
+	//	private static <T> T copyGetSetProperties(Object dest, Object orig) {
+	//		TypeConvert destTc = TypeConvertHelper.me().get(dest.getClass().getName());
+	//		TypeConvert origTc = TypeConvertHelper.me().get(orig.getClass().getName());
+	//		if ("null".equals(destTc.getName()) && "null".equals(origTc.getName())) {
+	//			if (dest instanceof Map && orig instanceof Map) {
+	//				return (T) MapHelper.combine((Map) dest, (Map) orig);
+	//			}else if(dest instanceof List){
+	//				
+	//			}
+	//		} else {
+	//			return (T) dest;
+	//		}
+	//	}
 
 	private static <T> T copyPlainObjectProperties(Object dest, Object orig) {
 		String destClassName = dest.getClass().getName();
@@ -294,7 +310,7 @@ public class BeanHelper {
 		System.out.println((new Boolean[0]).getClass().getName());
 	}
 
-	public static void main1(String[] args) {
+	public static void main(String[] args) {
 		B b = new B();
 		C c = new C();
 		b.print();
@@ -317,7 +333,14 @@ public class BeanHelper {
 			for (int i = 0; i < 10000; i++) {
 				BeanHelper.copyProperties(c, b);
 			}
-			System.out.println("Object2Object:" + (System.currentTimeMillis() - start) / 10000.0);
+			System.out.println("Object2Object-ins:" + (System.currentTimeMillis() - start) / 10000.0);
+		}
+		{
+			long start = System.currentTimeMillis();
+			for (int i = 0; i < 10000; i++) {
+				BeanHelper.copyProperties(C.class, b);
+			}
+			System.out.println("Object2Object-class:" + (System.currentTimeMillis() - start) / 10000.0);
 		}
 		{
 			long start = System.currentTimeMillis();

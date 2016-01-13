@@ -24,7 +24,7 @@ import freemarker.template.Version;
  */
 public class FreeMarkerConfiguration extends Configuration {
 
-	private static final BeansWrapper beansWrapper = new freemarker.ext.beans.BeansWrapperBuilder(
+	public static final BeansWrapper beansWrapper = new freemarker.ext.beans.BeansWrapperBuilder(
 			freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS).build();
 	public static final freemarker.template.TemplateModel helper = beansWrapper.getStaticModels();
 
@@ -32,10 +32,12 @@ public class FreeMarkerConfiguration extends Configuration {
 
 	public FreeMarkerConfiguration() {
 		super(freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+		init();
 	}
 
 	public FreeMarkerConfiguration(Version incompatibleImprovements) {
 		super(incompatibleImprovements);
+		init();
 	}
 
 	protected void init() {

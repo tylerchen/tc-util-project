@@ -1,5 +1,4 @@
 
-
 import java.io.Serializable;
 
 import org.iff.infra.util.mybatis.service.Dao;
@@ -117,6 +116,13 @@ public class ModelProperty implements Serializable {
 
 	public void setSize(String size) {
 		this.size = size;
+	}
+
+	protected void setAA(String aa) {
+	}
+
+	protected String getAA() {
+		return "";
 	}
 
 	public static ModelProperty get(ModelProperty one) {

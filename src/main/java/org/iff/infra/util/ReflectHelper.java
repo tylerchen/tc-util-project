@@ -13,9 +13,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
 import groovy.lang.GroovyObject;
 
 /**
@@ -26,8 +23,8 @@ import groovy.lang.GroovyObject;
 public class ReflectHelper {
 
 	private static boolean CACHE = false;
-	private static Multimap<Class<?>, Field> CACHE_FIELD = ArrayListMultimap.create();
-	private static Multimap<Class<?>, Method> CACHE_METHOD = ArrayListMultimap.create();
+	//private static Multimap<Class<?>, Field> CACHE_FIELD = ArrayListMultimap.create();
+	//private static Multimap<Class<?>, Method> CACHE_METHOD = ArrayListMultimap.create();
 
 	private ReflectHelper() {
 	}

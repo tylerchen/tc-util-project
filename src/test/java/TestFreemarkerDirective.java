@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.iff.infra.util.MapHelper;
 import org.iff.infra.util.freemarker.FreeMarkerConfiguration;
@@ -28,11 +29,29 @@ public class TestFreemarkerDirective {
 			freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS).build();
 	private static final freemarker.template.TemplateModel helper = beansWrapper.getStaticModels();
 
+	public static void main3(String[] args) {
+		try {
+			FreeMarkerConfiguration config = new FreeMarkerConfiguration();
+			config.setDirectoryForTemplateLoading(
+					new File("/Users/zhaochen/dev/workspace/cocoa/tc-util-project/src/test/resources/ftl"));
+
+			config.setDirectivePath("org.iff.infra.util.freemarker.model");
+
+			Template template = config.getTemplate("test.ftl", "UTF-8");
+			template.process(MapHelper.toMap("test", "123"), new PrintWriter(System.out));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void main(String[] args) {
 		try {
 			FreeMarkerConfiguration config = new FreeMarkerConfiguration();
 			config.setDirectoryForTemplateLoading(
 					new File("/Users/zhaochen/dev/workspace/cocoa/tc-util-project/src/test/resources/ftl"));
+			
+			System.out.println(config.getDefaultEncoding());
+			System.out.println(config.getOutputEncoding());
 
 			config.setDirectivePath("org.iff.infra.util.freemarker.model");
 

@@ -27,6 +27,7 @@ public final class StringHelper {
 	public static final int HIGHEST_SPECIAL = '>' + 1;
 	/** store the special html char **/
 	public static char[][] specialCharactersRepresentation = new char[HIGHEST_SPECIAL][];
+
 	static {
 		specialCharactersRepresentation['&'] = "&amp;".toCharArray();
 		specialCharactersRepresentation['<'] = "&lt;".toCharArray();
@@ -470,7 +471,7 @@ public final class StringHelper {
 		return urlString;
 	}
 
-	public static String cutTo(String source, String toCut) {
+	public static String cutLeft(String source, String toCut) {
 		if (source == null || source.length() < 1) {
 			return source;
 		}
@@ -478,12 +479,36 @@ public final class StringHelper {
 		return index > -1 ? (source.substring(index + toCut.length())) : source;
 	}
 
-	public static String cutOff(String source, String toCut) {
+	public static String cutRight(String source, String toCut) {
 		if (source == null || source.length() < 1) {
 			return source;
 		}
 		int index = source.lastIndexOf(toCut);
 		return index > -1 ? (source.substring(0, index)) : source;
+	}
+
+	public static String addStart(String source, String toAdd) {
+		if (source == null || source.length() < 1) {
+			return source;
+		}
+		return source.startsWith(toAdd) ? source : (toAdd + source);
+	}
+
+	public static String addEnd(String source, String toAdd) {
+		if (source == null || source.length() < 1) {
+			return source;
+		}
+		return source.endsWith(toAdd) ? source : (source + toAdd);
+	}
+
+	@Deprecated
+	public static String cutTo(String source, String toCut) {
+		return cutLeft(source, toCut);
+	}
+
+	@Deprecated
+	public static String cutOff(String source, String toCut) {
+		return cutRight(source, toCut);
 	}
 
 	public static String trim(String source, String toTrim) {

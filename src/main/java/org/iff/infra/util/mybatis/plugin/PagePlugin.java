@@ -29,7 +29,7 @@ import org.iff.infra.util.ReflectHelper;
 import org.iff.infra.util.jdbc.dialet.Dialect;
 
 @SuppressWarnings("unchecked")
-@Intercepts( { @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }) })
+@Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }) })
 public class PagePlugin implements Interceptor {
 
 	private static Dialect dialectObject = null; // 数据库方言
@@ -50,7 +50,6 @@ public class PagePlugin implements Interceptor {
 				if (parameterObject == null) {
 					throw new NullPointerException("boundSql.getParameterObject() is null!");
 				} else {
-
 					Page page = null;
 					if (parameterObject instanceof Page) { // 参数就是Pages实体
 						page = (Page) parameterObject;
@@ -63,65 +62,67 @@ public class PagePlugin implements Interceptor {
 						}
 					} else { // 参数为某个实体，该实体拥有Pages属性
 						page = ReflectHelper.getValueByFieldType(parameterObject, Page.class);
-						if (page == null) {
-							return ivk.proceed();
-						}
+					}
+					if (page == null) {
+						return ivk.proceed();
 					}
 
 					String sql = boundSql.getSql();
 					PreparedStatement countStmt = null;
 					ResultSet rs = null;
-					try {
-						Connection connection = (Connection) ivk.getArgs()[0];
-						String countSql = "select count(1) from (" + sql + ") tmp_count"; // 记录统计
-						countStmt = connection.prepareStatement(countSql);
-						ReflectHelper.setValueByFieldName(boundSql, "sql", countSql);
-						Constructor<?> defaultParameterHandlerObject = null;
-						if (defaultParameterHandlerObject == null) {
-							try {// for mybatis 3.1.1
-								defaultParameterHandlerObject = ReflectHelper.getConstructor(
-										"org.apache.ibatis.executor.parameter.DefaultParameterHandler",
-										"org.apache.ibatis.mapping.MappedStatement", "java.lang.Object",
-										"org.apache.ibatis.mapping.BoundSql");
-							} catch (Exception e) {
-								Logger.debug(FCS.get("[LoadDefaultParameterHandlerFail]:{0}",
-										"org.apache.ibatis.executor.parameter.DefaultParameterHandler"));
+					if (!page.isOffsetPage()) {
+						try {
+							Connection connection = (Connection) ivk.getArgs()[0];
+							String countSql = "select count(*) from (" + sql + ") tmp_count"; // 记录统计
+							countStmt = connection.prepareStatement(countSql);
+							ReflectHelper.setValueByFieldName(boundSql, "sql", countSql);
+							Constructor<?> defaultParameterHandlerObject = null;
+							if (defaultParameterHandlerObject == null) {
+								try {// for mybatis 3.1.1
+									defaultParameterHandlerObject = ReflectHelper.getConstructor(
+											"org.apache.ibatis.executor.parameter.DefaultParameterHandler",
+											"org.apache.ibatis.mapping.MappedStatement", "java.lang.Object",
+											"org.apache.ibatis.mapping.BoundSql");
+								} catch (Exception e) {
+									Logger.debug(FCS.get("[LoadDefaultParameterHandlerFail]:{0}",
+											"org.apache.ibatis.executor.parameter.DefaultParameterHandler"));
+								}
 							}
-						}
-						if (defaultParameterHandlerObject == null) {
-							try {// for mybatis 3.2.8
-								defaultParameterHandlerObject = ReflectHelper.getConstructor(
-										"org.apache.ibatis.scripting.defaults.DefaultParameterHandler",
-										"org.apache.ibatis.mapping.MappedStatement", "java.lang.Object",
-										"org.apache.ibatis.mapping.BoundSql");
-							} catch (Exception e) {
-								Logger.debug(FCS.get("[LoadDefaultParameterHandlerFail]:{0}",
-										"org.apache.ibatis.scripting.defaults.DefaultParameterHandler"));
+							if (defaultParameterHandlerObject == null) {
+								try {// for mybatis 3.2.8
+									defaultParameterHandlerObject = ReflectHelper.getConstructor(
+											"org.apache.ibatis.scripting.defaults.DefaultParameterHandler",
+											"org.apache.ibatis.mapping.MappedStatement", "java.lang.Object",
+											"org.apache.ibatis.mapping.BoundSql");
+								} catch (Exception e) {
+									Logger.debug(FCS.get("[LoadDefaultParameterHandlerFail]:{0}",
+											"org.apache.ibatis.scripting.defaults.DefaultParameterHandler"));
+								}
 							}
-						}
-						try {
-							Object instance = defaultParameterHandlerObject.newInstance(mappedStatement,
-									parameterObject, boundSql);
-							Method method = ReflectHelper.getMethod(instance.getClass().getName(), "setParameters",
-									"java.sql.PreparedStatement");
-							method.invoke(instance, countStmt);
-						} catch (Exception e) {
-							Logger.debug("[DefaultParameterHandler.setParameters]", e);
-						}
-						rs = countStmt.executeQuery();
-						int count = 0;
-						if (rs.next()) {
-							count = ((Number) rs.getObject(1)).intValue();
-						}
-						page.setTotalCount(count);
-					} finally {
-						try {
-							rs.close();
-						} catch (Exception e) {
-						}
-						try {
-							countStmt.close();
-						} catch (Exception e) {
+							try {
+								Object instance = defaultParameterHandlerObject.newInstance(mappedStatement,
+										parameterObject, boundSql);
+								Method method = ReflectHelper.getMethod(instance.getClass().getName(), "setParameters",
+										"java.sql.PreparedStatement");
+								method.invoke(instance, countStmt);
+							} catch (Exception e) {
+								Logger.debug("[DefaultParameterHandler.setParameters]", e);
+							}
+							rs = countStmt.executeQuery();
+							int count = 0;
+							if (rs.next()) {
+								count = ((Number) rs.getObject(1)).intValue();
+							}
+							page.setTotalCount(count);
+						} finally {
+							try {
+								rs.close();
+							} catch (Exception e) {
+							}
+							try {
+								countStmt.close();
+							} catch (Exception e) {
+							}
 						}
 					}
 					String pageSql = generatePagesSql(sql, page);
@@ -141,8 +142,8 @@ public class PagePlugin implements Interceptor {
 	 */
 	private String generatePagesSql(String sql, Page page) {
 		if (page != null && dialectObject != null) {
-			return dialectObject.getLimitString(sql, (page.getCurrentPage() - 1) * page.getPageSize(), page
-					.getPageSize());
+			return dialectObject.getLimitString(sql, (page.getCurrentPage() - 1) * page.getPageSize(),
+					page.getPageSize());
 		}
 		return sql;
 	}

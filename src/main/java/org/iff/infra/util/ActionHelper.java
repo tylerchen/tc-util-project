@@ -7,6 +7,9 @@
  ******************************************************************************/
 package org.iff.infra.util;
 
+import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Enumeration;
@@ -15,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,7 +57,7 @@ public class ActionHelper {
 
 	public static String fixQueryString(String queryString, String... removeParams) {
 		if (queryString == null || queryString.length() < 1) {
-			return queryString;
+			return "";
 		}
 		Map<String, String> map = new HashMap<String, String>();
 		{
@@ -63,11 +67,14 @@ public class ActionHelper {
 				}
 			}
 		}
-		StringBuilder sb = new StringBuilder(queryString.length());
-		String[] params = queryString.split("&");
+		int indexOf = queryString.indexOf('?');
+		String requestUrl = indexOf > -1 ? queryString.substring(0, indexOf + 1) : "";
+		String queryParam = indexOf > -1 ? queryString.substring(indexOf + 1) : queryString;
+		StringBuilder sb = new StringBuilder(queryString.length()).append(requestUrl);
+		String[] params = queryParam.split("&");
 		for (String p : params) {
-			String name = p.indexOf('=') > -1 ? p.substring(0, p.indexOf('=')) : p;
-			if (!map.containsKey(name)) {
+			String name = p.indexOf('=') > -1 ? p.substring(0, p.indexOf('=')) : "";
+			if (name.length() > 0 && !map.containsKey(name)) {
 				sb.append(p).append('&');
 				map.put(name, name);
 			}
@@ -199,6 +206,30 @@ public class ActionHelper {
 			}
 		}
 		return map;
+	}
+
+	public void download(String fileName, InputStream is, long size) {
+		byte[] buffer = new byte[1024 * 10];
+		int len = 0;
+		OutputStream os = null;
+		try {
+			response.reset();
+			// 先去掉文件名称中的空格,然后转换编码格式为utf-8,保证不出现乱码,这个文件名称用于浏览器的下载框中自动显示的文件名
+			response.addHeader("Content-Disposition",
+					"attachment;filename=" + new String(fileName.replaceAll(" ", "").getBytes("UTF-8"), "ISO8859-1"));
+			response.addHeader("Content-Length", "" + size);
+			response.setContentType("application/octet-stream");
+			os = response.getOutputStream();
+			while ((len = is.read(buffer)) > 0) {
+				os.write(buffer, 0, len);
+			}
+			os.flush();
+		} catch (Exception e) {
+			Exceptions.runtime("download error.", e);
+		} finally {
+			SocketHelper.closeWithoutError(is);
+			SocketHelper.closeWithoutError(os);
+		}
 	}
 
 	public HttpServletRequest getRequest() {
