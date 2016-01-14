@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.zip.Adler32;
 import java.util.zip.CheckedInputStream;
@@ -23,6 +24,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -65,34 +67,55 @@ public class ZipHelper {
 		}
 	}
 
-	public static void zip(String dir, String zipFileName) {
+	public static void zip(String[] paths, String zipFileName, String rootFolderName) {
 		BufferedInputStream origin = null;
 		ZipOutputStream out = null;
 		try {
+			if (paths == null || paths.length == 0) {
+				Logger.warn("No zip entry input, the paths is empty.");
+				return;
+			}
 			FileOutputStream dest = new FileOutputStream(zipFileName);
 			CheckedOutputStream checksum = new CheckedOutputStream(dest, new Adler32());
 			out = new ZipOutputStream(new BufferedOutputStream(checksum));
 			//out.setMethod(ZipOutputStream.DEFLATED);
 			byte data[] = new byte[BUFFER];
-			// get a list of files from current directory
-			File f = new File(dir);
-			Collection<File> files = FileUtils.listFiles(f, FileFilterUtils.fileFileFilter(),
-					FileFilterUtils.directoryFileFilter());
-
-			for (File file : files) {
-				System.out.println("Adding: " + file);
-				try {
-					FileInputStream fi = new FileInputStream(file);
-					origin = new BufferedInputStream(fi, BUFFER);
-					ZipEntry entry = new ZipEntry(StringHelper.pathConcat(f.getName(),
-							file.getAbsolutePath().substring(f.getAbsolutePath().length())));
-					out.putNextEntry(entry);
-					int count;
-					while ((count = origin.read(data, 0, BUFFER)) != -1) {
-						out.write(data, 0, count);
+			for (String path : paths) {
+				// get a list of files from current directory
+				File pathFile = new File(path);
+				String pathFileAsbPath = pathFile.getAbsolutePath();
+				String folderName = "";
+				Collection<File> files = new ArrayList<File>();
+				{
+					if (pathFile.isDirectory()) {
+						files = FileUtils.listFiles(pathFile, FileFilterUtils.fileFileFilter(),
+								FileFilterUtils.directoryFileFilter());
+						folderName = pathFile.getName();
+					} else if (pathFile.isFile()) {
+						files.add(pathFile);
+						File parent = pathFile.getParentFile();
+						pathFileAsbPath = parent == null ? "" : parent.getAbsolutePath();
+						folderName = "";
 					}
-				} finally {
-					SocketHelper.closeWithoutError(origin);
+				}
+
+				for (File file : files) {
+					System.out.println("Adding: " + file);
+					try {
+						FileInputStream fi = new FileInputStream(file);
+						origin = new BufferedInputStream(fi, BUFFER);
+						String entryName = StringHelper.pathConcat(rootFolderName, folderName,
+								file.getAbsolutePath().substring(pathFileAsbPath.length()));
+						entryName = StringUtils.removeStart(entryName, "/");
+						ZipEntry entry = new ZipEntry(entryName);
+						out.putNextEntry(entry);
+						int count;
+						while ((count = origin.read(data, 0, BUFFER)) != -1) {
+							out.write(data, 0, count);
+						}
+					} finally {
+						SocketHelper.closeWithoutError(origin);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -102,10 +125,12 @@ public class ZipHelper {
 		}
 	}
 
-	public static void main(String[] args) {
-		unzip("/Users/zhaochen/dev/workspace/cocoa/foss-qdp-project/src/main/webapp/WEB-INF/project_base_framework/qdp-1.0.0.zip",
-				"/Users/zhaochen/dev/workspace/cocoa/foss-qdp-project/src/main/webapp/WEB-INF/project_base_framework/");
-		zip("/Users/zhaochen/dev/workspace/cocoa/foss-qdp-project/src/main/webapp/WEB-INF/project_base_framework/test-project",
-				"/Users/zhaochen/dev/workspace/cocoa/foss-qdp-project/src/main/webapp/WEB-INF/project_base_framework/qdp-test.zip");
+	public static void zip(String path, String zipFileName) {
+		if (StringUtils.isEmpty(path)) {
+			Logger.warn("No zip entry input, the paths is empty.");
+			return;
+		}
+		File file = new File(path);
+		zip(new String[] { path }, zipFileName, file.isDirectory() ? file.getName() : null);
 	}
 }
