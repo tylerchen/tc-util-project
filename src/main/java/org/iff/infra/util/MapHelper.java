@@ -19,6 +19,7 @@ import java.util.Set;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-2-26
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class MapHelper {
 
 	/**
@@ -114,8 +115,8 @@ public class MapHelper {
 				tmp.put(paths[i], val);
 			}
 			if (!(val instanceof Map)) {
-				Logger.error(FCS.get("[MapHelper.setByPath][{0}][{1}][ISNOTMAP][{2}]", path, paths[i], val.getClass()
-						.getName()));
+				Logger.error(FCS.get("[MapHelper.setByPath][{0}][{1}][ISNOTMAP][{2}]", path, paths[i],
+						val.getClass().getName()));
 				return;
 			} else {
 				tmp = (Map) val;
@@ -176,9 +177,5 @@ public class MapHelper {
 			}
 		}
 		return beCombineMap;
-	}
-
-	public static void main(String[] args) {
-
 	}
 }

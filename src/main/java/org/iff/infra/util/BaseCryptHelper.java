@@ -17,6 +17,7 @@ public class BaseCryptHelper {
 	private static char[] encodes = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
 	//===============================Base64
 	private static byte[] decodes = new byte[256];
+
 	static {
 		for (int i = 0; i < encodes.length; i++) {
 			decodes[encodes[i]] = (byte) i;
@@ -40,6 +41,10 @@ public class BaseCryptHelper {
 		return sb;
 	}
 
+	public static String encodeBase64(String toEncode) {
+		return encodeBase64(toEncode.getBytes()).toString();
+	}
+
 	public static byte[] decodeBase64(char[] data) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
 		int pos = 0, val = 0;
@@ -54,6 +59,10 @@ public class BaseCryptHelper {
 		return baos.toByteArray();
 	}
 
+	public static byte[] decodeBase64(String string) {
+		return decodeBase64(string.toCharArray());
+	}
+
 	//===============================Base64 END
 	//===============================Base62
 	public static StringBuffer encodeBase62(byte[] data) {
@@ -64,21 +73,27 @@ public class BaseCryptHelper {
 			pos += 8;
 			while (pos > 5) {
 				char c = encodes[val >> (pos -= 6)];
-				sb.append(
-				/**/c == 'i' ? "ia" :
-				/**/c == '+' ? "ib" :
-				/**/c == '/' ? "ic" : c);
+				sb.append(/**/c == 'i' ? "ia"
+						:
+						/**/c == '+' ? "ib"
+								:
+								/**/c == '/' ? "ic" : c);
 				val &= ((1 << pos) - 1);
 			}
 		}
 		if (pos > 0) {
 			char c = encodes[val << (6 - pos)];
-			sb.append(
-			/**/c == 'i' ? "ia" :
-			/**/c == '+' ? "ib" :
-			/**/c == '/' ? "ic" : c);
+			sb.append(/**/c == 'i' ? "ia"
+					:
+					/**/c == '+' ? "ib"
+							:
+							/**/c == '/' ? "ic" : c);
 		}
 		return sb;
+	}
+
+	public static String encodeBase62(String string) {
+		return encodeBase62(string.getBytes()).toString();
 	}
 
 	public static byte[] decodeBase62(char[] data) {
@@ -89,9 +104,11 @@ public class BaseCryptHelper {
 			if (c == 'i') {
 				c = data[++i];
 				c =
-				/**/c == 'a' ? 'i' :
-				/**/c == 'b' ? '+' :
-				/**/c == 'c' ? '/' : data[--i];
+				/**/c == 'a' ? 'i'
+						:
+						/**/c == 'b' ? '+'
+								:
+								/**/c == 'c' ? '/' : data[--i];
 			}
 			val = (val << 6) | decodes[c];
 			pos += 6;
@@ -101,6 +118,10 @@ public class BaseCryptHelper {
 			}
 		}
 		return baos.toByteArray();
+	}
+
+	public static byte[] decodeBase62(String string) {
+		return decodeBase62(string.toCharArray());
 	}
 
 	//===============================Base62 END

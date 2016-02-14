@@ -11,7 +11,6 @@ import groovy.util.Node;
 import groovy.util.XmlParser;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,6 +36,7 @@ import java.util.Map;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Aug 11, 2015
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class XmlHelper {
 
 	/**
@@ -93,12 +93,5 @@ public class XmlHelper {
 			e.printStackTrace();
 		}
 		return xml;
-	}
-
-	public static void main(String[] args) {
-		System.out.println(
-				parseXmlToMap(null, "jar:file:///Users/zhaochen/Desktop/share/test/hello.jar!/META-INF/tcmodule.xml"));
-		System.out.println(
-				parseXmlToMap(null, "file:///Users/zhaochen/Desktop/share/test/commonModule/META-INF/tcmodule.xml"));
 	}
 }

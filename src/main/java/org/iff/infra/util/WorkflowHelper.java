@@ -17,6 +17,7 @@ import java.util.Map;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Sep 9, 2015
  */
+@Deprecated
 public class WorkflowHelper {
 
 	private List<Object> steps = new ArrayList<Object>();

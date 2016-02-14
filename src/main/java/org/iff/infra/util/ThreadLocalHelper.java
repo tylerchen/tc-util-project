@@ -21,9 +21,10 @@ import java.util.Map;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Aug 7, 2015
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class ThreadLocalHelper {
 
-	private static ThreadLocal<Map> params = new ThreadLocal<Map>();
+	private static final ThreadLocal<Map> params = new ThreadLocal<Map>();
 
 	/**
 	 * setting value to current ThreadLocal map.

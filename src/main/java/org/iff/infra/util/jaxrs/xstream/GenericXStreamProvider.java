@@ -35,10 +35,6 @@ public abstract class GenericXStreamProvider<T> implements MessageBodyReader<T>,
 
 	public GenericXStreamProvider() {
 	}
-	
-	private void hello(String aa){
-		System.out.println(aa);
-	}
 
 	public GenericXStreamProvider(XStream xstream) {
 		this.xstream = xstream;
@@ -49,8 +45,8 @@ public abstract class GenericXStreamProvider<T> implements MessageBodyReader<T>,
 	}
 
 	public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
-			WebApplicationException {
+			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+					throws IOException, WebApplicationException {
 		return (T) getXstream().fromXML(new InputStreamReader(entityStream, Charsets.UTF_8));
 	}
 
@@ -63,8 +59,8 @@ public abstract class GenericXStreamProvider<T> implements MessageBodyReader<T>,
 	}
 
 	public void writeTo(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException,
-			WebApplicationException {
+			MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+					throws IOException, WebApplicationException {
 		final Writer w = new OutputStreamWriter(entityStream, Charsets.UTF_8);
 		getXstream().toXML(t, w);
 	}

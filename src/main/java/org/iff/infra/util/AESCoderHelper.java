@@ -54,49 +54,258 @@ public class AESCoderHelper {
 
 	/**
 	 * 转换密钥
-	 *
-	 * @param key   二进制密钥
-	 * @return 密钥
 	 */
-	private static Key toKey(byte[] key) {
+	public static Key toKey(byte[] key) {
 		//生成密钥
 		return new SecretKeySpec(key, KEY_ALGORITHM);
 	}
 
 	/**
+	 * 转换密钥
+	 */
+	public static Key toKeyByHex(String hexKey) {
+		//生成密钥
+		try {
+			return new SecretKeySpec(Hex.decodeHex(hexKey.toCharArray()), KEY_ALGORITHM);
+		} catch (Exception e) {
+			Exceptions.runtime("Decode key by Hex string fail!", e);
+		}
+		return null;
+	}
+
+	/**
+	 * 转换密钥
+	 */
+	public static Key toKeyByBase64(String base64Key) {
+		//生成密钥
+		try {
+			return new SecretKeySpec(BaseCryptHelper.decodeBase64(base64Key.toCharArray()), KEY_ALGORITHM);
+		} catch (Exception e) {
+			Exceptions.runtime("Decode key by Base64 string fail!", e);
+		}
+		return null;
+	}
+
+	/**
+	 * 转换密钥
+	 */
+	public static Key toKeyByBase62(String base62Key) {
+		//生成密钥
+		try {
+			return new SecretKeySpec(BaseCryptHelper.decodeBase62(base62Key.toCharArray()), KEY_ALGORITHM);
+		} catch (Exception e) {
+			Exceptions.runtime("Decode key by Base62 string fail!", e);
+		}
+		return null;
+	}
+
+	/**
 	 * 加密
-	 *
 	 * @param data  待加密数据
 	 * @param key   密钥
 	 * @return byte[]   加密数据
 	 * @throws Exception
 	 */
-	public static byte[] encrypt(byte[] data, Key key) throws Exception {
+	public static byte[] encrypt(byte[] data, Key key) {
 		return encrypt(data, key, DEFAULT_CIPHER_ALGORITHM);
 	}
 
 	/**
 	 * 加密
-	 *
 	 * @param data  待加密数据
 	 * @param key   二进制密钥
 	 * @return byte[]   加密数据
 	 * @throws Exception
 	 */
-	public static byte[] encrypt(byte[] data, byte[] key) throws Exception {
+	public static byte[] encrypt(byte[] data, byte[] key) {
 		return encrypt(data, key, DEFAULT_CIPHER_ALGORITHM);
 	}
 
 	/**
 	 * 加密
-	 *
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByHexKey(byte[] data, String hexKey) {
+		return encrypt(data, toKeyByHex(hexKey), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByHexKey(byte[] data, String hexKey, String cipherAlgorithm) {
+		return encrypt(data, toKeyByHex(hexKey), cipherAlgorithm);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByBase64Key(byte[] data, String base64Key) {
+		return encrypt(data, toKeyByBase64(base64Key), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByBase64Key(byte[] data, String base64Key, String cipherAlgorithm) {
+		return encrypt(data, toKeyByBase64(base64Key), cipherAlgorithm);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByBase642Key(byte[] data, String base62Key) {
+		return encrypt(data, toKeyByBase62(base62Key), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByBase642Key(byte[] data, String base62Key, String cipherAlgorithm) {
+		return encrypt(data, toKeyByBase62(base62Key), cipherAlgorithm);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encrypt(String toEncrypt, Key key) {
+		return encrypt(toEncrypt.getBytes(), key, DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encrypt(String toEncrypt, Key key, String cipherAlgorithm) {
+		return encrypt(toEncrypt.getBytes(), key, cipherAlgorithm);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encrypt(String toEncrypt, byte[] key) {
+		return encrypt(toEncrypt.getBytes(), key, DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encrypt(String toEncrypt, byte[] key, String cipherAlgorithm) {
+		return encrypt(toEncrypt.getBytes(), key, cipherAlgorithm);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByHexKey(String toEncrypt, String hexKey) {
+		return encrypt(toEncrypt.getBytes(), toKeyByHex(hexKey), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByHexKey(String toEncrypt, String hexKey, String cipherAlgorithm) {
+		return encrypt(toEncrypt.getBytes(), toKeyByHex(hexKey), cipherAlgorithm);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByBase64Key(String toEncrypt, String base64Key) {
+		return encrypt(toEncrypt.getBytes(), toKeyByBase64(base64Key), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByBase64Key(String toEncrypt, String base64Key, String cipherAlgorithm) {
+		return encrypt(toEncrypt.getBytes(), toKeyByBase64(base64Key), cipherAlgorithm);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByBase642Key(String toEncrypt, String base62Key) {
+		return encrypt(toEncrypt.getBytes(), toKeyByBase62(base62Key), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 加密
+	 * @param data  待加密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   加密数据
+	 * @throws Exception
+	 */
+	public static byte[] encryptByBase642Key(String toEncrypt, String base62Key, String cipherAlgorithm) {
+		return encrypt(toEncrypt.getBytes(), toKeyByBase62(base62Key), cipherAlgorithm);
+	}
+
+	/**
+	 * 加密
 	 * @param data  待加密数据
 	 * @param key   二进制密钥
 	 * @param cipherAlgorithm   加密算法/工作模式/填充方式
 	 * @return byte[]   加密数据
 	 * @throws Exception
 	 */
-	public static byte[] encrypt(byte[] data, byte[] key, String cipherAlgorithm) throws Exception {
+	public static byte[] encrypt(byte[] data, byte[] key, String cipherAlgorithm) {
 		//还原密钥
 		Key k = toKey(key);
 		return encrypt(data, k, cipherAlgorithm);
@@ -111,37 +320,216 @@ public class AESCoderHelper {
 	 * @return byte[]   加密数据
 	 * @throws Exception
 	 */
-	public static byte[] encrypt(byte[] data, Key key, String cipherAlgorithm) throws Exception {
-		//实例化
-		Cipher cipher = Cipher.getInstance(cipherAlgorithm);
-		//使用密钥初始化，设置为加密模式
-		cipher.init(Cipher.ENCRYPT_MODE, key);
-		//执行操作
-		return cipher.doFinal(data);
+	public static byte[] encrypt(byte[] data, Key key, String cipherAlgorithm) {
+		try {
+			//实例化
+			Cipher cipher = Cipher.getInstance(cipherAlgorithm);
+			//使用密钥初始化，设置为加密模式
+			cipher.init(Cipher.ENCRYPT_MODE, key);
+			//执行操作
+			return cipher.doFinal(data);
+		} catch (Exception e) {
+			Exceptions.runtime("AES encrypt data fail!", e);
+		}
+		return null;
 	}
 
 	/**
 	 * 解密
-	 *
-	 * @param data  待解密数据
-	 * @param key   二进制密钥
-	 * @return byte[]   解密数据
-	 * @throws Exception
-	 */
-	public static byte[] decrypt(byte[] data, byte[] key) throws Exception {
-		return decrypt(data, key, DEFAULT_CIPHER_ALGORITHM);
-	}
-	
-	/**
-	 * 解密
-	 *
 	 * @param data  待解密数据
 	 * @param key   密钥
 	 * @return byte[]   解密数据
 	 * @throws Exception
 	 */
-	public static byte[] decrypt(byte[] data, Key key) throws Exception {
+	public static byte[] decrypt(byte[] data, Key key) {
 		return decrypt(data, key, DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decrypt(byte[] data, byte[] key) {
+		return decrypt(data, key, DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByHexKey(byte[] data, String hexKey) {
+		return decrypt(data, toKeyByHex(hexKey), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByHexKey(byte[] data, String hexKey, String cipherAlgorithm) {
+		return decrypt(data, toKeyByHex(hexKey), cipherAlgorithm);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByBase64Key(byte[] data, String base64Key) {
+		return decrypt(data, toKeyByBase64(base64Key), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByBase64Key(byte[] data, String base64Key, String cipherAlgorithm) {
+		return decrypt(data, toKeyByBase64(base64Key), cipherAlgorithm);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByBase62Key(byte[] data, String base62Key) {
+		return decrypt(data, toKeyByBase62(base62Key), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByBase62Key(byte[] data, String base62Key, String cipherAlgorithm) {
+		return decrypt(data, toKeyByBase62(base62Key), cipherAlgorithm);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decrypt(String toDecrypt, Key key) {
+		return decrypt(toDecrypt.getBytes(), key, DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decrypt(String toDecrypt, Key key, String cipherAlgorithm) {
+		return decrypt(toDecrypt.getBytes(), key, cipherAlgorithm);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decrypt(String toDecrypt, byte[] key) {
+		return decrypt(toDecrypt.getBytes(), key, DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decrypt(String toDecrypt, byte[] key, String cipherAlgorithm) {
+		return decrypt(toDecrypt.getBytes(), key, cipherAlgorithm);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByHexKey(String toDecrypt, String hexKey) {
+		return decrypt(toDecrypt.getBytes(), toKeyByHex(hexKey), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByHexKey(String toDecrypt, String hexKey, String cipherAlgorithm) {
+		return decrypt(toDecrypt.getBytes(), toKeyByHex(hexKey), cipherAlgorithm);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByBase64Key(String toDecrypt, String base64Key) {
+		return decrypt(toDecrypt.getBytes(), toKeyByBase64(base64Key), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByBase64Key(String toDecrypt, String base64Key, String cipherAlgorithm) {
+		return decrypt(toDecrypt.getBytes(), toKeyByBase64(base64Key), cipherAlgorithm);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByBase62Key(String toDecrypt, String base62Key) {
+		return decrypt(toDecrypt.getBytes(), toKeyByBase62(base62Key), DEFAULT_CIPHER_ALGORITHM);
+	}
+
+	/**
+	 * 解密
+	 * @param data  待解密数据
+	 * @param key   二进制密钥
+	 * @return byte[]   解密数据
+	 * @throws Exception
+	 */
+	public static byte[] decryptByBase62Key(String toDecrypt, String base62Key, String cipherAlgorithm) {
+		return decrypt(toDecrypt.getBytes(), toKeyByBase62(base62Key), cipherAlgorithm);
 	}
 
 	/**
@@ -153,7 +541,7 @@ public class AESCoderHelper {
 	 * @return byte[]   解密数据
 	 * @throws Exception
 	 */
-	public static byte[] decrypt(byte[] data, byte[] key, String cipherAlgorithm) throws Exception {
+	public static byte[] decrypt(byte[] data, byte[] key, String cipherAlgorithm) {
 		//还原密钥
 		Key k = toKey(key);
 		return decrypt(data, k, cipherAlgorithm);
@@ -168,13 +556,18 @@ public class AESCoderHelper {
 	 * @return byte[]   解密数据
 	 * @throws Exception
 	 */
-	public static byte[] decrypt(byte[] data, Key key, String cipherAlgorithm) throws Exception {
-		//实例化
-		Cipher cipher = Cipher.getInstance(cipherAlgorithm);
-		//使用密钥初始化，设置为解密模式
-		cipher.init(Cipher.DECRYPT_MODE, key);
-		//执行操作
-		return cipher.doFinal(data);
+	public static byte[] decrypt(byte[] data, Key key, String cipherAlgorithm) {
+		try {
+			//实例化
+			Cipher cipher = Cipher.getInstance(cipherAlgorithm);
+			//使用密钥初始化，设置为解密模式
+			cipher.init(Cipher.DECRYPT_MODE, key);
+			//执行操作
+			return cipher.doFinal(data);
+		} catch (Exception e) {
+			Exceptions.runtime("AES encrypt data fail!", e);
+		}
+		return null;
 	}
 
 	private static String showByteArray(byte[] data) {

@@ -1,16 +1,14 @@
-
+package tet;
 
 import java.io.Serializable;
+import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.iff.infra.util.mybatis.service.Dao;
 
-@XmlRootElement(name = "ModelProperty")
 @SuppressWarnings("serial")
-public class ModelPropertyVO implements Serializable {
+public class ModelProperty implements Serializable {
 
 	private String id;
-	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private java.util.Date createTime;
 	private int sort;
 	private String isNull;
@@ -22,8 +20,10 @@ public class ModelPropertyVO implements Serializable {
 	private String defaultValue;
 	private String type;
 	private String size;
+	private ModelProperty self;
+	private List<ModelProperty> list;
 
-	public ModelPropertyVO() {
+	public ModelProperty() {
 	}
 
 	public String getId() {
@@ -122,9 +122,46 @@ public class ModelPropertyVO implements Serializable {
 		this.size = size;
 	}
 
-	/*@Override
-	public String toString() {
-	
-	}*/
+	protected void setAA(String aa) {
+	}
 
+	protected String getAA() {
+		return "";
+	}
+
+	public ModelProperty getSelf() {
+		return self;
+	}
+
+	public void setSelf(ModelProperty self) {
+		this.self = self;
+	}
+
+	public List<ModelProperty> getList() {
+		return list;
+	}
+
+	public void setList(List<ModelProperty> list) {
+		this.list = list;
+	}
+
+	public static ModelProperty get(ModelProperty one) {
+		return Dao.queryOne("ModelProperty.getModelProperty", one);
+	}
+
+	public static void remove(ModelProperty one) {
+		Dao.remove("ModelProperty.deleteModelProperty", one);
+	}
+
+	public void add() {
+		Dao.save("ModelProperty.insertModelProperty", this);
+	}
+
+	public void update() {
+		Dao.save("ModelProperty.updateModelProperty", this);
+	}
+
+	public void remove() {
+		Dao.remove("ModelProperty.deleteModelProperty", this);
+	}
 }

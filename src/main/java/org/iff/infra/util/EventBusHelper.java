@@ -4,9 +4,19 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PatternLayout;
 
 public class EventBusHelper {
 	private static EventBusHelper me = new EventBusHelper();
+	private static final ExecutorService executor = Executors.newFixedThreadPool(20,
+			new BasicThreadFactory.Builder().build());
 	private Map<String, Map<String, EventProcess>> defaultBus = Collections
 			.synchronizedMap(new LinkedHashMap<String, Map<String, EventProcess>>());
 
@@ -76,7 +86,7 @@ public class EventBusHelper {
 		final Map<String, EventProcess> processors = defaultBus.get(eventPath);
 		if (processors != null && !processors.isEmpty()) {
 			for (final Entry<String, EventProcess> entry : processors.entrySet()) {
-				new Thread() {
+				executor.execute(new Runnable() {
 					public void run() {
 						try {
 							entry.getValue().listen(eventPath, events);
@@ -84,7 +94,7 @@ public class EventBusHelper {
 							Logger.debug(FCS.get("[EventBusHelper.async_event]:eventPath={0}", eventPath), e);
 						}
 					}
-				}.start();
+				});
 			}
 		} else if (!"deadEvent".endsWith(eventPath)) {
 			asyncEvent("deadEvent", MapHelper.toMap("sourceEventPath", eventPath, "sourceEvent", events));
@@ -126,5 +136,22 @@ public class EventBusHelper {
 		public String getName() {
 			return "deadEvent";
 		}
+	}
+
+	public static void main(String[] args) {
+		ConsoleAppender console = new ConsoleAppender();
+		LogManager.getRootLogger().addAppender(console);
+		{
+			//configure the appender
+			String PATTERN = "%t %d [%p|%c|%C{1}] %m%n";
+			console.setLayout(new PatternLayout(PATTERN));
+			console.setThreshold(Level.DEBUG);
+			console.activateOptions();
+		}
+		Logger.changeLevel("FOSS", "debug");
+		EventBusHelper.me().asyncEvent("/test", 1);
+		EventBusHelper.me().asyncEvent("/test", 1);
+		EventBusHelper.me().asyncEvent("/test", 1);
+		EventBusHelper.me().asyncEvent("/test", 1);
 	}
 }

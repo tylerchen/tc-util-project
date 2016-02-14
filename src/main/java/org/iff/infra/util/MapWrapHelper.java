@@ -14,6 +14,7 @@ import java.util.Map;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Jan 2, 2016
  */
+@Deprecated
 public class MapWrapHelper {
 
 	public static <T> T wrapTo(Map map, Class<T> clazz) {

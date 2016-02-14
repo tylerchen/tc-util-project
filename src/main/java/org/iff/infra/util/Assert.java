@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-3-14
  */
+@SuppressWarnings("unchecked")
 public class Assert {
 
 	/**
@@ -42,8 +43,7 @@ public class Assert {
 	 */
 	public static void isTrue(boolean expression, CharSequence message) {
 		if (!expression) {
-			throw new IllegalArgumentException("[FOSS-0001][isTrue][" + message
-					+ "]");
+			throw new IllegalArgumentException("[FOSS-0001][isTrue][" + message + "]");
 		}
 	}
 
@@ -81,8 +81,7 @@ public class Assert {
 	 */
 	public static void isNull(Object object, CharSequence message) {
 		if (object != null) {
-			throw new IllegalArgumentException("[FOSS-0002][isNull][" + message
-					+ "]");
+			throw new IllegalArgumentException("[FOSS-0002][isNull][" + message + "]");
 		}
 	}
 
@@ -118,8 +117,7 @@ public class Assert {
 	 */
 	public static void notNull(Object object, CharSequence message) {
 		if (object == null) {
-			throw new IllegalArgumentException("[FOSS-0003][notNull]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0003][notNull][" + message + "]");
 		}
 	}
 
@@ -136,8 +134,7 @@ public class Assert {
 	 *             if the object is <code>null</code>
 	 */
 	public static void notNull(Object object) {
-		notNull(object,
-				"[Assertion failed] - this argument is required; it must not be null");
+		notNull(object, "[Assertion failed] - this argument is required; it must not be null");
 	}
 
 	/**
@@ -147,8 +144,7 @@ public class Assert {
 	 */
 	public static void isEmpty(CharSequence text, CharSequence message) {
 		if (StringUtils.isNotEmpty(text)) {
-			throw new IllegalArgumentException("[FOSS-0004][isEmpty]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0004][isEmpty][" + message + "]");
 		}
 	}
 
@@ -157,8 +153,7 @@ public class Assert {
 	 * @param text the character sequence to be checked
 	 */
 	public static void isEmpty(CharSequence text) {
-		isEmpty(text,
-				"[Assertion failed] - this CharSequence argument must be null or empty");
+		isEmpty(text, "[Assertion failed] - this CharSequence argument must be null or empty");
 	}
 
 	/**
@@ -168,8 +163,7 @@ public class Assert {
 	 */
 	public static void notEmpty(CharSequence text, CharSequence message) {
 		if (StringUtils.isEmpty(text)) {
-			throw new IllegalArgumentException("[FOSS-0005][notEmpty]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0005][notEmpty][" + message + "]");
 		}
 	}
 
@@ -178,8 +172,7 @@ public class Assert {
 	 * @param text the character sequence to be checked
 	 */
 	public static void notEmpty(CharSequence text) {
-		notEmpty(text,
-				"[Assertion failed] - this CharSequence argument must not be null or empty");
+		notEmpty(text, "[Assertion failed] - this CharSequence argument must not be null or empty");
 	}
 
 	/**
@@ -189,8 +182,7 @@ public class Assert {
 	 */
 	public static void isBlank(CharSequence text, CharSequence message) {
 		if (StringUtils.isNotBlank(text)) {
-			throw new IllegalArgumentException("[FOSS-0006][isBlank]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0006][isBlank][" + message + "]");
 		}
 	}
 
@@ -199,8 +191,7 @@ public class Assert {
 	 * @param text the character sequence to be checked
 	 */
 	public static void isBlank(CharSequence text) {
-		isBlank(text,
-				"[Assertion failed] - this CharSequence argument must be null or blank");
+		isBlank(text, "[Assertion failed] - this CharSequence argument must be null or blank");
 	}
 
 	/**
@@ -210,8 +201,7 @@ public class Assert {
 	 */
 	public static void notBlank(CharSequence text, CharSequence message) {
 		if (StringUtils.isBlank(text)) {
-			throw new IllegalArgumentException("[FOSS-0007][notBlank]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0007][notBlank][" + message + "]");
 		}
 	}
 
@@ -220,8 +210,7 @@ public class Assert {
 	 * @param text the character sequence to be checked
 	 */
 	public static void notBlank(CharSequence text) {
-		notBlank(text,
-				"[Assertion failed] - this CharSequence argument must not be null or blank");
+		notBlank(text, "[Assertion failed] - this CharSequence argument must not be null or blank");
 	}
 
 	/**
@@ -240,8 +229,7 @@ public class Assert {
 	 */
 	public static void hasLength(String text, CharSequence message) {
 		if (StringUtils.isEmpty(text)) {
-			throw new IllegalArgumentException("[FOSS-0008][hasLength]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0008][hasLength][" + message + "]");
 		}
 	}
 
@@ -258,9 +246,7 @@ public class Assert {
 	 * @see StringUtils#hasLength
 	 */
 	public static void hasLength(String text) {
-		hasLength(
-				text,
-				"[Assertion failed] - this String argument must have length; it must not be null or empty");
+		hasLength(text, "[Assertion failed] - this String argument must have length; it must not be null or empty");
 	}
 
 	/**
@@ -280,8 +266,7 @@ public class Assert {
 	 */
 	public static void hasText(String text, CharSequence message) {
 		if (StringUtils.isBlank(text)) {
-			throw new IllegalArgumentException("[FOSS-0009][hasText]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0009][hasText][" + message + "]");
 		}
 	}
 
@@ -299,9 +284,7 @@ public class Assert {
 	 * @see StringUtils#hasText
 	 */
 	public static void hasText(String text) {
-		hasText(
-				text,
-				"[Assertion failed] - this String argument must have text; it must not be null, empty, or blank");
+		hasText(text, "[Assertion failed] - this String argument must have text; it must not be null, empty, or blank");
 	}
 
 	/**
@@ -318,13 +301,10 @@ public class Assert {
 	 * @param message
 	 *            the exception message to use if the assertion fails
 	 */
-	public static void doesNotContain(String textToSearch, String substring,
-			CharSequence message) {
-		if (!StringUtils.isEmpty(textToSearch)
-				&& !StringUtils.isEmpty(substring)
+	public static void doesNotContain(String textToSearch, String substring, CharSequence message) {
+		if (!StringUtils.isEmpty(textToSearch) && !StringUtils.isEmpty(substring)
 				&& textToSearch.indexOf(substring) != -1) {
-			throw new IllegalArgumentException("[FOSS-0010][doesNotContain]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0010][doesNotContain][" + message + "]");
 		}
 	}
 
@@ -342,8 +322,7 @@ public class Assert {
 	 */
 	public static void doesNotContain(String textToSearch, String substring) {
 		doesNotContain(textToSearch, substring,
-				"[Assertion failed] - this String argument must not contain the substring ["
-						+ substring + "]");
+				"[Assertion failed] - this String argument must not contain the substring [" + substring + "]");
 	}
 
 	/**
@@ -363,8 +342,7 @@ public class Assert {
 	 */
 	public static void notEmpty(Object[] array, CharSequence message) {
 		if (array == null || array.length == 0) {
-			throw new IllegalArgumentException("[FOSS-0005][notEmpty]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0005][notEmpty][" + message + "]");
 		}
 	}
 
@@ -382,9 +360,7 @@ public class Assert {
 	 *             if the object array is <code>null</code> or has no elements
 	 */
 	public static void notEmpty(Object[] array) {
-		notEmpty(
-				array,
-				"[Assertion failed] - this array must not be empty: it must contain at least 1 element");
+		notEmpty(array, "[Assertion failed] - this array must not be empty: it must contain at least 1 element");
 	}
 
 	/**
@@ -406,8 +382,7 @@ public class Assert {
 		if (array != null) {
 			for (int i = 0; i < array.length; i++) {
 				if (array[i] == null) {
-					throw new IllegalArgumentException(
-							"[FOSS-0011][noNullElements][" + message + "]");
+					throw new IllegalArgumentException("[FOSS-0011][noNullElements][" + message + "]");
 				}
 			}
 		}
@@ -427,8 +402,7 @@ public class Assert {
 	 *             if the object array contains a <code>null</code> element
 	 */
 	public static void noNullElements(Object[] array) {
-		noNullElements(array,
-				"[Assertion failed] - this array must not contain any null elements");
+		noNullElements(array, "[Assertion failed] - this array must not contain any null elements");
 	}
 
 	/**
@@ -448,8 +422,7 @@ public class Assert {
 	 */
 	public static void notEmpty(Collection collection, CharSequence message) {
 		if (collection == null || collection.isEmpty()) {
-			throw new IllegalArgumentException("[FOSS-0005][notEmpty]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0005][notEmpty][" + message + "]");
 		}
 	}
 
@@ -467,8 +440,7 @@ public class Assert {
 	 *             if the collection is <code>null</code> or has no elements
 	 */
 	public static void notEmpty(Collection collection) {
-		notEmpty(
-				collection,
+		notEmpty(collection,
 				"[Assertion failed] - this collection must not be empty: it must contain at least 1 element");
 	}
 
@@ -489,8 +461,7 @@ public class Assert {
 	 */
 	public static void notEmpty(Map map, CharSequence message) {
 		if (map == null || map.isEmpty()) {
-			throw new IllegalArgumentException("[FOSS-0005][notEmpty]["
-					+ message + "]");
+			throw new IllegalArgumentException("[FOSS-0005][notEmpty][" + message + "]");
 		}
 	}
 
@@ -508,9 +479,7 @@ public class Assert {
 	 *             if the map is <code>null</code> or has no entries
 	 */
 	public static void notEmpty(Map map) {
-		notEmpty(
-				map,
-				"[Assertion failed] - this map must not be empty; it must contain at least one entry");
+		notEmpty(map, "[Assertion failed] - this map must not be empty; it must contain at least one entry");
 	}
 
 	/**
@@ -555,10 +524,8 @@ public class Assert {
 	public static void isInstanceOf(Class type, Object obj, CharSequence message) {
 		notNull(type, "Type to check against must not be null");
 		if (!type.isInstance(obj)) {
-			throw new IllegalArgumentException("[FOSS-0012][isInstanceOf]["
-					+ message + ", Object of class ["
-					+ (obj != null ? obj.getClass().getName() : "null")
-					+ "] must be an instance of " + type + "]");
+			throw new IllegalArgumentException("[FOSS-0012][isInstanceOf][" + message + ", Object of class ["
+					+ (obj != null ? obj.getClass().getName() : "null") + "] must be an instance of " + type + "]");
 		}
 	}
 
@@ -601,14 +568,11 @@ public class Assert {
 	 * @throws IllegalArgumentException
 	 *             if the classes are not assignable
 	 */
-	@SuppressWarnings("unchecked")
-	public static void isAssignable(Class superType, Class subType,
-			CharSequence message) {
+	public static void isAssignable(Class superType, Class subType, CharSequence message) {
 		notNull(superType, "Type to check against must not be null");
 		if (subType == null || !superType.isAssignableFrom(subType)) {
-			throw new IllegalArgumentException("[FOSS-0013][isAssignable]["
-					+ message + ", " + subType + " is not assignable to "
-					+ superType + ",");
+			throw new IllegalArgumentException("[FOSS-0013][isAssignable][" + message + ", " + subType
+					+ " is not assignable to " + superType + ",");
 		}
 	}
 
@@ -630,8 +594,7 @@ public class Assert {
 	 */
 	public static void state(boolean expression, CharSequence message) {
 		if (!expression) {
-			throw new IllegalStateException("[FOSS-0014][state][" + message
-					+ "]");
+			throw new IllegalStateException("[FOSS-0014][state][" + message + "]");
 		}
 	}
 
@@ -652,8 +615,7 @@ public class Assert {
 	 *             if the supplied expression is <code>false</code>
 	 */
 	public static void state(boolean expression) {
-		state(expression,
-				"[Assertion failed] - this state invariant must be true");
+		state(expression, "[Assertion failed] - this state invariant must be true");
 	}
 
 	public static void error(CharSequence message) {

@@ -320,8 +320,6 @@ public class ValidationMethods {
 		return false;
 	}
 
-	private static final Pattern CHINESE_PATTERN = Pattern.compile("\\p{IsHan}+", Pattern.CASE_INSENSITIVE);
-
 	/**
 	 * 验证值对象是否为全部中文
 	 *
@@ -329,7 +327,34 @@ public class ValidationMethods {
 	 * @return 验证通过则返回true
 	 */
 	public static boolean chinese(Object value) {
-		return required(value) && value instanceof CharSequence && CHINESE_PATTERN.matcher(value.toString()).matches();
+		return required(value) && value instanceof CharSequence && isChinese(value.toString());
+	}
+
+	// 根据Unicode编码完美的判断中文汉字和符号
+	private static boolean isChinese(char c) {
+		Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+		if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+				|| ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+				|| ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+				|| ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+				|| ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+				|| ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
+				|| ub == Character.UnicodeBlock.GENERAL_PUNCTUATION) {
+			return true;
+		}
+		return false;
+	}
+
+	// 完整的判断中文汉字和符号
+	public static boolean isChinese(String strName) {
+		char[] ch = strName.toCharArray();
+		for (int i = 0; i < ch.length; i++) {
+			char c = ch[i];
+			if (isChinese(c)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static final Pattern MOBILE_PATTERN = Pattern.compile("^0?(13\\d|15[0-35-9]|18[0236-9]|14[57])(\\d{8})$");

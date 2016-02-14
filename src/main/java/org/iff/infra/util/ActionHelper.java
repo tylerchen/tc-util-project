@@ -47,10 +47,13 @@ public class ActionHelper {
 	public static ActionHelper get() {
 		ActionHelper actionHelper = ThreadLocalHelper.get("actionHelper");
 		if (actionHelper == null) {
-			Map params = ThreadLocalHelper.get("params");
-			actionHelper = create((HttpServletRequest) params.get("request"),
-					(HttpServletResponse) params.get("response"));
-			ThreadLocalHelper.set("actionHelper", actionHelper);
+			Object obj = ThreadLocalHelper.get("servletParams");
+			if (obj != null && obj instanceof Map) {
+				Map params = (Map) obj;
+				actionHelper = create((HttpServletRequest) params.get("request"),
+						(HttpServletResponse) params.get("response"));
+				ThreadLocalHelper.set("actionHelper", actionHelper);
+			}
 		}
 		return actionHelper;
 	}

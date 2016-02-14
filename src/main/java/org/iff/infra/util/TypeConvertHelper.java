@@ -27,12 +27,10 @@ import org.apache.commons.lang3.time.DateUtils;
  */
 public class TypeConvertHelper {
 	private static final TypeConvertHelper me = new TypeConvertHelper();
-	private static final Map<String, TypeConvert> typeConverts = new HashMap<String, TypeConvert>();
+	private Map<String, TypeConvert> typeConverts = new HashMap<String, TypeConvert>();
 
-	public TypeConvertHelper() {
-		if (typeConverts.isEmpty()) {
-			registTypeConvert();
-		}
+	protected TypeConvertHelper() {
+		registTypeConvert();
 	}
 
 	public static TypeConvertHelper me() {
@@ -97,6 +95,11 @@ public class TypeConvertHelper {
 	public TypeConvert get(String targetClassName) {
 		TypeConvert typeConvert = typeConverts.get(targetClassName);
 		return typeConvert == null ? typeConverts.get("null") : typeConvert;
+	}
+
+	public TypeConvert getNullable(String targetClassName) {
+		TypeConvert typeConvert = typeConverts.get(targetClassName);
+		return typeConvert;
 	}
 
 	public interface TypeConvert {

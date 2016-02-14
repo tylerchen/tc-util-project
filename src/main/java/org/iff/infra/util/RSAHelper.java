@@ -10,6 +10,8 @@ package org.iff.infra.util;
 import java.io.*;
 import java.security.*;
 import java.security.spec.*;
+import java.util.Map;
+
 import javax.crypto.*;
 import org.bouncycastle.jce.provider.*;
 import org.apache.commons.codec.binary.Base64;
@@ -76,12 +78,10 @@ public class RSAHelper {
 				}
 			} catch (Exception e) {
 				PRI_KEY[0] = Base64.decodeBase64(defaultPriKeyBase64);
-				Logger
-						.warn(
-								FCS
-										.get(
-												"RSA Private Key init error, using default private key, keyHex:{priKeyHex}, keyB64:{priKeyB64}",
-												priKeyHex, priKeyB64), e);
+				Logger.warn(
+						FCS.get("RSA Private Key init error, using default private key, keyHex:{priKeyHex}, keyB64:{priKeyB64}",
+								priKeyHex, priKeyB64),
+						e);
 			}
 		}
 		try {
@@ -110,6 +110,85 @@ public class RSAHelper {
 	}
 
 	/**
+	 * Generate key which contains a pair of privae and public key using 1024 bytes
+	 * @return key pair
+	 */
+	public static Map<String, byte[]> generateKeyBytes() {
+		try {
+			KeyPair key = null;
+			KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
+			keyGen.initialize(1024, new SecureRandom());
+			key = keyGen.generateKeyPair();
+			return MapHelper.toMap("private", key.getPrivate().getEncoded(), "public", key.getPublic().getEncoded());
+		} catch (Exception e) {
+			Exceptions.runtime("org.iff.infra.util.RSAHelper.generateKeyBytes", e);
+		}
+		return null;
+	}
+
+	/**
+	 * Generates Public Key from bytes
+	 * @param key hex encoded string which represents the key
+	 * @return The PublicKey
+	 */
+	public static PublicKey getPublicKeyFromBytes(byte[] key) {
+		PublicKey publicKey = null;
+		try {
+			KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
+			EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(key);
+			publicKey = keyFactory.generatePublic(publicKeySpec);
+		} catch (Exception e) {
+			Exceptions.runtime("org.iff.infra.util.RSAHelper.getPublicKeyFromBytes", e);
+		}
+		return publicKey;
+	}
+
+	/**
+	 * Generates Public Key from Hex encoded string
+	 * @param key hex encoded string which represents the key
+	 * @return The PublicKey
+	 */
+	public static PublicKey getPublicKeyFromHex(String key) {
+		PublicKey publicKey = null;
+		try {
+			publicKey = getPublicKeyFromBytes(Hex.decodeHex(key.toCharArray()));
+		} catch (Exception e) {
+			Exceptions.runtime("org.iff.infra.util.RSAHelper.getPublicKeyFromHex", e);
+		}
+		return publicKey;
+	}
+
+	/**
+	* Generates Public Key from BASE64 encoded string
+	* @param key BASE64 encoded string which represents the key
+	* @return The PublicKey
+	*/
+	public static PublicKey getPublicKeyFromBase62(String key) {
+		PublicKey publicKey = null;
+		try {
+			publicKey = getPublicKeyFromBytes(BaseCryptHelper.decodeBase62(key.toCharArray()));
+		} catch (Exception e) {
+			Exceptions.runtime("org.iff.infra.util.RSAHelper.getPublicKeyFromBase62", e);
+		}
+		return publicKey;
+	}
+
+	/**
+	 * Generates Public Key from BASE64 encoded string
+	 * @param key BASE64 encoded string which represents the key
+	 * @return The PublicKey
+	 */
+	public static PublicKey getPublicKeyFromBase64(String key) {
+		PublicKey publicKey = null;
+		try {
+			publicKey = getPublicKeyFromBytes(BaseCryptHelper.decodeBase64(key.toCharArray()));
+		} catch (Exception e) {
+			Exceptions.runtime("org.iff.infra.util.RSAHelper.getPublicKeyFromBase64", e);
+		}
+		return publicKey;
+	}
+
+	/**
 	* Encrypt a text using public key.
 	* @param text The original unencrypted text
 	* @param key The public key
@@ -122,6 +201,66 @@ public class RSAHelper {
 			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", BouncyCastleProvider.PROVIDER_NAME);
 			// encrypt the plaintext using the public key
 			cipher.init(Cipher.ENCRYPT_MODE, key);
+			cipherText = cipher.doFinal(text);
+		} catch (Exception e) {
+			Exceptions.runtime("org.iff.infra.util.RSAHelper.encrypt", e);
+		}
+		return cipherText;
+	}
+
+	/**
+	 * Encrypt a text using public key.
+	 * @param text The original unencrypted text
+	 * @param key The public key
+	 * @return Encrypted text
+	 */
+	public static byte[] encrypt(byte[] text, byte[] key) {
+		byte[] cipherText = null;
+		try {
+			// get an RSA cipher object and print the provider
+			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", BouncyCastleProvider.PROVIDER_NAME);
+			// encrypt the plaintext using the public key
+			cipher.init(Cipher.ENCRYPT_MODE, getPublicKeyFromBytes(key));
+			cipherText = cipher.doFinal(text);
+		} catch (Exception e) {
+			Exceptions.runtime("org.iff.infra.util.RSAHelper.encrypt", e);
+		}
+		return cipherText;
+	}
+
+	/**
+	 * Encrypt a text using public key.
+	 * @param text The original unencrypted text
+	 * @param key The public key
+	 * @return Encrypted text
+	 */
+	public static byte[] encryptByBase62Key(byte[] text, String base62Key) {
+		byte[] cipherText = null;
+		try {
+			// get an RSA cipher object and print the provider
+			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", BouncyCastleProvider.PROVIDER_NAME);
+			// encrypt the plaintext using the public key
+			cipher.init(Cipher.ENCRYPT_MODE, getPublicKeyFromBase62(base62Key));
+			cipherText = cipher.doFinal(text);
+		} catch (Exception e) {
+			Exceptions.runtime("org.iff.infra.util.RSAHelper.encrypt", e);
+		}
+		return cipherText;
+	}
+
+	/**
+	 * Encrypt a text using public key.
+	 * @param text The original unencrypted text
+	 * @param key The public key
+	 * @return Encrypted text
+	 */
+	public static byte[] encryptByBase64Key(byte[] text, String base64Key) {
+		byte[] cipherText = null;
+		try {
+			// get an RSA cipher object and print the provider
+			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", BouncyCastleProvider.PROVIDER_NAME);
+			// encrypt the plaintext using the public key
+			cipher.init(Cipher.ENCRYPT_MODE, getPublicKeyFromBase64(base64Key));
 			cipherText = cipher.doFinal(text);
 		} catch (Exception e) {
 			Exceptions.runtime("org.iff.infra.util.RSAHelper.encrypt", e);
@@ -288,53 +427,6 @@ public class RSAHelper {
 			Exceptions.runtime("org.iff.infra.util.RSAHelper.getPrivateKeyFromBytes", e);
 		}
 		return privateKey;
-	}
-
-	/**
-	* Generates Public Key from BASE64 encoded string
-	* @param key BASE64 encoded string which represents the key
-	* @return The PublicKey
-	*/
-	public static PublicKey getPublicKeyFromBase64(String key) {
-		PublicKey publicKey = null;
-		try {
-			publicKey = getPublicKeyFromBytes(Base64.decodeBase64(key));
-		} catch (Exception e) {
-			Exceptions.runtime("org.iff.infra.util.RSAHelper.getPublicKeyFromBase64", e);
-		}
-		return publicKey;
-	}
-
-	/**
-	 * Generates Public Key from Hex encoded string
-	 * @param key hex encoded string which represents the key
-	 * @return The PublicKey
-	 */
-	public static PublicKey getPublicKeyFromHex(String key) {
-		PublicKey publicKey = null;
-		try {
-			publicKey = getPublicKeyFromBytes(Hex.decodeHex(key.toCharArray()));
-		} catch (Exception e) {
-			Exceptions.runtime("org.iff.infra.util.RSAHelper.getPublicKeyFromHex", e);
-		}
-		return publicKey;
-	}
-
-	/**
-	 * Generates Public Key from bytes
-	 * @param key hex encoded string which represents the key
-	 * @return The PublicKey
-	 */
-	public static PublicKey getPublicKeyFromBytes(byte[] bytes) {
-		PublicKey publicKey = null;
-		try {
-			KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
-			EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(bytes);
-			publicKey = keyFactory.generatePublic(publicKeySpec);
-		} catch (Exception e) {
-			Exceptions.runtime("org.iff.infra.util.RSAHelper.getPublicKeyFromBytes", e);
-		}
-		return publicKey;
 	}
 
 	/**

@@ -19,6 +19,7 @@ package org.iff.infra.util;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-3-14
  */
+@SuppressWarnings("serial")
 public class FCS extends FormatableCharSequence {
 	protected FCS(CharSequence formatString, Object[] parameters) {
 		super(formatString, parameters);

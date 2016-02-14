@@ -7,6 +7,8 @@ import org.iff.infra.util.moduler.TCApplication;
 import org.iff.infra.util.moduler.TCServer;
 
 import net.sf.cglib.beans.BeanCopier;
+import tet.ModelProperty;
+import tet.ModelPropertyVO;
 
 /*******************************************************************************
  * Copyright (c) 2014-7-3 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.

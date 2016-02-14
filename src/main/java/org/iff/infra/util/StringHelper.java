@@ -117,12 +117,11 @@ public final class StringHelper {
 		if (str == null || str.length() == 0) {
 			return "";
 		}
-		int i = 0;
 		replaces = replaces == null ? new HashMap<String, Object>() : replaces;
 		StringBuffer sb = new StringBuffer(str);
 		Matcher matcher = Pattern.compile("(\\{\\w*\\})").matcher(str);
 		int offset = 0;
-		for (; matcher.find(); i++) {
+		for (; matcher.find();) {
 			String group = matcher.group();
 			String substring = group.substring(1, group.length() - 1);
 			String replace = replaces.containsKey(substring) ? String.valueOf(replaces.get(substring))
@@ -210,12 +209,11 @@ public final class StringHelper {
 			return "";
 		}
 		String replace = fileSeparator;
-		int i = 0;
 		StringBuffer sb = new StringBuffer(str);
 		{
 			Matcher matcher = Pattern.compile("((\\\\+|/+)+)").matcher(str);
 			int offset = 0;
-			for (; matcher.find(); i++) {
+			for (; matcher.find();) {
 				int start = matcher.start(), end = matcher.end();
 				sb.replace(Math.min(start + offset, sb.length()), Math.min(end + offset, sb.length()), replace);
 				offset += replace.length() - (end - start);
@@ -224,7 +222,7 @@ public final class StringHelper {
 		{
 			Matcher matcher = Pattern.compile("((\\\\+|/+)+)").matcher(sb.toString());
 			int offset = 0;
-			for (; matcher.find(); i++) {
+			for (; matcher.find();) {
 				int start = matcher.start(), end = matcher.end();
 				sb.replace(Math.min(start + offset, sb.length()), Math.min(end + offset, sb.length()), replace);
 				offset += replace.length() - (end - start);
