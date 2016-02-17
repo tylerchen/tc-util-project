@@ -279,7 +279,7 @@ public class POVOCopyHelper {
 						;
 				String parameter = setterParamType.getName() + ".class";
 				String copyTo = "copyTo";
-				if (isAssignTo(Collection.class, srcClass) && isAssignTo(Collection.class, destClass)) {
+				if (isAssignTo(srcClass, Collection.class) && isAssignTo(destClass, Collection.class)) {
 					parameter = (wildcardType == null ? "null, " : (wildcardType.getName() + ".class, ")) + "new "
 							+ getDefaultListClass(setterParamType) + "() ";
 					copyTo = "copyListTo";
@@ -292,15 +292,13 @@ public class POVOCopyHelper {
 			}
 		}
 		{
-			source = StringHelper.replaceBlock(source,
-					MapHelper.toMap("className",
-							StringUtils.replace(Map.class.getName(), ".", "_") + "$"
-									+ StringUtils.replace(destClass.getName(), ".", "_"),
-							"PoVoCopy", PoVoCopy.class.getName(), "destClass", getDefaultClass(destClass), "copyMap",
-							sb),
-					null);
+			source = StringHelper.replaceBlock(source, MapHelper.toMap("className",
+					(StringUtils.replace(Map.class.getName(), ".", "_") + "$"
+							+ StringUtils.replace(destClass.getName(), ".", "_")),
+					"PoVoCopy", PoVoCopy.class.getName(), "destClass", getDefaultClass(destClass), "copyMap",
+					sb.toString()), null);
 		}
-		//System.out.println(source);
+		System.out.println(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
 			PoVoCopy poVoCopy = clazz.newInstance();
@@ -360,6 +358,7 @@ public class POVOCopyHelper {
 							"srcClass", srcClass.getName(), "copyToMap", sb),
 					null);
 		}
+		//System.out.println(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
 			PoVoCopy poVoCopy = clazz.newInstance();
@@ -407,8 +406,8 @@ public class POVOCopyHelper {
 				if (getter == null) {
 					continue;
 				}
-				if (isAssignTo(Collection.class, setter.getParameterTypes()[0])
-						&& isAssignTo(Collection.class, getter.getReturnType())) {
+				if (isAssignTo(setter.getParameterTypes()[0], Collection.class)
+						&& isAssignTo(getter.getReturnType(), Collection.class)) {
 					String fragment = ""/**/
 							+ "\n        destCast.{setterName}( ({setterType}) {POVOCopyHelper}.copyListTo( srcCast.{getterName}(), {wildType}, new {setterDefaultType}() ) );"/**/
 							;
@@ -456,7 +455,7 @@ public class POVOCopyHelper {
 							srcClass.getName(), "copy", sb),
 					null);
 		}
-		System.out.println(source);
+		//System.out.println(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
 			PoVoCopy poVoCopy = clazz.newInstance();
@@ -535,10 +534,10 @@ public class POVOCopyHelper {
 		if (hasDefaultConstructor(clazz)) {
 			return clazz.getName();
 		}
-		if (isAssignTo(Map.class, clazz)) {
+		if (isAssignTo(clazz, Map.class)) {
 			return getDefaultMapClass(clazz);
 		}
-		if (isAssignTo(Collection.class, clazz)) {
+		if (isAssignTo(clazz, Collection.class)) {
 			return getDefaultListClass(clazz);
 		}
 		return clazz.getName();
@@ -553,7 +552,7 @@ public class POVOCopyHelper {
 	 * @since Feb 14, 2016
 	 */
 	private static String getDefaultListClass(Class<?> clazz) {
-		if (clazz != null && isAssignTo(Collection.class, clazz)) {
+		if (clazz != null && isAssignTo(clazz, Collection.class)) {
 			if (hasDefaultConstructor(clazz)) {
 				return clazz.getName();
 			}
@@ -571,7 +570,7 @@ public class POVOCopyHelper {
 	 * @since Feb 14, 2016
 	 */
 	private static String getDefaultMapClass(Class<?> clazz) {
-		if (clazz != null && isAssignTo(Map.class, clazz)) {
+		if (clazz != null && isAssignTo(clazz, Map.class)) {
 			if (hasDefaultConstructor(clazz)) {
 				return clazz.getName();
 			}
@@ -672,13 +671,13 @@ public class POVOCopyHelper {
 
 	/**
 	 * type parent is assign child type.
-	 * @param parent the parent type you think
 	 * @param child the child type
+	 * @param parent the parent type you think
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Feb 14, 2016
 	 */
-	private static boolean isAssignTo(Class<?> parent, Class<?> child) {
+	private static boolean isAssignTo(Class<?> child, Class<?> parent) {
 		return parent.isAssignableFrom(child);
 	}
 

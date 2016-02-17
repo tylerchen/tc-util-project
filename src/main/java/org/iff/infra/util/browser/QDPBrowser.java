@@ -39,7 +39,8 @@ public class QDPBrowser implements Browser.ActionListener {
 			Map<String, byte[]> loadZip = qdp.loadZip(is);
 			Class<?> parseClass = gcl.parseClass(new String(loadZip.get("groovy/QDPClient.groovy"), "UTF-8"));
 			GroovyObject instance = (GroovyObject) parseClass.newInstance();
-			instance.invokeMethod("init", MapHelper.toMap("resource", loadZip, "defaultUrl", DEFAULT_URL));
+			instance.invokeMethod("init",
+					MapHelper.toMap("resource", loadZip, "defaultUrl", DEFAULT_URL, "classLoader", gcl));
 		} catch (Exception e) {
 			Exceptions.runtime("start QDPBrowser error!", e);
 		}

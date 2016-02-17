@@ -64,6 +64,14 @@ public class Browser implements HyperlinkListener, Runnable {
 		SwingUtilities.invokeLater(this);
 	}
 
+	public void redirct(String url) {
+		try {
+			hyperlinkUpdate(new HTMLFrameHyperlinkEvent(editorPane, EventType.ACTIVATED, new URL(url), null));
+		} catch (Exception e) {
+			Exceptions.runtime(FCS.get("Can't redirect url: {0}", url), e);
+		}
+	}
+
 	public ActionListener getActionListener() {
 		return actionListener;
 	}
@@ -101,7 +109,7 @@ public class Browser implements HyperlinkListener, Runnable {
 						Logger.debug(FCS.get("Goto URL fail. URL: {0}", url), e);
 					}
 				} else {
-					((JEditorPane) event.getSource()).setText(StringUtils.defaultString(html, ""));
+					editorPane.setText(StringUtils.defaultString(html, ""));
 				}
 			} else {
 				try {
@@ -132,7 +140,7 @@ public class Browser implements HyperlinkListener, Runnable {
 				editorPane.setContentType("text/html");
 				((HTMLEditorKit) editorPane.getEditorKit()).setAutoFormSubmission(false);
 				editorPane.addHyperlinkListener(this);
-				editorPane.getDocument().putProperty("stream", new URL("http://localhost"));
+				editorPane.getDocument().putProperty("stream", new URL("http://www.tc.com"));
 				{
 					hyperlinkUpdate(new HTMLFrameHyperlinkEvent(editorPane, EventType.ACTIVATED,
 							new URL("http://www.tc.com"), null));
@@ -161,6 +169,7 @@ public class Browser implements HyperlinkListener, Runnable {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public class WorkBench extends JPanel implements Scrollable {
 		Box vbox = null;
 
