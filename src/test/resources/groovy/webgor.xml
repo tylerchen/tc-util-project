@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webgor id="www.12306.cn">
+	<UserAgent>
+		<![CDATA[Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:44.0) Gecko/20100101 Firefox/44.0]]>
+	</UserAgent>
+	<Header>
+		<Host>kyfw.12306.cn</Host>
+		<Accept><![CDATA[text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]]></Accept>
+		<Accept-Language>en-US,en;q=0.5</Accept-Language>
+		<Accept-Encoding>gzip, deflate</Accept-Encoding>
+		<Referer>http://www.12306.cn/mormhweb/</Referer>
+		<Connection>keep-alive</Connection>
+	</Header>
+	<Cookie>
+	</Cookie>
+	<Step id="step-00">
+		<In id="in-00"
+			url="https://kyfw.12306.cn/otn/lcxxcx/query?purpose_codes=ADULT&queryDate=2016-02-23&from_station=GZQ&to_station=SHH"
+			method="" parser="">
+			<Data></Data>
+			<Header></Header>
+			<Cookie></Cookie>
+		</In>
+		<In id="in-01"
+			url="https://kyfw.12306.cn/otn/czxx/queryByTrainNo?train_no=630000K5280I&from_station_telecode=GZQ&to_station_telecode=SNH&depart_date=2016-02-23"
+			method="" parser="">
+			<Data></Data>
+			<Header></Header>
+			<Cookie></Cookie>
+		</In>
+		<In id="in-02"
+			url="https://kyfw.12306.cn/otn/leftTicket/queryTicketPrice?train_no=630000K5280I&from_station_no=01&to_station_no=22&seat_types=1413&train_date=2016-02-23"
+			method="" parser="">
+			<Data></Data>
+			<Header></Header>
+			<Cookie></Cookie>
+		</In>
+	</Step>
+</webgor>

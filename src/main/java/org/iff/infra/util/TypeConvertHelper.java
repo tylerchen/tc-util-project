@@ -439,7 +439,8 @@ public class TypeConvertHelper {
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
-			if (sourceCls.getName().equals(targetClassName)) {
+			if (sourceCls.getName().equals(targetClassName) || (sourceValue instanceof java.util.Date
+					&& java.util.Date.class.getName().equals(targetClassName))) {
 				return sourceValue;
 			} else if (sourceValue == null) {
 				return null;
@@ -455,12 +456,18 @@ public class TypeConvertHelper {
 			} else {
 				java.util.Date date = null;
 				try {
-					date = DateUtils.parseDate(sourceValue.toString(), "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd",
-							"yyyy/MMdd HH:mm:ss", "yyyy/MM/dd");
+					if (sourceValue instanceof java.util.Date) {
+						date = (Date) sourceValue;
+					} else {
+						date = DateUtils.parseDate(sourceValue.toString(), "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd",
+								"yyyy/MMdd HH:mm:ss", "yyyy/MM/dd");
+					}
 				} catch (Exception e) {
 				}
 				try {
-					if (sourceCls == java.sql.Time.class) {
+					if (date == null) {
+						return null;
+					} else if (sourceCls == java.sql.Time.class) {
 						return new java.sql.Time(date.getTime());
 					} else if (sourceCls == java.sql.Timestamp.class) {
 						return new java.sql.Timestamp(date.getTime());
@@ -1302,64 +1309,4 @@ public class TypeConvertHelper {
 		}
 	}
 
-	//	public class BeanTypeConvert implements TypeConvert {
-	//		public String getName() {
-	//			return "java.lang.Object";
-	//		}
-	//
-	//		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
-	//			return null;
-	//		}
-	//	}
-	//
-	//	//
-	//	public class ListTypeConvert implements TypeConvert {
-	//		public String getName() {
-	//			return "[Ljava.util.List;";
-	//		}
-	//
-	//		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
-	//			List<?> list = null;
-	//			if (sourceValue == null) {
-	//				return null;
-	//			}
-	//			try {
-	//				if (List.class.isAssignableFrom(sourceCls) && !sourceCls.isInterface()) {
-	//					list = (List<?>) sourceCls.newInstance();
-	//				} else {
-	//					list = new ArrayList();
-	//				}
-	//			} catch (Exception e) {
-	//				list = new ArrayList();
-	//			}
-	//			if (sourceCls.isArray()) {
-	//				int len = Array.getLength(sourceValue);
-	//				for (int i = 0; i < len; i++) {
-	//					Object object = Array.get(sourceValue, i);
-	//					list.add();
-	//					arr[i] = (Date) tc.convert(Date.class.getName(), object.getClass(), sourceCls, null);
-	//				}
-	//				return arr;
-	//			} else if (sourceValue instanceof Collection<?>) {
-	//				Date[] arr = new Date[((Collection<?>) sourceValue).size()];
-	//				int i = 0;
-	//				for (Object object : (Collection<?>) sourceValue) {
-	//					arr[i] = (Date) tc.convert(Date.class.getName(), object.getClass(), sourceCls, null);
-	//					i++;
-	//				}
-	//				return arr;
-	//			} else {
-	//				try {
-	//					String tName = targetClassName.substring(2, targetClassName.length() - 1);
-	//					String sName = sourceCls.getName().substring(2, sourceCls.getName().length() - 1);
-	//					Object arr = Array.newInstance(Class.forName(tName), 1);
-	//					Array.set(arr, 0,
-	//							new DateTypeConvert().convert(tName, sourceValue, Class.forName(sName), sourceType));
-	//					return arr;
-	//				} catch (Exception e) {
-	//					throw new RuntimeException(e);
-	//				}
-	//			}
-	//		}
-	//	}
 }

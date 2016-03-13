@@ -268,9 +268,13 @@ public class POVOCopyHelper {
 						+ "\n        try {"/**/
 						+ "\n            Object obj = srcMap.get(\"{fieldName}\");"/**/
 						+ "\n            if(obj != null) {"/**/
-						+ "\n                obj = {POVOCopyHelper}.{copyTo}( obj, {parameter} );"/**/
-						+ "\n                if(obj != null) {"/**/
+						+ "\n                if(obj instanceof {setterParamClass} && !(obj instanceof java.util.Collection)) {"/**/
 						+ "\n                    destCast.{setterName}( ({setterParamClass}) obj );"/**/
+						+ "\n                } else {"/**/
+						+ "\n                    obj = {POVOCopyHelper}.{copyTo}( obj, {parameter} );"/**/
+						+ "\n                    if(obj != null) {"/**/
+						+ "\n                        destCast.{setterName}( ({setterParamClass}) obj );"/**/
+						+ "\n                    }"/**/
 						+ "\n                }"/**/
 						+ "\n            }"/**/
 						+ "\n        } catch(Exception e) {"/**/
@@ -285,9 +289,10 @@ public class POVOCopyHelper {
 					copyTo = "copyListTo";
 				}
 				sb.append(StringHelper.replaceBlock(fragment,
-						MapHelper.toMap("fieldName", fieldName, "POVOCopyHelper", POVOCopyHelper.class.getName(),
-								"copyTo", copyTo, "parameter", parameter, "setterName", setter.getName(),
-								"setterParamClass", setterParamType.getName()),
+						MapHelper.toMap("fieldName", fieldName, "setterParamClass",
+								getObjectClassName(setterParamType.getName()), "setterName", setter.getName(),
+								"POVOCopyHelper", POVOCopyHelper.class.getName(), "copyTo", copyTo, "parameter",
+								parameter),
 						null));
 			}
 		}
@@ -298,7 +303,7 @@ public class POVOCopyHelper {
 					"PoVoCopy", PoVoCopy.class.getName(), "destClass", getDefaultClass(destClass), "copyMap",
 					sb.toString()), null);
 		}
-		System.out.println(source);
+		//System.out.println(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
 			PoVoCopy poVoCopy = clazz.newInstance();
@@ -429,10 +434,14 @@ public class POVOCopyHelper {
 							+ "\n        try {"/**/
 							+ "\n            Object obj = srcCast.{getterName}();"/**/
 							+ "\n            if(obj != null) {"/**/
-							+ "\n                obj = {POVOCopyHelper}.copyTo( obj, {setteType}.class );"/**/
-							+ "\n                if(obj != null) {"/**/
-							+ "\n                    destCast.{setterName}( ({setteType}) obj );"/**/
-							+ "\n                }"/**/
+							+ "\n                //if((obj instanceof {setterType}) && !(obj instanceof java.util.Collection)) {"/**/
+							+ "\n                //    destCast.{setterName}( ({setterType}) obj );"/**/
+							+ "\n                //} else {"/**/
+							+ "\n                    obj = {POVOCopyHelper}.copyTo( obj, {setterType}.class );"/**/
+							+ "\n                    if(obj != null) {"/**/
+							+ "\n                        destCast.{setterName}( ({setterType}) obj );"/**/
+							+ "\n                    }"/**/
+							+ "\n                //}"/**/
 							+ "\n            }"/**/
 							+ "\n        } catch(Exception e) {"/**/
 							+ "\n            org.iff.infra.util.Logger.error( \" Copy map key value to property [{fieldName}] error! \", e );"/**/
@@ -440,8 +449,9 @@ public class POVOCopyHelper {
 							;
 					sb.append(StringHelper.replaceBlock(fragment,
 							MapHelper.toMap("getterName", getter.getName(), "POVOCopyHelper",
-									getClassName(POVOCopyHelper.class), "setterName", setter.getName(), "setteType",
-									getClassName(setter.getParameterTypes()[0]), "fieldName", fieldName),
+									getClassName(POVOCopyHelper.class), "setterName", setter.getName(), "setterType",
+									getObjectClassName(getClassName(setter.getParameterTypes()[0])), "fieldName",
+									fieldName),
 							null));
 				}
 			}
@@ -455,7 +465,7 @@ public class POVOCopyHelper {
 							srcClass.getName(), "copy", sb),
 					null);
 		}
-		//System.out.println(source);
+		System.out.println(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
 			PoVoCopy poVoCopy = clazz.newInstance();
@@ -679,6 +689,27 @@ public class POVOCopyHelper {
 	 */
 	private static boolean isAssignTo(Class<?> child, Class<?> parent) {
 		return parent.isAssignableFrom(child);
+	}
+
+	private static String getObjectClassName(String className) {
+		if ("boolean".equals(className)) {
+			return Boolean.class.getName();
+		} else if ("byte".equals(className)) {
+			return Byte.class.getName();
+		} else if ("short".equals(className)) {
+			return Short.class.getName();
+		} else if ("int".equals(className)) {
+			return Integer.class.getName();
+		} else if ("long".equals(className)) {
+			return Long.class.getName();
+		} else if ("float".equals(className)) {
+			return Float.class.getName();
+		} else if ("double".equals(className)) {
+			return Double.class.getName();
+		} else if ("char".equals(className)) {
+			return Character.class.getName();
+		}
+		return className;
 	}
 
 }

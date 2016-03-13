@@ -36,6 +36,8 @@ public class POVOCopyHelperTest {
 		Method m = ReflectHelper.getMethod(tet.ModelPropertyVO.class, "setList", java.util.List.class.getName());
 		System.out.println(m);
 		//System.out.println(POVOCopyHelper.getDefaultClass(m.getParameterTypes()[0]));
+		Object[] a = new Object[] { (int) 1 };
+		System.out.println(a[0] instanceof Integer);
 	}
 
 	public static void main(String[] args) {

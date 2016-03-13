@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iff</groupId>
 	<artifactId>tc-util</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.8</version>
 	<name>tc-util-project</name>
 	<url>http://maven.apache.org</url>
 
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.7.3</version>
+			<version>1.8.3</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- XSS end -->

@@ -56,4 +56,13 @@ public class ThreadLocalHelper {
 		}
 		return (T) map.get(name);
 	}
+
+	/**
+	 * remove thread variable for the thread pool.
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Mar 13, 2016
+	 */
+	public static void remove() {
+		params.remove();
+	}
 }
