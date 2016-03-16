@@ -9,18 +9,22 @@ package org.iff.infra.util;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -102,72 +106,182 @@ public class HttpHelper {
 
 	public static String put(String request, String data) {
 		BufferedReader reader = null;
+		HttpURLConnection connection = null;
+		DataOutputStream wr = null;
 		try {
 			URL url = new URL(request);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection = (HttpURLConnection) url.openConnection();
 			String content = data;
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
 			connection.setInstanceFollowRedirects(false);
 			connection.setRequestMethod("PUT");
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			connection.setRequestProperty("charset", "utf-8");
+			connection.setRequestProperty("charset", "UTF-8");
 			connection.setRequestProperty("Content-Length", "" + content.length());
 			connection.setUseCaches(false);
-			DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-			wr.writeBytes(content);
-			wr.flush();
-			wr.close();
-			connection.disconnect();
-			reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		try {
-			for (String line; (line = reader.readLine()) != null;) {
-				System.out.println(line);
+			connection.setConnectTimeout(30 * 1000);
+			connection.setReadTimeout(60 * 1000);
+			{
+				wr = new DataOutputStream(connection.getOutputStream());
+				wr.writeBytes(content);
+				wr.flush();
+				wr.close();
 			}
+			reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+			StringBuilder sb = new StringBuilder(2048);
+			for (String line; (line = reader.readLine()) != null;) {
+				sb.append(line).append("\n");
+			}
+			return sb.toString();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			Exceptions.runtime("Request Error: " + request, e);
 		} finally {
-			if (reader != null)
-				try {
-					reader.close();
-				} catch (IOException ignore) {
-				}
+			StreamHelper.closeWithoutError(reader);
+			StreamHelper.closeWithoutError(wr);
+			try {
+				connection.disconnect();
+			} catch (Exception e) {
+			}
 		}
 		return null;
 	}
 
-	public static String get(String request, String data) {
+	public static String post(String request, String data) {
 		BufferedReader reader = null;
+		HttpURLConnection connection = null;
+		DataOutputStream wr = null;
 		try {
 			URL url = new URL(request);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection = (HttpURLConnection) url.openConnection();
+			String content = data;
 			connection.setDoOutput(true);
+			connection.setDoInput(true);
 			connection.setInstanceFollowRedirects(false);
-			connection.setRequestMethod("GET");
-			connection.setRequestProperty("Content-Type", "text/json");
-			connection.setRequestProperty("charset", "utf-8");
-			connection.connect();
-			reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		try {
-			for (String line; (line = reader.readLine()) != null;) {
-				System.out.println(line);
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.setRequestProperty("charset", "UTF-8");
+			connection.setRequestProperty("Content-Length", "" + content.getBytes("UTF-8").length);
+			connection.setUseCaches(false);
+			connection.setConnectTimeout(30 * 1000);
+			connection.setReadTimeout(60 * 1000);
+			{
+				wr = new DataOutputStream(connection.getOutputStream());
+				wr.write(content.getBytes("UTF-8"));
+				wr.flush();
+				wr.close();
 			}
+			reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+			StringBuilder sb = new StringBuilder(2048);
+			for (String line; (line = reader.readLine()) != null;) {
+				sb.append(line).append("\n");
+			}
+			return sb.toString();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			Exceptions.runtime("Request Error: " + request, e);
 		} finally {
-			if (reader != null)
-				try {
-					reader.close();
-				} catch (IOException ignore) {
-				}
+			StreamHelper.closeWithoutError(reader);
+			StreamHelper.closeWithoutError(wr);
+			try {
+				connection.disconnect();
+			} catch (Exception e) {
+			}
 		}
 		return null;
+	}
+
+	public static String get(String requestUrl) {
+		BufferedReader reader = null;
+		HttpURLConnection connection = null;
+		try {
+			URL url = new URL(requestUrl);
+			{
+				connection = (HttpURLConnection) url.openConnection();
+				connection.setDoOutput(true);
+				connection.setInstanceFollowRedirects(false);
+				connection.setRequestMethod("GET");
+				connection.setRequestProperty("charset", "UTF-8");
+				connection.setRequestProperty("accept", "*/*");
+				connection.setConnectTimeout(30 * 1000);
+				connection.setReadTimeout(60 * 1000);
+				connection.connect();
+			}
+			reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+			StringBuilder sb = new StringBuilder(2048);
+			for (String line; (line = reader.readLine()) != null;) {
+				sb.append(line).append("\n");
+			}
+			{
+				Map<String, List<String>> fields = connection.getHeaderFields();
+				for (Entry<String, List<String>> entry : fields.entrySet()) {
+					System.out.println(entry.getKey() + "=" + Arrays.toString(entry.getValue().toArray()));
+				}
+			}
+			return sb.toString();
+		} catch (Exception e) {
+			Exceptions.runtime("Request Error: " + requestUrl, e);
+		} finally {
+			StreamHelper.closeWithoutError(reader);
+			try {
+				connection.disconnect();
+			} catch (Exception e) {
+			}
+		}
+		return null;
+	}
+
+	public static String get(String requestUrl, String paramString) {
+		BufferedReader reader = null;
+		HttpURLConnection connection = null;
+		try {
+			URL url = new URL(requestUrl);
+			{
+				connection = (HttpURLConnection) url.openConnection();
+				connection.setDoOutput(true);
+				connection.setInstanceFollowRedirects(false);
+				connection.setRequestMethod("GET");
+				connection.setRequestProperty("User-Agent",
+						"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:44.0) Gecko/20100101 Firefox/44.0");
+				connection.setRequestProperty("charset", "UTF-8");
+				connection.setRequestProperty("accept", "*/*");
+				connection.setConnectTimeout(30 * 1000);
+				connection.setReadTimeout(60 * 1000);
+				connection.connect();
+			}
+			reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+			StringBuilder sb = new StringBuilder(2048);
+			for (String line; (line = reader.readLine()) != null;) {
+				sb.append(line).append("\n");
+			}
+			return sb.toString();
+		} catch (Exception e) {
+			Exceptions.runtime("Request Error: " + requestUrl, e);
+		} finally {
+			StreamHelper.closeWithoutError(reader);
+			try {
+				connection.disconnect();
+			} catch (Exception e) {
+			}
+		}
+		return null;
+	}
+
+	public static String getIpAddr(HttpServletRequest request) {
+		String ip = request.getHeader("x-forwarded-for");
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		return ip;
+	}
+
+	public static String getAuthorization(HttpServletRequest request) {
+		return request.getHeader("Authorization");
 	}
 
 	/**
@@ -259,8 +373,9 @@ public class HttpHelper {
 		return map;
 	}
 
-	public static void main(String[] args) {
-		put("http://localhost:9200/twitter/tweet/1", null);
-		get("http://localhost:9200/twitter/tweet/1", null);
+	public static void main(String[] args) throws Exception {
+		String encode = "loginEmail=" + URLEncoder.encode("admin@123.com", "UTF-8") + "&loginPasswd=1111";
+		System.out.println(encode);
+		System.out.println(post("http://182.254.204.165:8080/auth/authaccount/login.do", encode));
 	}
 }

@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Dec 14, 2015
@@ -70,20 +72,27 @@ public class I18nHelper {
 		}
 		for (String resource : resList) {
 			try {
-				File file = new File(new URL(resource).toURI());
-				{
-					if (!file.exists() || !file.isFile()) {
-						continue;
+				String content = "";
+				String fileName = StringUtils.substringAfterLast(resource, "/");
+				if (!StringUtils.contains(resource, ".jar!/")) {
+					File file = new File(new URL(resource).toURI());
+					{
+						if (!file.exists() || !file.isFile()) {
+							continue;
+						}
 					}
+					FileInputStream is = new FileInputStream(file);
+					content = SocketHelper.getContent(is, false);
+				} else {
+					content = SocketHelper.getContent(new URL(resource).openStream(), false);
 				}
 				Properties prop = new Properties();
 				{
-					FileInputStream is = new FileInputStream(file);
-					prop.load(new StringReader(SocketHelper.getContent(is, false)));
+					prop.load(new StringReader(content));
+					Logger.info("Loaded properties file: " + resource);
 				}
 				String keySubfix = "";
 				{
-					String fileName = file.getName();
 					if (fileName.lastIndexOf('-') > -1) {
 						keySubfix = fileName.substring(fileName.lastIndexOf('-') + 1, fileName.lastIndexOf('.'));
 					}
@@ -101,7 +110,8 @@ public class I18nHelper {
 			} catch (Exception e) {
 				Logger.warn(
 						FCS.get("[org.iff.infra.util.I18nHelper.loadDefualtMessages][{file}]: loading property file error! ",
-								resource));
+								resource),
+						e);
 			}
 		}
 		return me;
@@ -190,4 +200,5 @@ public class I18nHelper {
 	public String getMessage(String code) {
 		return getMessage(code, new Object[0], null);
 	}
+
 }

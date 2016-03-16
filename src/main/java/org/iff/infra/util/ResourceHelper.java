@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Find the resources from jar or classpath or file system.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -60,21 +62,24 @@ public class ResourceHelper {
 
 	public static List<String> loadResourcesInJar(final String resPath, final String fileExt, final String include,
 			final String exclude) {
-		return loadResourcesInJar(resPath, fileExt, include, exclude, ResourceHelper.class.getClassLoader());
+		return loadResourcesInJar(resPath, fileExt, include, exclude, Thread.currentThread().getContextClassLoader());
 	}
 
 	public static List<String> loadResourcesInJar(final String resPath, final String fileExt, final String include,
 			final String exclude, ClassLoader cl) {
 		Set<String> list = new LinkedHashSet<String>(64);
 		try {
-			Enumeration<URL> rs = cl.getResources(resPath);
+			final String fixPath = StringUtils.removeStart(resPath, "/");
+			Enumeration<URL> rs = cl.getResources(fixPath);
 			while (rs.hasMoreElements()) {
-				URL url = rs.nextElement();//jar:file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
-				String filePath = new URLDecoder().decode(url.getFile(), "UTF-8");//file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
-				String protocol = url.getProtocol();
-				if ("file".equals(protocol) || "jar".equals(protocol)) {
-					if (filePath.startsWith("file:")) {
-						File file = new File(filePath.substring("file:".length(), filePath.lastIndexOf("!/")));
+				String filePath = "";
+				try {
+					URL url = rs.nextElement();//jar:file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
+					filePath = new URLDecoder().decode(url.getFile(), "UTF-8");//file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
+					if (filePath.lastIndexOf(".jar!/") > -1) {
+						filePath = filePath.indexOf(':') > -1 ? StringUtils.substringAfter(filePath, ":") : filePath;
+						filePath = StringUtils.substringBefore(filePath, "!/");
+						File file = new File(filePath);
 						java.util.jar.JarFile jarFile = new java.util.jar.JarFile(file);
 						Enumeration<JarEntry> entries = jarFile.entries();
 						while (entries.hasMoreElements()) {
@@ -83,11 +88,11 @@ public class ResourceHelper {
 								continue;
 							}
 							String entryName = entry.getName();
-							if (!entryName.startsWith(resPath)) {
+							if (!entryName.startsWith(fixPath)) {
 								continue;
 							}
-							if (!(fileExt == null || fileExt.length() < 1 || "*".equals(fileExt) || entryName
-									.endsWith(fileExt))) {
+							if (!(fileExt == null || fileExt.length() < 1 || "*".equals(fileExt)
+									|| entryName.endsWith(fileExt))) {
 								continue;
 							}
 							if (include != null && include.length() > 0 && !"*".equals(include)
@@ -97,39 +102,46 @@ public class ResourceHelper {
 							if (exclude != null && exclude.length() > 0 && wildCardMatch(entryName, exclude)) {
 								continue;
 							}
-							String urlString = protocol + ":" + filePath.substring(0, filePath.lastIndexOf("!/") + 2)
-									+ entryName.replaceAll("\\\\", "/");
+							String urlString = "jar:file://" + filePath + "!/" + entryName.replaceAll("\\\\", "/");
 							list.add(fixUrl(urlString));
 						}
 						jarFile.close();
 					}
+				} catch (Exception e) {
+					Logger.warn(FCS.get("[loadResourcesInClassPath][{file}]: loading resource error! ", filePath), e);
 				}
 			}
 		} catch (Exception ee) {
 			ee.printStackTrace();
 		}
+
 		List<String> result = new ArrayList<String>();
 		result.addAll(list);
 		return result;
+
 	}
 
 	public static List<String> loadResourcesInClassPath(final String resPath, final String fileExt,
 			final String include, final String exclude) {
-		return loadResourcesInClassPath(resPath, fileExt, include, exclude, ResourceHelper.class.getClassLoader());
+		return loadResourcesInClassPath(resPath, fileExt, include, exclude,
+				Thread.currentThread().getContextClassLoader());
 	}
 
 	public static List<String> loadResourcesInClassPath(final String resPath, final String fileExt,
 			final String include, final String exclude, ClassLoader cl) {
 		Set<String> list = new LinkedHashSet<String>(64);
 		try {
-			Enumeration<URL> rs = cl.getResources(resPath);
+			final String fixPath = StringUtils.removeStart(resPath, "/");
+			Enumeration<URL> rs = cl.getResources(fixPath);
 			while (rs.hasMoreElements()) {
-				URL url = rs.nextElement();
-				String filePath = new URLDecoder().decode(url.getFile(), "UTF-8");
-				String protocol = url.getProtocol();
-				if ("file".equals(protocol) || "jar".equals(protocol)) {
-					if (filePath.startsWith("file:")) {
-						File file = new File(filePath.substring("file:".length(), filePath.lastIndexOf("!/")));
+				String filePath = "";
+				try {
+					URL url = rs.nextElement();
+					filePath = new URLDecoder().decode(url.getFile(), "UTF-8");
+					if (filePath.lastIndexOf(".jar!/") > -1) {
+						filePath = filePath.indexOf(':') > -1 ? StringUtils.substringAfter(filePath, ":") : filePath;
+						filePath = StringUtils.substringBefore(filePath, "!/");
+						File file = new File(filePath);
 						java.util.jar.JarFile jarFile = new java.util.jar.JarFile(file);
 						Enumeration<JarEntry> entries = jarFile.entries();
 						while (entries.hasMoreElements()) {
@@ -138,11 +150,11 @@ public class ResourceHelper {
 								continue;
 							}
 							String entryName = entry.getName();
-							if (!entryName.startsWith(resPath)) {
+							if (!entryName.startsWith(fixPath)) {
 								continue;
 							}
-							if (!(fileExt == null || fileExt.length() < 1 || "*".equals(fileExt) || entryName
-									.endsWith(fileExt))) {
+							if (!(fileExt == null || fileExt.length() < 1 || "*".equals(fileExt)
+									|| entryName.endsWith(fileExt))) {
 								continue;
 							}
 							if (include != null && include.length() > 0 && !"*".equals(include)
@@ -153,8 +165,7 @@ public class ResourceHelper {
 								continue;
 							}
 
-							String urlString = protocol + ":" + filePath.substring(0, filePath.lastIndexOf("!/") + 2)
-									+ entryName.replaceAll("\\\\", "/");
+							String urlString = "jar:file://" + filePath + "!/" + entryName.replaceAll("\\\\", "/");
 							list.add(fixUrl(urlString));
 						}
 						jarFile.close();
@@ -163,6 +174,8 @@ public class ResourceHelper {
 						//		.replaceAll("^/|/$", "") : StringHelper.pathBuild(filePath, "/").replaceAll("/$", "");
 						list.addAll(loadResourcesInFileSystem(url.toString(), fileExt, include, exclude));
 					}
+				} catch (Exception e) {
+					Logger.warn(FCS.get("[loadResourcesInClassPath][{file}]: loading resource error! ", filePath), e);
 				}
 			}
 		} catch (Exception ee) {
@@ -339,13 +352,12 @@ public class ResourceHelper {
 		return null;
 	}
 
-	public static void main(String[] args) {
-		//System.out.println(loadResources("jar://META-INF/tc-framework-test", ".groovy", "*", "*/TCMain.groovy"));
-		//System.out.println(loadResources("classpath://META-INF", ".groovy", "*", "*/TCMain.groovy"));
-		//System.out.println(loadResources("file://media/新加卷/workspace/JeeGalileo/tc-util-project2", ".xml", "", ""));
-		System.out
-				.println(loadResourcesInFileSystemJar(
-						"jar:file:///media/新加卷/workspace/JeeGalileo/tc-util-project2/builds/tc-util-project-1.0.1.jar!/org/iff/infra/test",
-						"*", "*", null));
-	}
+	//	public static void main(String[] args) {
+	//		//System.out.println(loadResources("jar://META-INF/tc-framework-test", ".groovy", "*", "*/TCMain.groovy"));
+	//		//System.out.println(loadResources("classpath://META-INF", ".groovy", "*", "*/TCMain.groovy"));
+	//		//System.out.println(loadResources("file://media/新加卷/workspace/JeeGalileo/tc-util-project2", ".xml", "", ""));
+	//		System.out.println(loadResourcesInFileSystemJar(
+	//				"jar:file:///media/新加卷/workspace/JeeGalileo/tc-util-project2/builds/tc-util-project-1.0.1.jar!/org/iff/infra/test",
+	//				"*", "*", null));
+	//	}
 }

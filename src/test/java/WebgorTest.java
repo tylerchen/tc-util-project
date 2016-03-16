@@ -21,7 +21,7 @@ public class WebgorTest {
 	public static void main(String[] args) {
 		WebgorGrab.create().data(MapHelper.toMap("dep", "CAN", "arr", "BJS")).timeout(30000)/**/
 				.connection(
-						"http://flights.ctrip.com/booking/${requestData.dep}-${requestData.arr}-day-1.html?DDate1=2016-03-12")/**/
+						"http://flights.ctrip.com/booking/${requestData.dep}-${requestData.arr}-day-1.html?DDate1=2016-03-16")/**/
 				.get().printError().printText().done()/**/
 				.processData(new WebgorGrab.Process() {
 					public WebgorGrab process(WebgorGrab test) {
