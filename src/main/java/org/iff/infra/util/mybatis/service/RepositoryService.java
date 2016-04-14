@@ -2,10 +2,10 @@ package org.iff.infra.util.mybatis.service;
 
 public interface RepositoryService extends QueryService {
 
-	void save(String queryDsl, Object params);
+	int save(String queryDsl, Object params);
 
-	void update(String queryDsl, Object params);
+	int update(String queryDsl, Object params);
 
-	void remove(String queryDsl, Object params);
+	int remove(String queryDsl, Object params);
 
 }

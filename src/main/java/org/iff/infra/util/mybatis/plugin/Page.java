@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.iff.infra.util.BeanHelper;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "unchecked", "rawtypes" })
 @XmlRootElement(name = "Page")
 public class Page implements Serializable, Cloneable {
 	private static int PAGE_SIZE_DEFAULT = 10; // 显示数目
@@ -26,26 +26,32 @@ public class Page implements Serializable, Cloneable {
 
 	public static Page pageable(int pageSize, int currentPage, int totalCount, List rows) {
 		Page page = new Page();
-		pageSize = pageSize < 1 ? PAGE_SIZE_DEFAULT : pageSize;
-		page.setPageSize(pageSize);
-		currentPage = currentPage < 1 ? 1 : currentPage;
-		page.setCurrentPage(currentPage);
-		totalCount = totalCount < -1 ? 0 : totalCount;
-		page.setTotalCount(totalCount);
-		rows = rows == null ? page.getRows() : rows;
-		page.setRows(rows);
+		{
+			pageSize = pageSize < 1 ? PAGE_SIZE_DEFAULT : pageSize;
+			page.setPageSize(pageSize);
+			currentPage = currentPage < 1 ? 1 : currentPage;
+			page.setCurrentPage(currentPage);
+			totalCount = totalCount < -1 ? 0 : totalCount;
+			page.setTotalCount(totalCount);
+			rows = rows == null ? page.getRows() : rows;
+			page.setRows(rows);
+			page.setTotalCount(rows.size());
+		}
 		return page;
 	}
 
 	public static Page offsetPage(int offset, int pageSize, List rows) {
 		Page page = new Page();
-		offset = offset < 1 ? 0 : offset;
-		page.setOffset(offset);
-		pageSize = pageSize < 1 ? PAGE_SIZE_DEFAULT : pageSize;
-		page.setPageSize(pageSize);
-		rows = rows == null ? page.getRows() : rows;
-		page.setRows(rows);
-		page.offsetPage = true;
+		{
+			offset = offset < 1 ? 0 : offset;
+			page.setOffset(offset);
+			pageSize = pageSize < 1 ? PAGE_SIZE_DEFAULT : pageSize;
+			page.setPageSize(pageSize);
+			rows = rows == null ? page.getRows() : rows;
+			page.setRows(rows);
+			page.setTotalCount(rows.size());
+			page.offsetPage = true;
+		}
 		return page;
 	}
 
@@ -127,7 +133,6 @@ public class Page implements Serializable, Cloneable {
 		return Page.pageable(pageSize, currentPage, totalCount, list);
 	}
 
-	@Override
 	public Page clone() {
 		if (isOffsetPage()) {
 			return Page.offsetPage(offset, pageSize, rows);
@@ -135,7 +140,6 @@ public class Page implements Serializable, Cloneable {
 		return Page.pageable(pageSize, currentPage, totalCount, rows);
 	}
 
-	@Override
 	public String toString() {
 		return "Pages [currentPage=" + currentPage + ", pageSize=" + pageSize + ", rows=" + rows + ", totalCount="
 				+ totalCount + "]";

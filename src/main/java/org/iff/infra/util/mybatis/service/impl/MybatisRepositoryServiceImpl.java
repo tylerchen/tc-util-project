@@ -41,16 +41,16 @@ public class MybatisRepositoryServiceImpl implements RepositoryService {
 		this.sqlSession = sqlSession;
 	}
 
-	public void remove(String queryDsl, Object params) {
-		sqlSession.delete(queryDsl, params);
+	public int remove(String queryDsl, Object params) {
+		return sqlSession.delete(queryDsl, params);
 	}
 
-	public void save(String queryDsl, Object params) {
-		sqlSession.insert(queryDsl, params);
+	public int save(String queryDsl, Object params) {
+		return sqlSession.insert(queryDsl, params);
 	}
 
-	public void update(String queryDsl, Object params) {
-		sqlSession.update(queryDsl, params);
+	public int update(String queryDsl, Object params) {
+		return sqlSession.update(queryDsl, params);
 	}
 
 	public <T> List<T> queryList(String queryDsl, Object params) {
@@ -68,6 +68,7 @@ public class MybatisRepositoryServiceImpl implements RepositoryService {
 		return list == null ? new ArrayList<T>() : list;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> T queryOne(String queryDsl, Object params) {
 		return (T) sqlSession.selectOne(queryDsl, params);
 	}

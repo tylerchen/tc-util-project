@@ -3,6 +3,7 @@ package org.iff.infra.util.mybatis.service;
 import java.util.List;
 
 import org.iff.infra.domain.InstanceFactory;
+import org.iff.infra.util.Assert;
 import org.iff.infra.util.mybatis.plugin.Page;
 
 public class Dao {
@@ -10,7 +11,12 @@ public class Dao {
 
 	public static RepositoryService getService() {
 		if (service == null) {
-			service = InstanceFactory.getInstance(RepositoryService.class);
+			try {
+				service = InstanceFactory.getInstance("repositoryService");
+				Assert.notNull(service);
+			} catch (Exception e) {
+				service = InstanceFactory.getInstance(RepositoryService.class);
+			}
 		}
 		return service;
 	}
@@ -60,8 +66,8 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static void save(String queryDsl, Object params) {
-		getService().save(queryDsl, params);
+	public static int save(String queryDsl, Object params) {
+		return getService().save(queryDsl, params);
 	}
 
 	/**
@@ -69,8 +75,8 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static void update(String queryDsl, Object params) {
-		getService().update(queryDsl, params);
+	public static int update(String queryDsl, Object params) {
+		return getService().update(queryDsl, params);
 	}
 
 	/**
@@ -78,7 +84,7 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static void remove(String queryDsl, Object params) {
-		getService().remove(queryDsl, params);
+	public static int remove(String queryDsl, Object params) {
+		return getService().remove(queryDsl, params);
 	}
 }
