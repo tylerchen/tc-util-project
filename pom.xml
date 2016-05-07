@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iff</groupId>
 	<artifactId>tc-util</artifactId>
-	<version>1.0.9</version>
+	<version>1.0.11</version>
 	<name>tc-util-project</name>
 	<url>http://maven.apache.org</url>
 
@@ -435,43 +435,56 @@
 			<groupId>org.xeustechnologies</groupId>
 			<artifactId>jcl-core</artifactId>
 			<version>2.6</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.beetl</groupId>
 			<artifactId>beetl-core</artifactId>
 			<version>2.2.3</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-all</artifactId>
 			<version>1.2.4</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mvel</groupId>
 			<artifactId>mvel2</artifactId>
 			<version>2.2.7.Final</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
 			<version>1.5.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.esotericsoftware</groupId>
 			<artifactId>reflectasm</artifactId>
 			<version>1.11.0</version>
 			<classifier>shaded</classifier>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.ow2.asm</groupId>
 					<artifactId>asm</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.20</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<repositories>

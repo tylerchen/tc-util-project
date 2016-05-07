@@ -410,8 +410,9 @@ public class WebgorGrab {
 			MapHelper.combine(getData().getHeader(name), MapHelper.toMap("Referer", response.url().toString()));
 		}
 		{// update cookie
-			System.out.println("Recieve Cookies:" + response.cookies());
+			System.out.println("Recieve Cookies:" + response.header("Set-Cookie"));
 			MapHelper.combine(getData().getCookie(name), response.cookies());
+			System.out.println("combine Cookies:" + getData().getCookie(name));
 		}
 		return this;
 	}
@@ -419,6 +420,7 @@ public class WebgorGrab {
 	private WebgorGrab settingConnection(Connection connection) {
 		{// setting header
 			for (Entry<String, String> entry : getData().getHeader(name).entrySet()) {
+				System.out.println("Header, " + entry.getKey() + "=" + entry.getValue());
 				if ("userAgent".equalsIgnoreCase(entry.getKey())) {
 					connection.userAgent(entry.getValue());
 				} else {
@@ -457,7 +459,7 @@ public class WebgorGrab {
 		return getData().getResult(name);
 	}
 
-	public Object getText() {
+	public String getText() {
 		return getData().getText(name);
 	}
 

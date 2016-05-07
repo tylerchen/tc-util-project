@@ -15,7 +15,6 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -159,7 +158,9 @@ public class HttpHelper {
 			connection.setDoInput(true);
 			connection.setInstanceFollowRedirects(false);
 			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			//connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			connection.setRequestProperty("Accept", "application/json");
+			connection.setRequestProperty("Content-Type", "application/json");
 			connection.setRequestProperty("charset", "UTF-8");
 			connection.setRequestProperty("Content-Length", "" + content.getBytes("UTF-8").length);
 			connection.setUseCaches(false);
@@ -373,9 +374,4 @@ public class HttpHelper {
 		return map;
 	}
 
-	public static void main(String[] args) throws Exception {
-		String encode = "loginEmail=" + URLEncoder.encode("admin@123.com", "UTF-8") + "&loginPasswd=1111";
-		System.out.println(encode);
-		System.out.println(post("http://182.254.204.165:8080/auth/authaccount/login.do", encode));
-	}
 }

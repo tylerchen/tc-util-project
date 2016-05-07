@@ -549,7 +549,7 @@ public class RSAHelper {
 		return Base64.encodeBase64String((byte[]) PUB_KEY[0]);
 	}
 
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		String encrypt = encryptByDefaultKey("hello world!");
 		System.out.println(encrypt);
 		System.out.println(decryptByDefaultKey(encrypt));
@@ -568,5 +568,13 @@ public class RSAHelper {
 		System.out.println("PUB-KEY HEX:" + getKeyAsHex(kp.getPublic()));
 		System.out.println("PRI-KEY Base64:" + priKey);
 		System.out.println("PRI-KEY HEX:" + getKeyAsHex(kp.getPrivate()));
+	}
+
+	public static void main(String[] args) {
+		String encrypt = encrypt("iff", getPublicKeyFromBase64(
+				"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCJHezVuDIGtL8RIcrU+7jCdMJIN2Amuzv0pU0iDCkTtuAuKrJidh35Tqa+4l5Z0uDCy6KhJdBvE2tL/L8NUcw7e4bgbsV8rm+LZoKWjUTRPfwskCVDN4iUk6KAMpUyW73AHJz3XRZnq2Z+LmJy+6mnguofGU37Mr6c5Jeh4PbhcwIDAQAB"));
+		System.out.println(encrypt);
+		String decrypt = decryptByDefaultKey("ISxz8KSdJ+/0ebzV5Ps9qQIY/BMsbFofn7KTw79zcUn9YDY7tz4lkTRDv/9+KGYoMsZCj5969LsP3Nj2o9vIIaueGspih1CnMHv72sB4bHhndqGj5WQeH3Xn4sD0e8tn7glfqt6uERMrfQMeFWzICLDvf8aM7/WuJCQyNHN96t8=");
+		System.out.println(decrypt);
 	}
 }

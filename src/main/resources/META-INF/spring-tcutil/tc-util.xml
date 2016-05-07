@@ -1,0 +1,38 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:lang="http://www.springframework.org/schema/lang"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+             http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-3.2.xsd">
+	<description>
+		<![CDATA[
+		== encryptDencryptPassword USAGE ==
+		define a bean to dencrypt/encrypt Password.
+		<bean id="dencryptPassword" factory-bean="encryptDencryptPassword" factory-method="dencryptPassword">
+			<constructor-arg index="0" value="${jdbc.password}"/>
+			<constructor-arg index="1" value="${rsa.key.private.base64}"/>
+		</bean>
+		PUBLIC KEY :MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpAVh977aPAnNSnhRvDtGLYjDHAoQu5sWzTC3TOms3xAdS3ffQJCA1HTMvDBjLHZTa2P3pdi1rtDre0xu/FpPAOdCqwXakdQw9KeV3KPx+diCm/vbhgEwWQXhVJ+PoIKPbNl8tURMjcgjdqm978dTf30RBtEm8fGNEvt8VAG2qhQIDAQAB 
+		PRIVATE KEY:MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKkBWH3vto8Cc1KeFG8O0YtiMMcChC7mxbNMLdM6azfEB1Ld99AkIDUdMy8MGMsdlNrY/el2LWu0Ot7TG78Wk8A50KrBdqR1DD0p5Xco/H52IKb+9uGATBZBeFUn4+ggo9s2Xy1REyNyCN2qb3vx1N/fREG0Sbx8Y0S+3xUAbaqFAgMBAAECgYAjW4u29UK9Uqbr3vSpc3E1dvp7eDRNV6x+4W4o5ezugs2BcbzZx+URF6XQrvg07mBpFMKyaC4CfXdfjM0eQkvwr88sPhHCYNGg4j2cmn6A73NiNmvHJX4+86Xy2W5ue+8XFVWlMTY7kcHhlbzbh5puxeZsTQ6nNQv4zAiOwHmVAQJBAPtSqcNbQwT7oEIDhf6u9+wS9/bS1dvNNDDhLxY+/V/zWfha0eg0inZgDjLrsKNHOLr2kX8GcWyW2IieAM+Z7MUCQQCsJoKMEEgXGMca4gUHhDlVv+fx8OUGjJRR9b7/RD1KfY0Nm5oluFz5ZEyziMY9BZbat4M4ZoVNd0kESJt7MCLBAkEAqmpwELbWaA+TqI+pEXxlQl/OYkCuoP+xTx+yhRwrRR/HNx+mTBUsen5BwoeM2/qUXjqJiB+/U4mpxGGXXS4bnQJAOr4NT/QCVXdMAZ1cb/srgVoxsHot/HUd63W6zeogK/n5lsog6HwnpaYXEjA6zPnKRynVqfo5xHxOuxp3i6qaQQJAHdRacCr8mDoumM8m+d9xhnEqZPCU7WNvpi29fTnb8DlwfENDBtDDS8rxJWc/6hJs5LSHu8fCiTWgiyopKui9dQ== 
+		hello world!:It7xDSQZ5R67ugTb/JFsTjqGaGtTX9sJ1NjTQaH4l1AQvWaIfVlGocGQ8OlfScdDjOxxU+C1Et6p+U3XrWk8vBbSC6rkyAU7BtRIeuvKM6Pf9Kica1TQlNEiSu5ZgtatqDLCsjd7cXngM1V4ehQMjxKtHc+TM2sq+/MW9jOYE+s=
+		-- use --
+		<property name="password" ref="dencryptPassword" > 
+		]]>
+	</description>
+	<lang:groovy id="encryptDencryptPassword">
+		<lang:inline-script>
+		<![CDATA[
+package org.iff.infra.util.generate;
+import org.iff.infra.util.RSAHelper;
+public class EncryptDencryptPassword {
+	@groovy.transform.CompileStatic
+	public String dencryptPassword(String password, String privateKey){
+		return RSAHelper.decrypt(password, RSAHelper.getPrivateKeyFromBase64(privateKey));
+	}
+	@groovy.transform.CompileStatic
+	public String encryptPassword(String password, String publicKey){
+		return RSAHelper.encrypt(password, RSAHelper.getPublicKeyFromBase64(publicKey));
+	}
+}
+		]]>
+		</lang:inline-script>
+	</lang:groovy>
+</beans>
