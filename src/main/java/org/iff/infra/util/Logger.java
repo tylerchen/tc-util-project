@@ -27,22 +27,6 @@ public class Logger {
 		return new Log(StringUtils.isEmpty(loggerName) ? log : LoggerFactory.getLogger(loggerName.trim()));
 	}
 
-	/**
-	 * get trace id for method access trace, if trace id is empty the create a new one.
-	 * @return
-	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since Jan 28, 2016
-	 */
-	public static String getTraceId() {
-		Object id = ThreadLocalHelper.get("TRACE_ID");
-		if (id != null && id instanceof String) {
-		} else {
-			id = StringHelper.uuid();
-			ThreadLocalHelper.set("TRACE_ID", id);
-		}
-		return (String) id;
-	}
-
 	public static org.slf4j.Logger getLogger() {
 		return log;
 	}
@@ -111,61 +95,61 @@ public class Logger {
 
 		public void debug(CharSequence message) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(StringHelper.concat("[", getTraceId(), "] ", message.toString()));
+				logger.debug(message.toString());
 			}
 		}
 
 		public void debug(CharSequence message, Throwable t) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(StringHelper.concat("[", getTraceId(), "] ", message.toString()), t);
+				logger.debug(message.toString(), t);
 			}
 		}
 
 		public void error(CharSequence message) {
 			if (logger.isErrorEnabled()) {
-				logger.error(StringHelper.concat("[", getTraceId(), "] ", message.toString()));
+				logger.error(message.toString());
 			}
 		}
 
 		public void error(CharSequence message, Throwable t) {
 			if (logger.isErrorEnabled()) {
-				logger.error(StringHelper.concat("[", getTraceId(), "] ", message.toString()), t);
+				logger.error(message.toString(), t);
 			}
 		}
 
 		public void info(CharSequence message) {
 			if (logger.isInfoEnabled()) {
-				logger.info(StringHelper.concat("[", getTraceId(), "] ", message.toString()));
+				logger.info(message.toString());
 			}
 		}
 
 		public void info(CharSequence message, Throwable t) {
 			if (logger.isInfoEnabled()) {
-				logger.info(StringHelper.concat("[", getTraceId(), "] ", message.toString()), t);
+				logger.info(message.toString(), t);
 			}
 		}
 
 		public void trace(CharSequence message) {
 			if (logger.isTraceEnabled()) {
-				logger.trace(StringHelper.concat("[", getTraceId(), "] ", message.toString()));
+				logger.trace(message.toString());
 			}
 		}
 
 		public void trace(CharSequence message, Throwable t) {
 			if (logger.isTraceEnabled()) {
-				logger.trace(StringHelper.concat("[", getTraceId(), "] ", message.toString()), t);
+				logger.trace(message.toString(), t);
 			}
 		}
 
 		public void warn(CharSequence message) {
 			if (logger.isWarnEnabled()) {
-				logger.warn(StringHelper.concat("[", getTraceId(), "] ", message.toString()));
+				logger.warn(message.toString());
 			}
 		}
 
 		public void warn(CharSequence message, Throwable t) {
 			if (logger.isWarnEnabled()) {
-				logger.warn(StringHelper.concat("[", getTraceId(), "] ", message.toString()), t);
+				logger.warn(message.toString(), t);
 			}
 		}
 	}
