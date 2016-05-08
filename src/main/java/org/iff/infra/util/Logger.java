@@ -153,4 +153,34 @@ public class Logger {
 			}
 		}
 	}
+
+	/**
+	 * get trace id for method access trace, if trace id is empty the create a new one.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jan 28, 2016
+	 */
+	public static String getTraceId() {
+		Object id = ThreadLocalHelper.get("TRACE_ID");
+		if (id != null && id instanceof String) {
+		} else {
+			id = StringHelper.uuid();
+			ThreadLocalHelper.set("TRACE_ID", id);
+		}
+		return (String) id;
+	}
+
+	/**
+	 * update trace id for method access trace, if trace id is empty the create a new one.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jan 28, 2016
+	 */
+	public static void updateTraceId(String traceId) {
+		String id = traceId == null ? getTraceId() : traceId;
+		{
+			id = StringHelper.uuid();
+			ThreadLocalHelper.set("TRACE_ID", id);
+		}
+	}
 }
