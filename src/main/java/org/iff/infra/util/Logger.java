@@ -179,7 +179,6 @@ public class Logger {
 	public static void updateTraceId(String traceId) {
 		String id = traceId == null ? getTraceId() : traceId;
 		{
-			id = StringHelper.uuid();
 			ThreadLocalHelper.set("TRACE_ID", id);
 		}
 	}
