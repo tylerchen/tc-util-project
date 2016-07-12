@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.iff.infra.domain.InstanceProvider;
@@ -48,22 +49,93 @@ import org.xeustechnologies.jcl.JclObjectFactory;
 import org.xeustechnologies.jcl.ProxyClassLoader;
 
 /**
+ * <pre>
+ * === Usage ===
+ * --- loading groovy and resources ---
+ * TCGroovyLoader can load groovy and resource file from file system, jar and classpath.
+ * example:
+ * TCGroovyLoader.create("moduleName", new String[] {"file://modules/commonModule" });
+ * TCGroovyLoader.create("moduleName", new String[] {"jar://modules/commonModule" });
+ * TCGroovyLoader.create("moduleName", new String[] {"classpath://modules/commonModule" });
+ * --- groovy and resources structure ---
+ * -basedir/META-INF
+ *  |-tcmodule.xml
+ *  |-resource
+ *   |-*.*
+ *  |-groovy/common
+ *   |-*.groovy
+ *  |-groovy/module
+ *   |-*.groovy
+ *  |-groovy/service
+ *   |-*.groovy
+ *  |-groovy/view
+ *   |-*.groovy
+ * the TCGroovyLoader loading groovy file order: tcmodule.xml，resource, common, module, service, view.
+ * if the dir has child-dir and files, TCGroovyLoader will sort files path first and load, the file in parent dir will load first.
+ * -- tcmodule.xml --
+ * this file currently not using.
+ * keep this content in file: &lt;tcmodule&gt;&lt;/tcmodule&gt;
+ * -- load and parse --
+ * when using create method to create a instanceof TCGroovyLoader, then use load() to load and parse all files.
+ * </pre>
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Aug 2, 2015
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class TCGroovyLoader {
+	/**
+	 * this lock to keep the resource update syncronize.
+	 */
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+	/**
+	 * the TCGroovyLoader name.
+	 */
 	private String name;
+	/**
+	 * the paths of the TCGroovyLoader to load the resources.
+	 */
 	private String[] basePaths;
+	/**
+	 * this jar class loader to load jar from the base paths.
+	 */
 	private JarClassLoader classLoader = new JarClassLoader();
+	/**
+	 * this is the groovy class loader.
+	 */
 	private TCGroovyProxyClassLoader groovyLoader = null;
+	/**
+	 * the jcl factory. to load the object from jcl, such as from JarClassLoader.
+	 */
 	private JclObjectFactory factory = JclObjectFactory.getInstance();
+	/**
+	 * all resource files from resources dir.
+	 */
 	private Map<String, Map> resourceMap = new HashMap<String, Map>();
+	/**
+	 * all groovy files from groovy dir.
+	 */
 	private Map<String, Map> groovyMap = new HashMap<String, Map>();
+	/**
+	 * all groovy beans.
+	 */
 	private Map<String, Map> beans = new HashMap<String, Map>();
+	/**
+	 * all groovy actions.
+	 */
 	private Map<String, Map> actions = new HashMap<String, Map>();
+	/**
+	 * tcmodule.xml data.
+	 */
 	private Map<String, Map> moduleConfig = new LinkedHashMap<String, Map>();
 
+	/**
+	 * create a TCGroovyLoader and load all files from base paths.
+	 * @param name
+	 * @param basePaths
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since May 31, 2016
+	 */
 	public static TCGroovyLoader create(String name, String[] basePaths) {
 		{
 			Assert.notBlank("TCModule name is required!");
@@ -77,14 +149,21 @@ public class TCGroovyLoader {
 		{
 			RegisterHelper.regist(InstanceProvider.class.getName(), MapHelper.toMap("name",
 					TCGroovyInstanceProvider.class.getSimpleName(), "value", TCGroovyInstanceProvider.create(m)));
+			RegisterHelper.regist(TCGroovyLoader.class.getName(), MapHelper.toMap("name", m.getName(), "value", m));
 		}
 		return m;
 	}
 
+	/**
+	 * reset the TCGroovyLoader.
+	 * 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since May 31, 2016
+	 */
 	public void release() {
 		try {
 			lock.writeLock().lock();
-			System.out.println("On release........");
+			Logger.info("On release........");
 			resourceMap.clear();
 			groovyMap.clear();
 			beans.clear();
@@ -95,7 +174,7 @@ public class TCGroovyLoader {
 			}
 			groovyLoader = null;
 			moduleConfig.clear();
-			System.out.println("Release Finished.");
+			Logger.info("Release Finished.");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -103,46 +182,52 @@ public class TCGroovyLoader {
 		}
 	}
 
+	/**
+	 * load and parse files.
+	 * 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since May 31, 2016
+	 */
 	public void load() {
 		try {
 			lock.writeLock().lock();
-			Logger.debug(FCS.get("groovy paths: {0}", basePaths));
+			Logger.debug(FCS.get("groovy paths: {0}", (Object[]) basePaths));
 			for (String basePath : basePaths) {
-				System.out.println("----------->" + basePath);
 				try {
 					if (basePath.startsWith("classpath:")) {
+						String resDir = StringUtils.substringAfterLast(basePath, "classpath:");
+						resDir = StringHelper.pathConcat(StringUtils.stripStart(resDir, "/"), "META-INF");
 						Set<String> pathSet = new HashSet<String>();
 						{// load module xml
-							List<String> resources = ResourceHelper.loadResourcesInClassPath("META-INF/",
-									"tcmodule.xml", "tcmodule.xml", null);
+							List<String> resources = ResourceHelper.loadResourcesInClassPath(resDir, "tcmodule.xml",
+									"tcmodule.xml", null);
 							for (String resource : resources) {
 								XmlHelper.parseXmlToMap(moduleConfig, resource);
 								pathSet.add(StringHelper.cutOff(resource, "tcmodule.xml"));
 							}
 						}
 						{// load resource
-							List<String> resources = ResourceHelper.loadResourcesInClassPath("META-INF/resource/", "*",
-									"*", null);
+							String resourceDir = StringHelper.pathConcat(resDir, "resource");
+							List<String> resources = ResourceHelper.loadResourcesInClassPath(resourceDir, "*", "*",
+									null);
 							for (String url : resources) {
-								for (String resDir : pathSet) {
-									if (url.startsWith(resDir)) {
+								for (String pathDir : pathSet) {
+									if (url.startsWith(pathDir)) {
 										resourceMap.put(
-												StringHelper.pathConcat("/",
-														StringHelper.cutTo(url, "META-INF/resource/")),
+												StringHelper.pathConcat("/", StringHelper.cutTo(url, resourceDir)),
 												MapHelper.toMap("url", url));
 									}
 								}
 							}
 						}
 						{// load groovy
-							List<String> resources = ResourceHelper.loadResourcesInClassPath("META-INF/groovy/",
-									".groovy", "*", null);
+							String groovyDir = StringHelper.pathConcat(resDir, "groovy");
+							List<String> resources = ResourceHelper.loadResourcesInClassPath(groovyDir, ".groovy", "*",
+									null);
 							for (String url : resources) {
-								for (String resDir : pathSet) {
-									if (url.startsWith(resDir)) {
-										groovyMap.put(
-												StringHelper.pathConcat("/",
-														StringHelper.cutTo(url, "META-INF/groovy/")),
+								for (String pathDir : pathSet) {
+									if (url.startsWith(pathDir)) {
+										groovyMap.put(StringHelper.pathConcat("/", StringHelper.cutTo(url, groovyDir)),
 												MapHelper.toMap("url", url));
 									}
 								}
@@ -266,7 +351,7 @@ public class TCGroovyLoader {
 			Map<String, List<String>> pathUrlMap = new HashMap<String, List<String>>();
 			for (String groovyFileName : groovyMap.keySet()) {
 				String dir = groovyFileName;
-				dir = dir.substring(0, dir.lastIndexOf("/"));
+				dir = dir.endsWith("/") ? dir : (dir + "/");
 				List<String> list = pathUrlMap.get(dir);
 				if (list == null) {
 					list = new ArrayList<String>();
@@ -619,7 +704,6 @@ public class TCGroovyLoader {
 		private Method method;
 		private String className;
 		private ClassLoader classLoader;
-		private JclObjectFactory factory;
 		private Map params;
 
 		public TCActionInvoker(Method method, String className, ClassLoader classLoader, Map params) {
@@ -648,6 +732,35 @@ public class TCGroovyLoader {
 
 		public Method getMethod() {
 			return method;
+		}
+
+		public String getClassName() {
+			return className;
+		}
+	}
+
+	public static class TCGroovyObjectInvoker {
+		private GroovyObject groovyObject;
+		private String methodName;
+		private String className;
+
+		public TCGroovyObjectInvoker(String groovyBeanName, String methodName) {
+			this.groovyObject = getDefaultGroovyLoader().getBean(groovyBeanName);
+			this.methodName = methodName;
+		}
+
+		public static TCGroovyObjectInvoker get(String groovyBeanName, String methodName) {
+			TCGroovyObjectInvoker invoker = new TCGroovyObjectInvoker(groovyBeanName, methodName);
+			return invoker;
+		}
+
+		public Object invoke(Object... params) {
+			try {
+				return groovyObject.invokeMethod(methodName, params);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
 		}
 
 		public String getClassName() {
@@ -813,6 +926,18 @@ public class TCGroovyLoader {
 
 	public Map<String, Map> getModuleConfig() {
 		return Collections.unmodifiableMap(moduleConfig);
+	}
+
+	public static TCGroovyLoader getDefaultGroovyLoader() {
+		TCGroovyLoader gl = (TCGroovyLoader) RegisterHelper.get(TCGroovyLoader.class.getName(), "default");
+		if (gl != null) {
+			return gl;
+		}
+		Map<String, Object> map = RegisterHelper.get(TCGroovyLoader.class.getName());
+		if (map.size() > 0) {
+			return (TCGroovyLoader) map.values().iterator().next();
+		}
+		return null;
 	}
 
 	public static final String actionMethod = "" //

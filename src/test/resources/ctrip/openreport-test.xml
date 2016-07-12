@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<openreport xmlns="http://www.iff.org/openreport" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="openreport.xsd">
+	<globals>
+		<templates>
+			<!-- openreportConfig, reportConfig, conditionParams, actionContent, conditionContent, dataContent, paginationContent, queryResult -->
+			<template display-name="page-template" version="1"
+				name="page_template">
+			<![CDATA[
+			<#assign jsFile=reportConfig['page']['js']?trim?split(',') />
+			<#assign cssFile=reportConfig['page']['css']?trim?split(',') />
+			<!DOCTYPE html>
+			<html xmlns='http://www.w3.org/1999/xhtml'>
+			<head>
+			    <meta charset='UTF-8' />
+			    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+				<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+				<meta name="author" content="Unknown" />
+				<title>${reportConfig['display-name']}</title>
+				<#list (cssFile![]) as item>
+				<link href="${ctx}/resource/css/${item}" rel="stylesheet" type="text/css" />
+				</#list>
+				<style type="text/css">
+					${reportConfig['page']['style']!''}
+				</style>
+				<script type="text/javascript">
+					var cxt = '${ctx}';
+				</script>
+				<@ifie/>
+			</head>
+			<body>
+				<div class='or-header'>
+					<h1>${reportConfig['display-name']}</h1>
+				</div>
+			    <div class='or-content'>
+			    	<form class='or-cdts-form' onsubmit='return false' id="${reportConfig['name']}">
+			    		<table class='or-params-actions'>
+			    			<tr>
+			    				<td>
+						    		${conditionContent!''}
+						    		${actionContent!''}
+			    				</td>
+			    			</tr>
+			    		</table>
+			    		${dataContent!''}
+			    		${paginationContent!''}
+			    	</form>
+			    </div>
+			</body>
+			<#list (jsFile![]) as item>
+			<script language="javascript" src="${ctx}/resource/js/${item}"></script>
+			</#list>
+			<script type="text/javascript">
+				${reportConfig['page']['javascript']!''}
+			</script>
+			</html>
+			]]>
+			</template>
+			<template display-name="condition-template" version="1" name="condition_template">
+			<![CDATA[
+			<div class='or-cdts'>
+				<#list (reportConfig.conditions![]) as item>
+					<#if item.html?has_content>
+						${item.html}
+					<#else>
+						<#assign htmlWidget=helper('org.iff.infra.util.groovy2.TCGroovyLoader.TCGroovyObjectInvoker').get('TC_COM_RT_'+(item.type)!'html', 'htmlWidget')!'' />
+						<div class="or-cdt ${item.name}">
+							<div class="or-cdt-name ${item.name}">${item.'display-name'}</div>
+							<div class="or-cdt-value ${item.name}">${htmlWidget}</div>
+						</div>
+					</#if>
+				</#list>
+			</div>
+			]]>
+			</template>
+			<template display-name="action-template" version="1" name="action_template">
+			<![CDATA[
+			<div class='or-cdts-fbtns'>
+				<#list (reportConfig.actions![]) as item>
+					<div class="or-cdts-fbtn ${item.name}">
+						<button class="or_submitable" type="submit" 
+							<#list item?keys as key>
+								<#if ',name,display-name,action,'?contains(','+key+',') ><#else>
+									${key}="${item.get(key)}"
+								</#if>
+							</#list>
+						>
+							${item.'display-name'}
+						</button>
+					</div>
+				</#list>
+			</div>
+			]]>
+			</template>
+			<template display-name="data-template" version="1" name="data_template">
+			<![CDATA[
+			<table class="or-data">
+				<thead>
+					<tr>
+						<#list (queryResult.columnNames![]) as columnName>
+							<th>
+								<div>${columnName}</div>
+							</th>
+						</#list>
+					</tr>
+				</thead>
+				<tbody>
+					<#list (queryResult.result![]) as record>
+						<tr>
+							<#list record.keys as columnName>
+								<td class="or-rc-${columnName}">
+									<div>${record.get(columnName)}</div>
+								</td>
+							</#list>
+						</tr>
+					</#list>
+				</tbody>
+			</table>
+			]]>
+			</template>
+			<template display-name="pagination-template" version="1" name="pagination_template">
+			<![CDATA[
+			<#assign pageSize=queryResult.pageSize totalCount=queryResult.totalCount currentPage=queryResult.currentPage />
+			<#assign pageNumbers=helper('org.iff.infra.util.PaginationHelper').middleCurrentPage(pageSize, totalCount, currentPage) />
+			<table class="or-pagination">
+				<tr><td><div>
+					<a href="javascript:;" onclick="return false" class="page-btn page-total">
+						当前记录${queryResult.result.size()}条，共 ${queryResult.totalCount}条，共${totalPage}
+					</a>
+					<#if totalPage gt 1>
+						<#if (currentPage<=1)><#assign currentPage=1 /></#if><#if (currentPage>totalPage)><#assign currentPage=totalPage /></#if>
+						<#list pageNumbers as pn>
+							<#if pn_index==0>
+								<a href="p=0" title="首页" class="page-btn page-start or_submitable"><<</a>
+							<#elseif !pn_has_next>
+								<a href="p=${totalPage}" class="page-btn page-end or_submitable" title="末页">>></a>
+							<#else>
+								<a href="p=${pageNo}" class="page-btn or_submitable ${pageNo==currentPage?then('page-on', '')}">${pageNo}</a>
+							</#if>
+						</#list>
+					</#if>
+				</div></td></tr>
+			</table>
+			]]>
+			</template>
+		</templates>
+		<htmlwidgets>
+			<htmlwidget name="html" beanName="TC_COM_HW_html" />
+			<htmlwidget name="blank" beanName="TC_COM_HW_blank" />
+			<htmlwidget name="hidden" beanName="TC_COM_HW_hidden" />
+			<htmlwidget name="script" beanName="TC_COM_HW_script" />
+			<htmlwidget name="text" beanName="TC_COM_HW_text" />
+			<htmlwidget name="cn2select" beanName="TC_COM_HW_cn2select" />
+			<htmlwidget name="select" beanName="TC_COM_HW_select" />
+			<htmlwidget name="mselect" beanName="TC_COM_HW_mselect" />
+		</htmlwidgets>
+	</globals>
+	<reports>
+		<report display-name="test" datasource="test" name="test">
+			<actions>
+				<action display-name="Query" name="query" action="query" href="op=query"/>
+			</actions>
+			<conditions>
+				<condition display-name="test" return-type="string" name="test"
+					default-value="test" type="test"></condition>
+			</conditions>
+			<query>
+				<![CDATA[
+					select time_id, promotion_id, store_id, unit_sales, store_sales, store_cost
+					from sales_fact_1998
+					where 1=1 
+					#[and product_id=:product_id]
+				]]>
+			</query>
+			<crosstable>
+				<columns>
+					<column name="cola" />
+					<column name="colb" />
+				</columns>
+				<rows>
+					<row name="rowa" />
+					<row name="rowb" />
+				</rows>
+				<summary name="test" display-name="test">
+					<value display-name="testa" name="testa" summary-method="sum" />
+					<value display-name="testb" name="testb" summary-method="avg" />
+				</summary>
+			</crosstable>
+			<page page-template="test" data-template="test" action-template="test"
+				condition-template="test">
+			</page>
+		</report>
+	</reports>
+</openreport>

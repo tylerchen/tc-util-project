@@ -7,30 +7,289 @@
     	<complexType>
     		<sequence>
 
-    			<element ref="tns:assign"></element>
+    			<element ref="tns:ftl-assign"></element>
     		</sequence>
     	</complexType>
     </element>
 
-    <element name="assign">
+    <element name="ftl-assign">
     	<complexType>
     		<sequence>
-    			<element ref="tns:variable"></element>
+    			<any></any>
+    		</sequence>
+    		<attribute name="name" type="string" use="required"></attribute>
+    		<attribute name="namespace" type="string" use="optional"></attribute>
+    	</complexType>
+    </element>
+    
+
+
+
+
+    <element name="ftl-attempt">
+    	<complexType>
+    		<sequence>
+    			<element name="ftl-try" type="string" maxOccurs="1"
+    				minOccurs="1">
+    			</element>
+    			<element name="ftl-catch" type="string" maxOccurs="1" minOccurs="1"></element>
     		</sequence>
     	</complexType>
     </element>
     
 
-    <simpleType name="nameType">
-    	<restriction base="string">
-    		<pattern value="[a-zA-Z][a-zA-Z0-9_]*"></pattern>
-    	</restriction>
-    </simpleType>
+    
 
 
-    <element name="variable">
+
+    <element name="ftl-compress" type="string"></element>
+
+    <element name="ftl-escape">
     	<complexType>
-    		<attribute name="name" type="tns:nameType" use="required"></attribute>
+            <sequence>
+            	<any></any>
+            </sequence>
+            <attribute name="expression" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-noescape" type="string"></element>
+
+    <element name="ftl-flush" type="string"></element>
+
+    <element name="ftl-ftl">
+    	<complexType>
+    		<attribute name="encoding" type="string" use="optional"
+    			default="UTF-8">
+    		</attribute>
+    		<attribute name="strip_whitespace" type="string"
+    			use="optional" default="true">
+    		</attribute>
+    		<attribute name="strip_text" type="string" use="optional"
+    			default="false">
+    		</attribute>
+    		<attribute name="strict_syntax" type="string" use="optional"
+    			default="true">
+    		</attribute>
+    		<attribute name="ns_prefixes" type="string" use="optional"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-function">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:ftl-argument" maxOccurs="unbounded"
+    				minOccurs="0">
+    			</element>
+    			<element ref="tns:ftl-return" maxOccurs="unbounded" minOccurs="0"></element>
+    		</sequence>
+    		<attribute name="name" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-argument">
+    	<complexType>
+            <sequence>
+            	<any></any>
+            </sequence>
+            <attribute name="name" type="string" use="required"></attribute>
+    		<attribute name="value" type="string" use="optional"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-return" type="string"></element>
+
+    <element name="ftl-global">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:ftl-argument" maxOccurs="unbounded" minOccurs="1"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+
+    <element name="ftl-if">
+    	<complexType>
+            <sequence>
+            	<any></any>
+            	<element ref="tns:ftl-elseif" maxOccurs="unbounded"
+            		minOccurs="0">
+            	</element>
+            	<element ref="tns:ftl-else" maxOccurs="1" minOccurs="0"></element>
+            </sequence>
+            <attribute name="condition" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-elseif">
+    	<complexType>
+            <sequence>
+            	<any></any>
+            </sequence>
+            <attribute name="condition" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-else" type="string"></element>
+
+    <element name="ftl-import">
+    	<complexType>
+    		<attribute name="path" type="string" use="required"></attribute>
+    		<attribute name="hash" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-include">
+    	<complexType>
+    		<attribute name="path" type="string" use="required"></attribute>
+    		<attribute name="encoding" type="string" use="optional"
+    			default="UTF-8">
+    		</attribute>
+    		<attribute name="parse" type="string"></attribute>
+    		<attribute name="ignore_missing" type="string"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-list">
+    	<complexType>
+    		<sequence>
+    			<sequence>
+    				<any></any>
+    				<element ref="tns:ftl-items"></element>
+    				<element ref="tns:ftl-sep"></element>
+    				<element ref="tns:ftl-break"></element>
+    			</sequence>
+                <element ref="tns:ftl-else" maxOccurs="1" minOccurs="0"></element>
+            </sequence>
+    		<attribute name="iterms" type="string" use="required"></attribute>
+    		<attribute name="var" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-items">
+    	<complexType>
+    		<attribute name="var" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-sep">
+    	<complexType>
+    		<sequence>
+    			<any></any>
+    		</sequence></complexType>
+    </element>
+    
+    <element name="ftl-break" type="string"></element>
+
+    <element name="ftl-local">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:ftl-argument" maxOccurs="unbounded" minOccurs="1"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+
+    <element name="ftl-macro">
+    	<complexType>
+            <sequence>
+                <element ref="tns:ftl-argument" maxOccurs="unbounded" minOccurs="0">
+    				</element>
+                <sequence><element ref="tns:ftl-nested" maxOccurs="unbounded" minOccurs="0">
+    			</element><element ref="tns:ftl-return" maxOccurs="unbounded" minOccurs="0">
+    			</element></sequence>
+            </sequence>
+    		<attribute name="name" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-nested">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:ftl-argument" maxOccurs="unbounded" minOccurs="0"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+
+    <element name="ftl-noparse" type="string"></element>
+
+    <element name="ftl-nt" type="string"></element>
+
+    <element name="ftl-stop">
+    	<complexType>
+    		<attribute name="reason" type="string" use="optional"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-setting">
+    	<complexType>
+    		<attribute name="name" use="required">
+    			<simpleType>
+    				<restriction base="string">
+    					<enumeration value="locale"></enumeration>
+    					<enumeration value="number_format"></enumeration>
+    					<enumeration value="boolean_format"></enumeration>
+    					<enumeration value="date_format"></enumeration>
+    					<enumeration value="time_format"></enumeration>
+    					<enumeration value=" datetime_format"></enumeration>
+    					<enumeration value="time_zone"></enumeration>
+    					<enumeration
+    						value="sql_date_and_time_time_zone">
+    					</enumeration>
+    					<enumeration value="url_escaping_charset"></enumeration>
+    					<enumeration value="output_encoding"></enumeration>
+    					<enumeration value="classic_compatible"></enumeration>
+    				</restriction>
+    			</simpleType>
+    		</attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-switch">
+    	<complexType>
+            <sequence>
+            	<element ref="tns:ftl-case" maxOccurs="unbounded" minOccurs="0"></element>
+            	<any></any>
+            	<element ref="tns:ftl-break" maxOccurs="unbounded" minOccurs="0"></element>
+            	<element ref="tns:ftl-default" maxOccurs="1" minOccurs="0"></element>
+            </sequence>
+            <attribute name="value" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-case">
+    	<complexType>
+            <sequence>
+            	<any></any>
+            </sequence>
+            <attribute name="value" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-default">
+    	<complexType>
+    		<sequence>
+    			<any></any>
+    		</sequence></complexType>
+    </element>
+
+    <element name="ftl-t" type="string"></element>
+
+    <element name="ftl-lt" type="string"></element>
+
+    <element name="ftl-rt" type="string"></element>
+
+    <element name="ftl-fallback" type="string"></element>
+
+    <element name="ftl-visit">
+    	<complexType>
+    		<attribute name="node" type="string" use="required"></attribute>
+    		<attribute name="namespace" type="string" use="optional"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="ftl-recurse">
+    	<complexType>
+    		<attribute name="node" type="string" use="required"></attribute>
+    		<attribute name="namespace" type="string" use="optional"></attribute>
     	</complexType>
     </element>
 </schema>

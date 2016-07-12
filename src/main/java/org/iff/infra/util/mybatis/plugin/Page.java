@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) Jul 12, 2016 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * All rights reserved.
+ *
+ * Contributors:
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
+ ******************************************************************************/
 package org.iff.infra.util.mybatis.plugin;
 
 import java.io.Serializable;
@@ -8,22 +15,42 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.iff.infra.util.BeanHelper;
 
+/**
+ * Page query
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+ * @since Jul 12, 2016
+ */
 @SuppressWarnings({ "serial", "unchecked", "rawtypes" })
 @XmlRootElement(name = "Page")
 public class Page implements Serializable, Cloneable {
-	private static int PAGE_SIZE_DEFAULT = 10; // 显示数目
-	private int pageSize = PAGE_SIZE_DEFAULT; // 当页显示数目
-	private int totalCount; // 总记录数
-	private int currentPage; // 当前页
-	private int offset; // 记录偏移量
+	/* 显示数目 */
+	private static int PAGE_SIZE_DEFAULT = 10;
+	/* 当页显示数目 */
+	private int pageSize = PAGE_SIZE_DEFAULT;
+	/* 总记录数 */
+	private int totalCount;
+	/* 当前页 */
+	private int currentPage;
+	/* 记录偏移量 */
+	private int offset;
 	private boolean offsetPage = false;
 
-	/** 分页结果 */
+	/* 分页结果 */
 	private List rows = new ArrayList();
 
 	public Page() {
 	}
 
+	/**
+	 * create a pageable query, this page query will get the total count.
+	 * @param pageSize
+	 * @param currentPage
+	 * @param totalCount
+	 * @param rows
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public static Page pageable(int pageSize, int currentPage, int totalCount, List rows) {
 		Page page = new Page();
 		{
@@ -40,6 +67,15 @@ public class Page implements Serializable, Cloneable {
 		return page;
 	}
 
+	/**
+	 * create a offset query, this page query will NOT get the total count.
+	 * @param offset
+	 * @param pageSize
+	 * @param rows
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public static Page offsetPage(int offset, int pageSize, List rows) {
 		Page page = new Page();
 		{
@@ -60,10 +96,11 @@ public class Page implements Serializable, Cloneable {
 	}
 
 	public int getOffset() {
-		if (offset > 0) {
+		if (isOffsetPage()) {
 			return offset;
+		} else {
+			return Math.max((currentPage - 1) * pageSize, 0);
 		}
-		return 0;
 	}
 
 	public void setOffset(int offset) {

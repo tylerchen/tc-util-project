@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) Jul 12, 2016 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * All rights reserved.
+ *
+ * Contributors:
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
+ ******************************************************************************/
 package org.iff.infra.test;
 
 import java.io.InputStream;
@@ -26,19 +33,34 @@ import org.xml.sax.InputSource;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
- * @author chencao
- * 
+ * DBUnit
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+ * @since Jul 12, 2016
  */
 public abstract class Dbunit {
 
+	/**
+	 * support FlatXml, and Xml
+	 * @author zhaochen
+	 */
 	public static enum DataSetStrategy {
 		FlatXml, Xml;
 	}
 
 	protected IDatabaseTester databaseTester;
 
+	/**
+	 * default to load : classpath*:META-INF/spring/root-test.xml
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public abstract String[] springXmlPath();
 
+	/**
+	 * default to load : jdbc.properties
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public abstract String testPropertiesFile();
 
 	public abstract void init();

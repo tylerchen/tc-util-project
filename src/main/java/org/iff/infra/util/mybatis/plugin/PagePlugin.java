@@ -1,14 +1,14 @@
 package org.iff.infra.util.mybatis.plugin;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.PropertyException;
 
@@ -23,12 +23,13 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
-import org.iff.infra.util.FCS;
+import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
+import org.iff.infra.util.Assert;
 import org.iff.infra.util.Logger;
 import org.iff.infra.util.ReflectHelper;
 import org.iff.infra.util.jdbc.dialet.Dialect;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 @Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = { Connection.class }) })
 public class PagePlugin implements Interceptor {
 
@@ -43,7 +44,36 @@ public class PagePlugin implements Interceptor {
 					"delegate");
 			MappedStatement mappedStatement = (MappedStatement) ReflectHelper.getValueByFieldName(delegate,
 					"mappedStatement");
+			{
+				Logger.changeLevel(mappedStatement.getId(), "debug");
+			}
 
+			/*String _SYS_CONDITION = "'_SYS_CONDITION'='_SYS_CONDITION'";
+			
+			//数据过滤部分 只是针对 SELECT 类型的sql语句
+			if (mappedStatement.getSqlCommandType().toString().equalsIgnoreCase("SELECT")) {
+				//String entityName = mappedStatement.getResultMaps().get(0).getType().getName();
+				//System.out.println("entityName: " +  entityName);
+				BoundSql boundSql = delegate.getBoundSql();
+				String sql = boundSql.getSql();
+			
+				if (ThreadLocalHelper.get("accountId") != null) {
+					AuthDataFilterConfVO authDataFilterConfVO = null;// CacheUtil4user4ehcache.getDataFilterConfig(ThreadUtil.accountId.get(), mappedStatement.getId());
+					if (authDataFilterConfVO != null) {
+			
+						if (sql.contains("'AND _SYS_CONDITION'=_'SYS_CONDITION'")) {
+							sql = sql.replace(_SYS_CONDITION, authDataFilterConfVO.getWhereValue());
+						} else {
+							sql = sql + " " + authDataFilterConfVO.getWhereValue();
+						}
+			
+					}
+				}
+				//sql += " AND LOGIN_EMAIL ='test@126.com'";
+				//sql += " AND US.NAME != '张三'";
+			
+				ReflectHelper.setValueByFieldName(boundSql, "sql", sql); // 将分页sql语句反射回BoundSql.
+			}*/
 			if (mappedStatement.getId().matches(pageSqlId)) { // 拦截需要分页的SQL
 				BoundSql boundSql = delegate.getBoundSql();
 				Object parameterObject = boundSql.getParameterObject();// 分页SQL<select>中parameterType属性对应的实体参数，即Mapper接口中执行分页方法的参数,该参数不得为空
@@ -73,10 +103,13 @@ public class PagePlugin implements Interceptor {
 					if (!page.isOffsetPage()) {
 						try {
 							Connection connection = (Connection) ivk.getArgs()[0];
-							String countSql = "select count(*) from (" + sql + ") tmp_count"; // 记录统计
+							String countSql = "select count(*) from (" + removeOrders(sql) + ") tmp_count"; // 记录统计
 							countStmt = connection.prepareStatement(countSql);
 							ReflectHelper.setValueByFieldName(boundSql, "sql", countSql);
-							Constructor<?> defaultParameterHandlerObject = null;
+							DefaultParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement,
+									parameterObject, boundSql);
+							parameterHandler.setParameters(countStmt);
+							/*Constructor<?> defaultParameterHandlerObject = null;
 							if (defaultParameterHandlerObject == null) {
 								try {// for mybatis 3.1.1
 									defaultParameterHandlerObject = ReflectHelper.getConstructor(
@@ -107,7 +140,7 @@ public class PagePlugin implements Interceptor {
 								method.invoke(instance, countStmt);
 							} catch (Exception e) {
 								Logger.debug("[DefaultParameterHandler.setParameters]", e);
-							}
+							}*/
 							rs = countStmt.executeQuery();
 							int count = 0;
 							if (rs.next()) {
@@ -125,8 +158,10 @@ public class PagePlugin implements Interceptor {
 							}
 						}
 					}
+
 					String pageSql = generatePagesSql(sql, page);
 					ReflectHelper.setValueByFieldName(boundSql, "sql", pageSql); // 将分页sql语句反射回BoundSql.
+
 				}
 			}
 		}
@@ -142,8 +177,12 @@ public class PagePlugin implements Interceptor {
 	 */
 	private String generatePagesSql(String sql, Page page) {
 		if (page != null && dialectObject != null) {
-			return dialectObject.getLimitString(sql, (page.getCurrentPage() - 1) * page.getPageSize(),
-					page.getPageSize());
+			if (page.isOffsetPage()) {
+				return dialectObject.getLimitString(sql, page.getOffset(), page.getPageSize());
+			} else {
+				return dialectObject.getLimitString(sql, (page.getCurrentPage() - 1) * page.getPageSize(),
+						page.getPageSize());
+			}
 		}
 		return sql;
 	}
@@ -176,5 +215,31 @@ public class PagePlugin implements Interceptor {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/** 
+	 * 去除hql的select 子句，未考虑union的情况,用于pagedQuery. 
+	 */
+	private static String removeSelect(String hql) {
+		Assert.hasText(hql);
+		int beginPos = hql.toLowerCase().indexOf("from");
+		Assert.isTrue(beginPos != -1, " hql : " + hql + " must has a keyword 'from'");
+		return hql.substring(beginPos);
+	}
+
+	private static Pattern p = Pattern.compile("order *by.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+	/** 
+	 * 去除hql的orderby 子句，用于pagedQuery. 
+	 */
+	private static String removeOrders(String hql) {
+		Assert.hasText(hql);
+		Matcher m = p.matcher(hql);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			m.appendReplacement(sb, "");
+		}
+		m.appendTail(sb);
+		return sb.toString();
 	}
 }

@@ -1,3 +1,375 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/openreport" xmlns:tns="http://www.example.org/openreport" elementFormDefault="qualified">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.iff.org/openreport"
+	xmlns:tns="http://www.iff.org/openreport" elementFormDefault="qualified">
+
+
+    <simpleType name="NameType">
+        <annotation>
+        	<documentation>the element id, only limit to: [a-zA-Z][a-zA-Z0-9\-_]*</documentation>
+        </annotation>
+        <restriction base="string">
+    		<pattern value="[a-zA-Z][a-zA-Z0-9\-_]*"></pattern>
+    	</restriction>
+    </simpleType>
+
+    <simpleType name="TypeType">
+        <annotation>
+        	<documentation>the data type Enum, only: string, number, date, datetime, time, json</documentation>
+        </annotation>
+        <restriction base="string">
+    		<enumeration value="string"></enumeration>
+    		<enumeration value="number"></enumeration>
+    		<enumeration value="date"></enumeration>
+    		<enumeration value="datetime"></enumeration>
+    		<enumeration value="time"></enumeration>
+    		<enumeration value="boolean"></enumeration>
+    		<enumeration value="json"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <element name="openreport">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:reports" minOccurs="0"
+    				maxOccurs="1">
+    			</element>
+    			<element ref="tns:globals" maxOccurs="1" minOccurs="0"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="reports">
+        <annotation>
+        	<documentation>the report set</documentation>
+        </annotation>
+        <complexType>
+    		<sequence>
+    			<element ref="tns:report" minOccurs="1" maxOccurs="unbounded"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="report">
+        <annotation>
+        	<documentation>the report element </documentation>
+        </annotation>
+        <complexType>
+        	<sequence>
+        		<element ref="tns:description" minOccurs="1"
+        			maxOccurs="1">
+        			<annotation>
+        				<documentation>
+        					descript the report
+        				</documentation>
+        			</annotation>
+        		</element>
+        		<element ref="tns:actions" minOccurs="1"
+        			maxOccurs="1">
+        			<annotation>
+        				<documentation>
+        					incluse a set of actions of the report, such
+        					as search action, export to xml action etc..
+        				</documentation>
+        			</annotation>
+        		</element>
+        		<element ref="tns:conditions" minOccurs="1"
+        			maxOccurs="1">
+        			<annotation>
+        				<documentation>
+        					the report conditions for query
+        				</documentation>
+        			</annotation>
+        		</element>
+        		<element ref="tns:query" minOccurs="1" maxOccurs="1">
+        			<annotation>
+        				<documentation>
+        					the query string, the conditions use #[] to
+        					wrap. example: select
+        					brand_name,sku,srp,gross_weight,net_weight
+        					from product where 1=1 #[and
+        					product_class_id=:product_class_id]
+        				</documentation>
+        			</annotation>
+        		</element>
+                <element ref="tns:crosstable" maxOccurs="1" minOccurs="0"></element>
+                <element ref="tns:page" minOccurs="1" maxOccurs="1">
+        			<annotation>
+        				<documentation>
+        					the page assert js, css and html template
+        					setting
+        				</documentation>
+        			</annotation>
+        		</element>
+        	</sequence>
+        	<attribute name="name" type="tns:NameType" use="required">
+        		<annotation>
+        			<documentation>the report name(id)</documentation>
+        		</annotation>
+        	</attribute>
+        	<attribute name="display-name" type="string"
+        		use="required">
+        		<annotation>
+        			<documentation>
+        				the report name to display
+        			</documentation>
+        		</annotation>
+        	</attribute>
+        	<attribute name="page-size" type="int" use="optional"
+        		default="10">
+        		<annotation>
+        			<documentation>
+        				if the report contains lots of record, can set
+        				the report page size, default to 10
+        			</documentation>
+        		</annotation>
+        	</attribute>
+        	<attribute name="datasource" type="string" use="required">
+        		<annotation>
+        			<documentation>data source reference.
+for spring bean->bean:ds
+for other->ref:id</documentation>
+        		</annotation></attribute>
+        </complexType>
+    </element>
+    
+    <element name="actions">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:action" minOccurs="1" maxOccurs="unbounded"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="action">
+    	<complexType>
+    		<attribute name="name" type="tns:NameType" use="required"></attribute>
+    		<attribute name="display-name" type="string"
+    			use="required">
+    		</attribute>
+    		<attribute name="action" type="string" use="required"></attribute>
+            <attributeGroup ref="tns:HtmlElAttribute"></attributeGroup>
+        </complexType>
+    </element>
+
+    <element name="conditions">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:condition" minOccurs="1" maxOccurs="unbounded"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="condition">
+    	<complexType>
+    		<sequence>
+    			<element name="html" type="string" minOccurs="1" maxOccurs="1"></element>
+    		</sequence>
+    		<attribute name="name" type="tns:NameType" use="required"></attribute>
+    		<attribute name="display-name" type="string"
+    			use="required">
+    		</attribute>
+    		<attribute name="type" type="string" use="required">
+    		</attribute>
+    		<attribute name="default-value" type="string"
+    			use="required">
+    		</attribute>
+    		<attribute name="return-type" type="tns:TypeType"
+    			use="required">
+    		</attribute>
+    	</complexType>
+    </element>
+    
+    <element name="description" type="string"></element>
+
+    <element name="query" type="string">
+    	<annotation>
+    		<documentation>the query string, the conditions use #[] to wrap. example:
+select brand_name,sku,srp,gross_weight,net_weight
+from product
+where 1=1 
+#[and product_class_id=:product_class_id]</documentation>
+    	</annotation></element>
+
+    <element name="page">
+    	<complexType>
+    		<sequence>
+    			<sequence>
+    				<element name="css" type="string" minOccurs="1"
+    					maxOccurs="1">
+    				</element>
+    			</sequence>
+    			<element name="js" type="string" minOccurs="1"
+    				maxOccurs="1">
+    			</element>
+    			<element name="style" type="string" minOccurs="1"
+    				maxOccurs="1">
+    			</element>
+    			<element name="javascript" type="string" minOccurs="1"
+    				maxOccurs="1">
+    			</element>
+    		</sequence>
+    		<attribute name="page-template" type="string"
+    			use="optional" default="page_template">
+    		</attribute>
+    		<attribute name="action-template" type="string"
+    			use="optional" default="action_template">
+    		</attribute>
+    		<attribute name="condition-template" type="string"
+    			use="optional" default="condition-template">
+    		</attribute>
+    		<attribute name="data-template" type="string"
+    			use="optional" default="data_template">
+    		</attribute>
+    		<attribute name="pagination-template" type="string" use="optional" default="pagination_template"></attribute>
+    	</complexType>
+    </element>
+
+    <attributeGroup name="HtmlElAttribute">
+    	<attribute name="href" type="string"></attribute>
+    	<attribute name="target" type="string"></attribute>
+    </attributeGroup>
+
+    <element name="crosstable">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:rows" minOccurs="1" maxOccurs="1"></element>
+    			<element ref="tns:columns" minOccurs="1"
+    				maxOccurs="1">
+    			</element>
+    			<element ref="tns:summary" maxOccurs="1" minOccurs="1"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="rows">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:row" maxOccurs="unbounded" minOccurs="1"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="columns">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:column" maxOccurs="unbounded" minOccurs="1"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+
+    <element name="summary">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:value" maxOccurs="unbounded"
+    				minOccurs="0">
+    			</element>
+    		</sequence>
+    		<attribute name="name" type="tns:NameType" use="required"></attribute>
+    		<attribute name="display-name" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+    
+    <element name="row">
+    	<complexType>
+    		<attribute name="name" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="column">
+    	<complexType>
+    		<attribute name="name" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="value">
+    	<complexType>
+    		<attribute name="name" type="tns:NameType" use="required"></attribute>
+    		<attribute name="summary-method" type="tns:SummaryMethodType" use="required"></attribute>
+    		<attribute name="display-name" type="string" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <simpleType name="SummaryMethodType">
+    	<restriction base="string">
+    		<enumeration value="sum"></enumeration>
+    		<enumeration value="max"></enumeration>
+    		<enumeration value="min"></enumeration>
+    		<enumeration value="avg"></enumeration>
+    		<enumeration value="count"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <element name="globals">
+    	<complexType>
+    		<sequence>
+                <element ref="tns:htmlwidgets" maxOccurs="1" minOccurs="0"></element>
+                <element ref="tns:templates" maxOccurs="1"
+    				minOccurs="0">
+    			</element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="templates">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:template" maxOccurs="unbounded" minOccurs="0"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="template">
+    	<complexType>
+    		<sequence>
+    		</sequence>
+    		<attribute name="name" type="tns:NameType" use="required"></attribute>
+    		<attribute name="display-name" type="string"
+    			use="required">
+    		</attribute>
+    		<attribute name="version" type="int" use="required"></attribute>
+    	</complexType>
+    </element>
+
+    <element name="htmlwidgets">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:htmlwidget" maxOccurs="unbounded" minOccurs="0"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+    <element name="htmlwidget">
+    	<complexType>
+    		<sequence>
+    			<element ref="tns:query" maxOccurs="1" minOccurs="0"></element>
+                <element ref="tns:script" maxOccurs="1" minOccurs="0"></element>
+                <element name="css" type="string" maxOccurs="1" minOccurs="0"></element>
+    			<element name="js" type="string" maxOccurs="1" minOccurs="0"></element>
+    			<element name="style" type="string" maxOccurs="1" minOccurs="0"></element>
+    			<element name="javascript" type="string" maxOccurs="1" minOccurs="0"></element>
+    			<element name="html" type="string" maxOccurs="1" minOccurs="0"></element>
+    			<element name="data" type="string" maxOccurs="1" minOccurs="0"></element>
+    		</sequence>
+    		<attribute name="name" type="tns:NameType" use="required"></attribute>
+    		<attribute name="beanName" type="string" use="optional"></attribute>
+    		<attribute name="datasource" type="string" use="optional"></attribute>
+    	</complexType>
+    </element>
+
+
+    <element name="script">
+    	<complexType>
+    		<attribute name="type" use="required">
+    			<simpleType>
+    				<restriction base="string">
+    					<enumeration value="javascript"></enumeration>
+    					<enumeration value="groovy"></enumeration>
+    					<enumeration value="mvel"></enumeration>
+    					<enumeration value="ftl"></enumeration>
+    				</restriction>
+    			</simpleType>
+    		</attribute>
+    	</complexType>
+    </element>
 </schema>

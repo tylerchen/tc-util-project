@@ -18,6 +18,13 @@ import org.iff.infra.util.RegisterHelper;
  */
 public class InstanceProviderDelegate implements InstanceProvider {
 
+	/**
+	 * get Instance by Class Type.
+	 * (non-Javadoc)
+	 * @see org.iff.infra.domain.InstanceProvider#getInstance(java.lang.Class)
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public <T> T getInstance(Class<T> beanClass) {
 		Map<String, Object> map = RegisterHelper.get(InstanceProvider.class.getName());
 		for (Entry<String, Object> entry : map.entrySet()) {
@@ -28,6 +35,13 @@ public class InstanceProviderDelegate implements InstanceProvider {
 		return null;
 	}
 
+	/**
+	 * get instance by Class Type and Bean Name.
+	 * (non-Javadoc)
+	 * @see org.iff.infra.domain.InstanceProvider#getInstance(java.lang.Class, java.lang.String)
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public <T> T getInstance(Class<T> beanClass, String beanName) {
 		Map<String, Object> map = RegisterHelper.get(InstanceProvider.class.getName());
 		for (Entry<String, Object> entry : map.entrySet()) {
@@ -36,6 +50,13 @@ public class InstanceProviderDelegate implements InstanceProvider {
 		return null;
 	}
 
+	/**
+	 * get instance by Bean Name.
+	 * (non-Javadoc)
+	 * @see org.iff.infra.domain.InstanceProvider#getInstance(java.lang.String)
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public <T> T getInstance(String beanName) {
 		Map<String, Object> map = RegisterHelper.get(InstanceProvider.class.getName());
 		for (Entry<String, Object> entry : map.entrySet()) {

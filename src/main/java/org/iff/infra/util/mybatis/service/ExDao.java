@@ -9,7 +9,9 @@ package org.iff.infra.util.mybatis.service;
 
 import java.util.List;
 
+import org.iff.infra.domain.InstanceFactory;
 import org.iff.infra.util.Assert;
+import org.iff.infra.util.Logger;
 import org.iff.infra.util.mybatis.plugin.Page;
 
 /**
@@ -17,8 +19,9 @@ import org.iff.infra.util.mybatis.plugin.Page;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
  * @since 2014-2-26
  */
-public class Dao {
+public class ExDao {
 	private static ExDao defaultDao = null;
+	private RepositoryService service;
 
 	/**
 	 * return the Dao with default RepositoryService[tcRepositoryService].
@@ -28,7 +31,15 @@ public class Dao {
 	 */
 	public static ExDao getDefaultDao() {
 		if (defaultDao == null) {
-			defaultDao = ExDao.getDefaultDao();
+			defaultDao = new ExDao();
+			try {
+				defaultDao.service = InstanceFactory.getInstance("tcRepositoryService");
+				Assert.notNull(defaultDao.service,
+						"RepositoryService[tcRepositoryService], was not found, please configure a spring bean: <bean id=\"tcRepositoryService\" class=\"org.iff.infra.util.mybatis.service.impl.MybatisRepositoryServiceImpl\" />");
+			} catch (Exception e) {
+				Logger.debug("Dao.getService ERROR:", e);
+				defaultDao.service = InstanceFactory.getInstance(RepositoryService.class);
+			}
 		}
 		return defaultDao;
 	}
@@ -43,8 +54,22 @@ public class Dao {
 	public static ExDao get(RepositoryService service) {
 		Assert.notNull(service, "RepositoryService can't be null!");
 		ExDao dao = new ExDao();
-		dao.setService(service);
+		dao.service = service;
 		return dao;
+	}
+
+	/**
+	 * return the RepositoryService of Dao.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 11, 2016
+	 */
+	public RepositoryService getService() {
+		return service;
+	}
+
+	protected void setService(RepositoryService service) {
+		this.service = service;
 	}
 
 	/**
@@ -52,8 +77,8 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static long querySize(String queryDsl, Object params) {
-		return getDefaultDao().querySize(queryDsl, params);
+	public long querySize(String queryDsl, Object params) {
+		return getService().querySize(queryDsl, params);
 	}
 
 	/**
@@ -61,8 +86,8 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static <T> List<T> queryList(String queryDsl, Object params) {
-		return getDefaultDao().queryList(queryDsl, params);
+	public <T> List<T> queryList(String queryDsl, Object params) {
+		return getService().queryList(queryDsl, params);
 	}
 
 	/**
@@ -70,8 +95,8 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static <T> T queryOne(String queryDsl, Object params) {
-		return getDefaultDao().queryOne(queryDsl, params);
+	public <T> T queryOne(String queryDsl, Object params) {
+		return getService().queryOne(queryDsl, params);
 	}
 
 	/**
@@ -79,8 +104,8 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static Page queryPage(String queryDsl, Object params) {
-		return getDefaultDao().queryPage(queryDsl, params);
+	public Page queryPage(String queryDsl, Object params) {
+		return getService().queryPage(queryDsl, params);
 	}
 
 	/**
@@ -88,8 +113,8 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static int save(String queryDsl, Object params) {
-		return getDefaultDao().save(queryDsl, params);
+	public int save(String queryDsl, Object params) {
+		return getService().save(queryDsl, params);
 	}
 
 	/**
@@ -97,8 +122,8 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static int update(String queryDsl, Object params) {
-		return getDefaultDao().update(queryDsl, params);
+	public int update(String queryDsl, Object params) {
+		return getService().update(queryDsl, params);
 	}
 
 	/**
@@ -106,7 +131,7 @@ public class Dao {
 	 * @param queryDsl 查询名称
 	 * @param params   参数
 	 */
-	public static int remove(String queryDsl, Object params) {
-		return getDefaultDao().remove(queryDsl, params);
+	public int remove(String queryDsl, Object params) {
+		return getService().remove(queryDsl, params);
 	}
 }

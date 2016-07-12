@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.iff.org/openreport"
+	xmlns:tns="http://www.iff.org/openreport" elementFormDefault="qualified">
+	<element name="openreport">
+		<complexType>
+			<sequence>
+				<element name="reports" ref="reports" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="reports">
+		<complexType>
+			<sequence minOccurs="1" maxOccurs="unbounded">
+				<element name="report" ref="report" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="report">
+		<complexType>
+			<attribute name="name" type="NameType" use="required" />
+			<attribute name="display-name" type="string" use="required" />
+			<attribute name="page-size" type="integer" use="optional"
+				default="10" />
+			<sequence>
+				<element name="description" ref="description" nillable="true" />
+				<element name="actions" ref="actions" nillable="false" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="description" type="string" />
+	<element name="actions">
+		<complexType>
+			<sequence>
+				<element name="action" ref="action" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="action">
+		<complexType>
+			<attribute name="name" type="NameType" use="required" />
+			<attribute name="display-name" type="string" use="required" />
+			<attribute name="action" type="string" use="required" />
+			<attributeGroup ref="HtmlElAttribute" />
+		</complexType>
+	</element>
+	<element name="conditions">
+		<complexType>
+			<sequence>
+				<element name="condition" ref="condition" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="condition">
+		<complexType>
+			<attribute name="name" type="NameType" use="required" />
+			<attribute name="display-name" type="string" use="required" />
+			<attribute name="type" type="string" use="required"
+				default="text" />
+			<attribute name="default-value" type="string" use="required" />
+			<attribute name="return-type" type="TypeType" use="required"
+				default="string" />
+			<sequence>
+				<element name="html" type="string" />
+			</sequence>
+		</complexType>
+	</element>
+	<simpleType name="NameType">
+		<restriction>
+			<pattern value="[a-zA-Z][a-zA-Z0-9-_]*" />
+		</restriction>
+	</simpleType>
+	<simpleType name="TypeType">
+		<restriction>
+			<enumeration value="string" />
+			<enumeration value="number" />
+			<enumeration value="boolean" />
+			<enumeration value="date" />
+			<enumeration value="datetime" />
+			<enumeration value="time" />
+			<enumeration value="json" />
+		</restriction>
+	</simpleType>
+	<attributeGroup name="HtmlElAttribute">
+		<attribute name="href" type="string" />
+		<attribute name="target" type="string" />
+	</attributeGroup>
+</schema>

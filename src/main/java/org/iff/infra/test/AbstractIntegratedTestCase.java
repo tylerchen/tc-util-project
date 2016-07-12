@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) Jul 12, 2016 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * All rights reserved.
+ *
+ * Contributors:
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
+ ******************************************************************************/
 package org.iff.infra.test;
 
 import javax.sql.DataSource;
@@ -6,6 +13,10 @@ import org.dbunit.operation.DatabaseOperation;
 import org.iff.infra.domain.InstanceFactory;
 import org.iff.infra.util.spring.factory.SpringInstanceProvider;
 
+/**
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+ * @since Jul 12, 2016
+ */
 public abstract class AbstractIntegratedTestCase extends Dbunit {
 
 	private static Boolean hasInit = false;
@@ -21,10 +32,22 @@ public abstract class AbstractIntegratedTestCase extends Dbunit {
 		return InstanceFactory.getInstance(DataSource.class);
 	}
 
+	/**
+	 * default to load : classpath*:META-INF/spring/root-test.xml
+	 * (non-Javadoc)
+	 * @see org.iff.infra.test.Dbunit#springXmlPath()
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public String[] springXmlPath() {
 		return new String[] { "classpath*:META-INF/spring/root-test.xml" };
 	}
 
+	/**
+	 * default to load : jdbc.properties
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 12, 2016
+	 */
 	public String testPropertiesFile() {
 		return "jdbc.properties";
 	}
