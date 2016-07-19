@@ -38,14 +38,37 @@ public class POVOCopyHelper {
 	private static final GroovyClassLoader gcl = new GroovyClassLoader();
 	private static final Map<Class, Map<String, Method>[]> getterAndSetterMaps = new HashMap<Class, Map<String, Method>[]>();
 
+	/**
+	 * get POVOCopyHelper instance.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static POVOCopyHelper me() {
 		return me;
 	}
 
+	/**
+	 * copy source object to destination object.
+	 * @param src
+	 * @param dest
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static <T> T copyTo(Object src, Object dest) {
 		return me().get(src, dest).copyTo(src, dest);
 	}
 
+	/**
+	 * copy source list to dest list.
+	 * @param src
+	 * @param destWildcardTypeClass
+	 * @param dest
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static <T> T copyListTo(Collection<?> src, Class<?> destWildcardTypeClass, Collection dest) {
 		if (src == null || dest == null) {
 			return me().get(src, dest).copyTo(src, dest);
@@ -66,6 +89,11 @@ public class POVOCopyHelper {
 		init();
 	}
 
+	/**
+	 * regist default Copy.
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	void init() {
 		map.put("null", new NullPoVoCopy());
 		map.put("default", new DefaultPoVoCopy());
@@ -73,10 +101,18 @@ public class POVOCopyHelper {
 		map.put("Direct", new DirectPoVoCopy());
 	}
 
+	/**
+	 * po vo copy instance.
+	 * @author zhaochen
+	 */
 	public static interface PoVoCopy {
 		<T> T copyTo(Object src, Object dest);
 	}
 
+	/**
+	 * null able po vo copy, only return null.
+	 * @author zhaochen
+	 */
 	class NullPoVoCopy implements PoVoCopy {
 		public <T> T copyTo(Object src, Object dest) {
 			Logger.debug("Using NullPoVoCopy to copy objects, return dest object!");
@@ -88,6 +124,10 @@ public class POVOCopyHelper {
 		}
 	}
 
+	/**
+	 * only return src.
+	 * @author zhaochen
+	 */
 	class DirectPoVoCopy implements PoVoCopy {
 		public <T> T copyTo(Object src, Object dest) {
 			Logger.warn("Using DirectPoVoCopy to copy objects!");
@@ -95,6 +135,10 @@ public class POVOCopyHelper {
 		}
 	}
 
+	/**
+	 * default po vo copy.
+	 * @author zhaochen
+	 */
 	class DefaultPoVoCopy implements PoVoCopy {
 		public <T> T copyTo(Object src, Object dest) {
 			Logger.warn("Using DefaultPoVoCopy to copy objects, lower efficiency!");
@@ -102,6 +146,10 @@ public class POVOCopyHelper {
 		}
 	}
 
+	/**
+	 * type convert copy.
+	 * @author zhaochen
+	 */
 	class TypeConvertPoVoCopy implements PoVoCopy {
 		public <T> T copyTo(Object src, Object dest) {
 			Logger.debug("Using TypeConvertHelper to copy objects for java base type!");
@@ -110,6 +158,10 @@ public class POVOCopyHelper {
 		}
 	}
 
+	/**
+	 * delegate po vo copy .
+	 * @author zhaochen
+	 */
 	class BlockingDelegatePoVoCopy implements PoVoCopy {
 		PoVoCopy delegate = null;
 
@@ -133,6 +185,14 @@ public class POVOCopyHelper {
 		}
 	}
 
+	/**
+	 * return po vo copy.
+	 * @param src
+	 * @param dest
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public PoVoCopy get(Object src, Object dest) {
 		if (src == null || dest == null) {
 			return map.get("null");

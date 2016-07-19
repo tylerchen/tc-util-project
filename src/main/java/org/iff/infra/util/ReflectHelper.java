@@ -29,14 +29,34 @@ public class ReflectHelper {
 	private ReflectHelper() {
 	}
 
+	/**
+	 * return if is use cache.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static boolean isCache() {
 		return CACHE;
 	}
 
+	/**
+	 * if true then cache then class fields and method.
+	 * @param cache
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static void setCache(boolean cache) {
 		CACHE = cache;
 	}
 
+	/**
+	 * get constructor by class name and parameter type names.
+	 * @param className
+	 * @param parameterTypes
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Constructor<?> getConstructor(String className, String... parameterTypes) {
 		try {
 			Class<?> clazz = Class.forName(className);
@@ -47,6 +67,14 @@ public class ReflectHelper {
 		return null;
 	}
 
+	/**
+	 * get constructor by class and parameter type names.
+	 * @param clazz
+	 * @param parameterTypes
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Constructor<?> getConstructor(Class clazz, String... parameterTypes) {
 		try {
 			if (parameterTypes == null || parameterTypes.length < 1) {
@@ -79,6 +107,15 @@ public class ReflectHelper {
 		return null;
 	}
 
+	/**
+	 * get method by class name and method name and parameter type names.
+	 * @param className
+	 * @param method
+	 * @param parameterTypes
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Method getMethod(String className, String method, String... parameterTypes) {
 
 		try {
@@ -91,6 +128,15 @@ public class ReflectHelper {
 		return null;
 	}
 
+	/**
+	 * get method by class and method name and parameter type names.
+	 * @param clazz
+	 * @param method
+	 * @param parameterTypes
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Method getMethod(Class clazz, String method, String... parameterTypes) {
 		try {
 			if (clazz == null) {
@@ -234,6 +280,15 @@ public class ReflectHelper {
 		return false;
 	}
 
+	/**
+	 * invoke object by method name and arguments.
+	 * @param instance
+	 * @param methodName
+	 * @param args
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Object invoke(Object instance, String methodName, Object... args) {
 		Assert.notNull(instance, "args [instance] is required!");
 		Assert.notBlank(methodName, "args [methodName] is required!");

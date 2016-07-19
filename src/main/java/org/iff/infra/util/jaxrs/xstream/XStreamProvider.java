@@ -7,6 +7,8 @@
  ******************************************************************************/
 package org.iff.infra.util.jaxrs.xstream;
 
+import org.iff.infra.util.XStreamHelper;
+
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -16,7 +18,7 @@ import com.thoughtworks.xstream.XStream;
 public class XStreamProvider extends GenericXStreamProvider<Object> {
 
 	public XStreamProvider() {
-		this(new XStream());
+		this(XStreamHelper.getXstream());
 	}
 
 	public XStreamProvider(XStream xstream) {

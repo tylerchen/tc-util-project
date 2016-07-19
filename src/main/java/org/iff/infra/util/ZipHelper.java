@@ -33,6 +33,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * a zip helper.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Dec 20, 2015
  */
@@ -43,6 +44,14 @@ public class ZipHelper {
 	private static Constructor<?> zipOutputStreamJdk7 = null;
 	private static Constructor<?> zipOutputStreamJdk6 = null;
 
+	/**
+	 * read input stream as zip input stream.
+	 * @param is
+	 * @param charset
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static ZipInputStream getZipInputStream(InputStream is, Charset charset) {
 		if (zipInputStreamJdk7 == null && zipInputStreamJdk6 == null) {
 			zipInputStreamJdk7 = ReflectHelper.getConstructor(ZipInputStream.class, InputStream.class.getName(),
@@ -59,6 +68,14 @@ public class ZipHelper {
 		return null;
 	}
 
+	/**
+	 * read output stream as zip output stream.
+	 * @param os
+	 * @param charset
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static ZipOutputStream getZipOutputStream(OutputStream os, Charset charset) {
 		if (zipOutputStreamJdk7 == null && zipOutputStreamJdk6 == null) {
 			zipOutputStreamJdk7 = ReflectHelper.getConstructor(ZipOutputStream.class, OutputStream.class.getName(),
@@ -75,6 +92,13 @@ public class ZipHelper {
 		return null;
 	}
 
+	/**
+	 * read zip file from path, and unzip to dir.
+	 * @param zipFile
+	 * @param dir
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static void unzip(String zipFile, String dir) {
 		BufferedOutputStream dest = null;
 		ZipInputStream zis = null;
@@ -109,6 +133,13 @@ public class ZipHelper {
 		}
 	}
 
+	/**
+	 * read zip from file path, and unzip entry to a map.
+	 * @param zipFile
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Map<String, byte[]> loadZip(String zipFile) {
 		BufferedOutputStream dest = null;
 		ZipInputStream zis = null;
@@ -142,6 +173,13 @@ public class ZipHelper {
 		return map;
 	}
 
+	/**
+	 * unzip an zip input stream to entry map.
+	 * @param is
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Map<String, byte[]> loadZip(InputStream is) {
 		BufferedOutputStream dest = null;
 		ZipInputStream zis = null;
@@ -174,6 +212,14 @@ public class ZipHelper {
 		return map;
 	}
 
+	/**
+	 * zip paths include sub dir and files to zip file with zip root folder.
+	 * @param paths
+	 * @param zipFileName
+	 * @param rootFolderName
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static void zip(String[] paths, String zipFileName, String rootFolderName) {
 		BufferedInputStream origin = null;
 		ZipOutputStream out = null;
@@ -232,6 +278,13 @@ public class ZipHelper {
 		}
 	}
 
+	/**
+	 * zip paths include sub dir and files to zip file without zip root folder.
+	 * @param path
+	 * @param zipFileName
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static void zip(String path, String zipFileName) {
 		if (StringUtils.isEmpty(path)) {
 			Logger.warn("No zip entry input, the paths is empty.");

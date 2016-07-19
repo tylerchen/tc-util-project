@@ -492,6 +492,17 @@
 			<id>osc-maven</id>
 			<name>osc maven</name>
 			<url>http://maven.oschina.net/content/groups/public</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>apache-maven</id>
+			<name>apache maven</name>
+			<url>http://repo1.maven.org/maven2</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
@@ -499,6 +510,17 @@
 			<id>osc-maven</id>
 			<name>osc maven</name>
 			<url>http://maven.oschina.net/content/groups/public</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>apache-maven</id>
+			<name>apache maven</name>
+			<url>http://repo1.maven.org/maven2</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<build>

@@ -26,10 +26,18 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * a helper for http.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-6-28
  */
 public class HttpHelper {
+
+	/**
+	 * return all address.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Map<String, InetAddress> getAddress() {
 		Map<String, InetAddress> map = new HashMap<String, InetAddress>();
 		try {
@@ -51,6 +59,12 @@ public class HttpHelper {
 		return map;
 	}
 
+	/**
+	 * hash ip address by md5.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String ipsMd5() {
 		StringBuilder sb = new StringBuilder(256);
 		Map<String, InetAddress> address = getAddress();
@@ -63,6 +77,13 @@ public class HttpHelper {
 		return sb.toString();
 	}
 
+	/**
+	 * hash ip by md5.
+	 * @param ipAddress
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String ipMd5(String ipAddress) {
 		StringBuilder sb = new StringBuilder(64);
 		String md5 = md5(ipAddress);
@@ -72,10 +93,25 @@ public class HttpHelper {
 		return sb.toString();
 	}
 
+	/**
+	 * validate ip match md5 string.
+	 * @param ip
+	 * @param ipsMd5
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static boolean validateIpMd5(String ip, String ipsMd5) {
 		return ip != null && ipsMd5 != null && ipsMd5.indexOf(ipMd5(ip)) > -1;
 	}
 
+	/**
+	 * encrypt string to md5.
+	 * @param inStr
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String md5(String inStr) {
 		MessageDigest md5 = null;
 		try {
@@ -103,6 +139,14 @@ public class HttpHelper {
 
 	}
 
+	/**
+	 * put url and return content.
+	 * @param request
+	 * @param data
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String put(String request, String data) {
 		BufferedReader reader = null;
 		HttpURLConnection connection = null;
@@ -146,6 +190,14 @@ public class HttpHelper {
 		return null;
 	}
 
+	/**
+	 * post url and return content.
+	 * @param request
+	 * @param data
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String post(String request, String data) {
 		BufferedReader reader = null;
 		HttpURLConnection connection = null;
@@ -191,6 +243,13 @@ public class HttpHelper {
 		return null;
 	}
 
+	/**
+	 * get url content.
+	 * @param requestUrl
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String get(String requestUrl) {
 		BufferedReader reader = null;
 		HttpURLConnection connection = null;
@@ -231,6 +290,14 @@ public class HttpHelper {
 		return null;
 	}
 
+	/**
+	 * get url content.
+	 * @param requestUrl
+	 * @param paramString
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String get(String requestUrl, String paramString) {
 		BufferedReader reader = null;
 		HttpURLConnection connection = null;
@@ -267,6 +334,13 @@ public class HttpHelper {
 		return null;
 	}
 
+	/**
+	 * get ip address.
+	 * @param request
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String getIpAddr(HttpServletRequest request) {
 		String ip = request.getHeader("x-forwarded-for");
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
@@ -281,6 +355,13 @@ public class HttpHelper {
 		return ip;
 	}
 
+	/**
+	 * get Authorization header.
+	 * @param request
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String getAuthorization(HttpServletRequest request) {
 		return request.getHeader("Authorization");
 	}

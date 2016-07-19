@@ -41,26 +41,62 @@ public final class PlatformHelper {
 	private PlatformHelper() {
 	}
 
+	/**
+	 * if is Mac then return true.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static final boolean isMac() {
 		return osType == MAC;
 	}
 
+	/**
+	 * if is Linux then return true.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static final boolean isLinux() {
 		return osType == LINUX;
 	}
 
+	/**
+	 * if is Windows then return true.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static final boolean isWindows() {
 		return osType == WINDOWS;
 	}
 
+	/**
+	 * if is Solaris then return true.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static final boolean isSolaris() {
 		return osType == SOLARIS;
 	}
 
+	/**
+	 * if is FreeBSD then return true.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static final boolean isFreeBSD() {
 		return osType == FREEBSD;
 	}
 
+	/**
+	 * if is X11 then return true.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static final boolean isX11() {
 		// TODO: check FS or do some other X11-specific test
 		return !PlatformHelper.isWindows() && !PlatformHelper.isMac();

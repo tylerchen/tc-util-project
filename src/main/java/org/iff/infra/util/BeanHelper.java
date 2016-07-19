@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
+ * bean helper.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
  * @since 2013-1-31
  */
@@ -53,10 +54,20 @@ public class BeanHelper {
 				.addDeserializer(java.util.Date.class, new DateDeserializer()));
 	}
 
+	/**
+	 * if set to true, then use POVOCopyHelper to copy beans.
+	 * @param usePOVOCopyHelper
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	synchronized public static void setUsePOVOCopyHelper(boolean usePOVOCopyHelper) {
 		BeanHelper.usePOVOCopyHelper = usePOVOCopyHelper;
 	}
 
+	/**
+	 * date serializer.
+	 * @author zhaochen
+	 */
 	public static class DateSerializer extends JsonSerializer<java.util.Date> {
 		public void serialize(java.util.Date date, JsonGenerator jg, SerializerProvider paramSerializerProvider)
 				throws IOException, JsonProcessingException {
@@ -64,6 +75,10 @@ public class BeanHelper {
 		}
 	}
 
+	/**
+	 * date de-serializer.
+	 * @author zhaochen
+	 */
 	public static class DateDeserializer extends JsonDeserializer<java.util.Date> {
 		public java.util.Date deserialize(JsonParser jp, DeserializationContext dc)
 				throws IOException, JsonProcessingException {

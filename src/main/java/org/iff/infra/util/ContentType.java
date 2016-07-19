@@ -1,8 +1,20 @@
+/*******************************************************************************
+ * Copyright (c) 2013-2-28 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * All rights reserved.
+ *
+ * Contributors:
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
+ ******************************************************************************/
 package org.iff.infra.util;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * http content type..
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+ * @since 2013-2-28
+ */
 public class ContentType {
 
 	private static final Map<String, String> contentTypeMap = new HashMap<String, String>();
@@ -660,6 +672,13 @@ public class ContentType {
 	private ContentType() {
 	}
 
+	/**
+	 * get content type by file name.
+	 * @param fileName
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String getContentType(String fileName) {
 		int lastIndexOf = fileName.lastIndexOf('.');
 		if (lastIndexOf == 0) {
@@ -673,6 +692,14 @@ public class ContentType {
 		return contentType == null ? "application/octet-stream" : contentType;
 	}
 
+	/**
+	 * get content by file name, if not found then return the default content type.
+	 * @param fileName
+	 * @param defaultContentType
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String getContentType(String fileName, String defaultContentType) {
 		int lastIndexOf = fileName.lastIndexOf('.');
 		if (lastIndexOf == 0) {

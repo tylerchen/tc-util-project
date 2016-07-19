@@ -11,6 +11,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
 /**
+ * html helper.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-7-22
  */
@@ -18,19 +19,21 @@ public class HtmlHelper {
 
 	private static Whitelist whitelist;
 
+	/**
+	 * html white list.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	private static Whitelist getWhitelist() {
 		if (whitelist == null) {
 			Whitelist user_content_filter = Whitelist.relaxed();
-			user_content_filter.addTags("embed", "object", "param", "span",
-					"div");
-			user_content_filter.addAttributes(":all", "style", "class", "id",
-					"name");
-			user_content_filter.addAttributes("object", "width", "height",
-					"classid", "codebase");
+			user_content_filter.addTags("embed", "object", "param", "span", "div");
+			user_content_filter.addAttributes(":all", "style", "class", "id", "name");
+			user_content_filter.addAttributes("object", "width", "height", "classid", "codebase");
 			user_content_filter.addAttributes("param", "name", "value");
-			user_content_filter.addAttributes("embed", "src", "quality",
-					"width", "height", "allowFullScreen", "allowScriptAccess",
-					"flashvars", "name", "type", "pluginspage");
+			user_content_filter.addAttributes("embed", "src", "quality", "width", "height", "allowFullScreen",
+					"allowScriptAccess", "flashvars", "name", "type", "pluginspage");
 			whitelist = user_content_filter;
 		}
 		return whitelist;
@@ -50,6 +53,13 @@ public class HtmlHelper {
 		return Jsoup.clean(html, getWhitelist());
 	}
 
+	/**
+	 * get html text.
+	 * @param html
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String htmlToText(String html) {
 		if (html == null || html.trim().length() < 1) {
 			return "";

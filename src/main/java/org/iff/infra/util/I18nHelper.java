@@ -23,6 +23,15 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * i18n helper.
+ * <pre>
+ * Usage: 
+ * I18nHelper.loadDefualtMessages("classpath://META-INF/i18n");
+ * 
+ * properties file content using UTF-8 encoding:
+ * Common.systemName=xxx
+ * Common.systemName.en=xx
+ * </pre>
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Dec 14, 2015
  */
@@ -34,10 +43,23 @@ public class I18nHelper {
 	private String namespace = "";
 	private Locale locale = null;
 
+	/**
+	 * return I18nHelper with default namespace.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static I18nHelper me() {
 		return me;
 	}
 
+	/**
+	 * get I18nHelper instance by namespace.
+	 * @param namespace
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static I18nHelper get(String namespace) {
 		I18nHelper helper = new I18nHelper();
 		helper.messages = me.messages;
@@ -45,6 +67,14 @@ public class I18nHelper {
 		return helper;
 	}
 
+	/**
+	 * get I18nHelper instance by namespace and locale.
+	 * @param namespace
+	 * @param locale
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static I18nHelper get(String namespace, Locale locale) {
 		I18nHelper helper = new I18nHelper();
 		helper.messages = me.messages;
@@ -53,6 +83,13 @@ public class I18nHelper {
 		return helper;
 	}
 
+	/**
+	 * set messages.
+	 * @param messages
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static I18nHelper setMessages(Map<String, String> messages) {
 		if (messages != null) {
 			me.messages = messages;
@@ -60,6 +97,27 @@ public class I18nHelper {
 		return me;
 	}
 
+	/**
+	 * add messages and over write exists message.
+	 * @param messages
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static I18nHelper addMessages(Map<String, String> messages) {
+		if (messages != null) {
+			me.messages.putAll(messages);
+		}
+		return me;
+	}
+
+	/**
+	 * load default messages.
+	 * @param locationSplitByComma
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static I18nHelper loadDefualtMessages(String locationSplitByComma) {
 		if (locationSplitByComma == null || locationSplitByComma.length() < 1) {
 			locationSplitByComma = "classpath://META-INF/i18n";
@@ -117,26 +175,63 @@ public class I18nHelper {
 		return me;
 	}
 
+	/**
+	 * return all messages.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public Map<String, String> getMessages() {
 		return messages;
 	}
 
+	/**
+	 * get namespace.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public String getNamespace() {
 		return namespace;
 	}
 
+	/**
+	 * set namespace.
+	 * @param namespace
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public void setNamespace(String namespace) {
 		this.namespace = namespace;
 	}
 
+	/**
+	 * get locale
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public Locale getLocale() {
 		return locale;
 	}
 
+	/**
+	 * set locale.
+	 * @param locale
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
 
+	/**
+	 * return the keys by code.
+	 * @param code
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public List<String> getKeys(String code) {
 		List<String> list = new ArrayList<String>(8);
 		if (code == null || code.length() < 1) {
@@ -163,6 +258,15 @@ public class I18nHelper {
 		return list;
 	}
 
+	/**
+	 * get message by code, and format message by arguments, if can't find the message use default message.
+	 * @param code
+	 * @param args
+	 * @param defaultMessage
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public String getMessage(String code, Object[] args, String defaultMessage) {
 		List<String> keys = getKeys(code);
 		String message = defaultMessage;
@@ -176,6 +280,15 @@ public class I18nHelper {
 		return StringHelper.replaceBlock(message, args, "");
 	}
 
+	/**
+	 * get message by code, and format message by arguments, if can't find the message use default message.
+	 * @param code
+	 * @param argsMap
+	 * @param defaultMessage
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public String getMessage(String code, Map<String, Object> argsMap, String defaultMessage) {
 		List<String> keys = getKeys(code);
 		String message = defaultMessage;
@@ -189,14 +302,37 @@ public class I18nHelper {
 		return StringHelper.replaceBlock(message, argsMap, "");
 	}
 
+	/**
+	 * get message by code, and format the message by arguments.
+	 * @param code
+	 * @param args
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public String getMessage(String code, Object[] args) {
 		return getMessage(code, args, null);
 	}
 
+	/**
+	 * get message by code, if can't find the message by code the return default message.
+	 * @param code
+	 * @param defaultMessage
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public String getMessage(String code, String defaultMessage) {
 		return getMessage(code, new Object[0], defaultMessage);
 	}
 
+	/**
+	 * get message by code.
+	 * @param code
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public String getMessage(String code) {
 		return getMessage(code, new Object[0], null);
 	}

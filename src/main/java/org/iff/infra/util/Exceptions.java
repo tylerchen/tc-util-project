@@ -8,6 +8,7 @@
 package org.iff.infra.util;
 
 /**
+ * common exceptions.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-3-14
  */
@@ -21,13 +22,11 @@ public class Exceptions {
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-3-14
 	 */
-	public static void exception(CharSequence message, Throwable t)
-			throws Exception {
+	public static void exception(CharSequence message, Throwable t) throws Exception {
 		if (t.getMessage().startsWith("[FOSS") && (t instanceof Exception)) {
 			throw (Exception) t;
 		}
-		throw new Exception("[FOSS-1001][" + t.getClass().getSimpleName()
-				+ "][" + message + "]", t);
+		throw new Exception("[FOSS-1001][" + t.getClass().getSimpleName() + "][" + message + "]", t);
 	}
 
 	/**
@@ -49,12 +48,10 @@ public class Exceptions {
 	 * @since 2014-3-14
 	 */
 	public static void runtime(CharSequence message, Throwable t) {
-		if (t.getMessage().startsWith("[FOSS")
-				&& (t instanceof RuntimeException)) {
+		if (t.getMessage().startsWith("[FOSS") && (t instanceof RuntimeException)) {
 			throw (RuntimeException) t;
 		}
-		throw new RuntimeException("[FOSS-1003]["
-				+ t.getClass().getSimpleName() + "][" + message + "]", t);
+		throw new RuntimeException("[FOSS-1003][" + t.getClass().getSimpleName() + "][" + message + "]", t);
 	}
 
 	/**
@@ -64,7 +61,6 @@ public class Exceptions {
 	 * @since 2014-3-14
 	 */
 	public static void runtime(CharSequence message) {
-		throw new RuntimeException("[FOSS-1004][RuntimeException][" + message
-				+ "]");
+		throw new RuntimeException("[FOSS-1004][RuntimeException][" + message + "]");
 	}
 }

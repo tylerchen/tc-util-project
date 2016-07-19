@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.lang3.time.DateUtils;
 
 /**
+ * Convert a basic type to an other. 
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Nov 28, 2015
  */
@@ -33,10 +34,22 @@ public class TypeConvertHelper {
 		registTypeConvert();
 	}
 
+	/**
+	 * return default instance.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static TypeConvertHelper me() {
 		return me;
 	}
 
+	/**
+	 * resiter all type converter.
+	 * 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	private void registTypeConvert() {
 		typeConverts.put("null", new NullTypeConvert());
 		//
@@ -92,22 +105,61 @@ public class TypeConvertHelper {
 		//
 	}
 
+	/**
+	 * get type converter by target class name.
+	 * @param targetClassName
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public TypeConvert get(String targetClassName) {
 		TypeConvert typeConvert = typeConverts.get(targetClassName);
 		return typeConvert == null ? typeConverts.get("null") : typeConvert;
 	}
 
+	/**
+	 * get nullable type converter by target class name.
+	 * @param targetClassName
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public TypeConvert getNullable(String targetClassName) {
 		TypeConvert typeConvert = typeConverts.get(targetClassName);
 		return typeConvert;
 	}
 
+	/**
+	 * type converter interface.
+	 * @author zhaochen
+	 *
+	 */
 	public interface TypeConvert {
+		/**
+		 * return the type converter name.
+		 * @return
+		 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+		 * @since Jul 19, 2016
+		 */
 		String getName();
 
+		/**
+		 * convert source value to target class value.
+		 * @param targetClassName
+		 * @param sourceValue
+		 * @param sourceCls
+		 * @param sourceType
+		 * @return
+		 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+		 * @since Jul 19, 2016
+		 */
 		Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType);
 	}
 
+	/**
+	 * Null type converter.
+	 * @author zhaochen
+	 */
 	public class NullTypeConvert implements TypeConvert {
 		public String getName() {
 			return "null";
@@ -118,6 +170,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * boolean type converter.
+	 * @author zhaochen
+	 */
 	public class BooleanTypeConvert implements TypeConvert {
 		public String getName() {
 			return "boolean";
@@ -140,6 +196,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * byte type converter.
+	 * @author zhaochen
+	 */
 	public class ByteTypeConvert implements TypeConvert {
 		public String getName() {
 			return "byte";
@@ -162,6 +222,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * short type converter.
+	 * @author zhaochen
+	 */
 	public class ShortTypeConvert implements TypeConvert {
 		public String getName() {
 			return "short";
@@ -184,6 +248,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * integer type converter.
+	 * @author zhaochen
+	 */
 	public class IntegerTypeConvert implements TypeConvert {
 		public String getName() {
 			return "int";
@@ -206,6 +274,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * long type converter.
+	 * @author zhaochen
+	 */
 	public class LongTypeConvert implements TypeConvert {
 		public String getName() {
 			return "long";
@@ -228,6 +300,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * float type converter.
+	 * @author zhaochen
+	 */
 	public class FloatTypeConvert implements TypeConvert {
 		public String getName() {
 			return "float";
@@ -250,6 +326,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * double type converter.
+	 * @author zhaochen
+	 */
 	public class DoubleTypeConvert implements TypeConvert {
 		public String getName() {
 			return "double";
@@ -272,6 +352,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * BigDecimal type converter.
+	 * @author zhaochen
+	 */
 	public class BigDecimalTypeConvert implements TypeConvert {
 		public String getName() {
 			return BigDecimal.class.getName();
@@ -294,6 +378,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * BigInteger type converter.
+	 * @author zhaochen
+	 */
 	public class BigIntegerTypeConvert implements TypeConvert {
 		public String getName() {
 			return BigInteger.class.getName();
@@ -316,6 +404,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * Number type converter.
+	 * @author zhaochen
+	 */
 	public class NumberTypeConvert implements TypeConvert {
 		public String getName() {
 			return "number";
@@ -360,6 +452,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * char type converter.
+	 * @author zhaochen
+	 */
 	public class CharTypeConvert implements TypeConvert {
 		public String getName() {
 			return "char";
@@ -383,6 +479,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * string type converter.
+	 * @author zhaochen
+	 */
 	public class StringTypeConvert implements TypeConvert {
 		public String getName() {
 			return String.class.getName();
@@ -402,6 +502,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * char sequence type converter.
+	 * @author zhaochen
+	 */
 	public class CharSequenceTypeConvert implements TypeConvert {
 		public String getName() {
 			return CharSequence.class.getName();
@@ -433,6 +537,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * date type converter.
+	 * @author zhaochen
+	 */
 	public class DateTypeConvert implements TypeConvert {
 		public String getName() {
 			return java.util.Date.class.getName();
@@ -483,6 +591,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * boolean array type converter.
+	 * @author zhaochen
+	 */
 	public class BooleanArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[Z";
@@ -558,6 +670,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * byte array type converter.
+	 * @author zhaochen
+	 */
 	public class ByteArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[B";
@@ -631,6 +747,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * short array type converter.
+	 * @author zhaochen
+	 */
 	public class ShortArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[S";
@@ -706,6 +826,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * integer array type converter.
+	 * @author zhaochen
+	 */
 	public class IntegerArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[I";
@@ -780,6 +904,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * long array type converter.
+	 * @author zhaochen
+	 */
 	public class LongArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[J";
@@ -853,6 +981,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * float array type converter.
+	 * @author zhaochen
+	 */
 	public class FloatArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[F";
@@ -928,6 +1060,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * double array type converter.
+	 * @author zhaochen
+	 */
 	public class DoubleArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[D";
@@ -1003,6 +1139,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * BigDecimal Array type converter.
+	 * @author zhaochen
+	 */
 	public class BigDecimalArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[Ljava.math.BigDecimal;";
@@ -1036,6 +1176,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * BigInteger Array type converter.
+	 * @author zhaochen
+	 */
 	public class BigIntegerArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[Ljava.math.BigInteger;";
@@ -1069,6 +1213,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * Number Array type converter.
+	 * @author zhaochen
+	 */
 	public class NumberArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[Ljava.lang.Number;";
@@ -1109,6 +1257,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * char array type converter.
+	 * @author zhaochen
+	 */
 	public class CharArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[C";
@@ -1184,6 +1336,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * char sequence array type converter.
+	 * @author zhaochen
+	 */
 	public class CharSequenceArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[Ljava.lang.CharSequence;";
@@ -1227,6 +1383,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * string array type converter.
+	 * @author zhaochen
+	 */
 	public class StringArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[Ljava.lang.String;";
@@ -1268,6 +1428,10 @@ public class TypeConvertHelper {
 		}
 	}
 
+	/**
+	 * date array type converter.
+	 * @author zhaochen
+	 */
 	public class DateArrTypeConvert implements TypeConvert {
 		public String getName() {
 			return "[Ljava.util.Date;";

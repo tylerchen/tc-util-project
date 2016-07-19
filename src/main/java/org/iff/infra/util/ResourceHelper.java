@@ -330,10 +330,24 @@ public class ResourceHelper {
 		return true;
 	}
 
+	/**
+	 * fix url.
+	 * @param urlString
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String fixUrl(String urlString) {
 		return StringHelper.fixUrl(urlString);
 	}
 
+	/**
+	 * get bytes from url.
+	 * @param url
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static byte[] getByte(String url) {
 		try {
 			return SocketHelper.getByte(new URL(url).openStream(), false);
@@ -343,6 +357,13 @@ public class ResourceHelper {
 		return null;
 	}
 
+	/**
+	 * get the text from url.
+	 * @param url    example: helloworld
+	 * @return 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2015-4-8
+	 */
 	public static String getText(String url) {
 		try {
 			return SocketHelper.getContent(new URL(url).openStream(), false);

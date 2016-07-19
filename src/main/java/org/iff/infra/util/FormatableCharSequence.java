@@ -19,16 +19,14 @@ package org.iff.infra.util;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-3-14
  */
-public class FormatableCharSequence implements java.io.Serializable,
-		CharSequence {
+public class FormatableCharSequence implements java.io.Serializable, CharSequence {
 
 	private static final long serialVersionUID = 4667459143425384729L;
 	private StringBuilder builder = new StringBuilder(64);
 	private Object[] parameters = new Object[0];
 	private String toString = null;
 
-	protected FormatableCharSequence(CharSequence formatString,
-			Object[] parameters) {
+	protected FormatableCharSequence(CharSequence formatString, Object[] parameters) {
 		String string = formatString == null ? "" : formatString.toString();
 		builder.append(string);
 		this.parameters = parameters == null ? this.parameters : parameters;
@@ -42,10 +40,8 @@ public class FormatableCharSequence implements java.io.Serializable,
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since 2014-3-14
 	 */
-	public static FormatableCharSequence get(CharSequence formatString,
-			Object... params) {
-		FormatableCharSequence fs = new FormatableCharSequence(formatString,
-				params);
+	public static FormatableCharSequence get(CharSequence formatString, Object... params) {
+		FormatableCharSequence fs = new FormatableCharSequence(formatString, params);
 		return fs;
 	}
 
@@ -57,24 +53,37 @@ public class FormatableCharSequence implements java.io.Serializable,
 		return builder.length();
 	}
 
+	/**
+	 * subSequence
+	 * (non-Javadoc)
+	 * @see java.lang.CharSequence#subSequence(int, int)
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public CharSequence subSequence(int start, int end) {
 		return builder.subSequence(start, end);
 	}
 
+	/**
+	 * to string.
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public String toString() {
 		if (toString != null) {
 			return toString;
 		} else if (builder.length() < 1) {
 			toString = "";
 		} else {
-			toString = StringHelper.replaceBlock(builder.toString(),
-					parameters, null);
+			toString = StringHelper.replaceBlock(builder.toString(), parameters, null);
 		}
 		return toString;
 	}
 
 	public static void main(String[] args) {
-		Assert.notNull(null, FormatableCharSequence.get(FormatableCharSequence
-				.get("fuck {0},{1}", "fuck"), "you", "you"));
+		Assert.notNull(null,
+				FormatableCharSequence.get(FormatableCharSequence.get("fuck {0},{1}", "fuck"), "you", "you"));
 	}
 }

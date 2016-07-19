@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) 2013-2-28 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * All rights reserved.
+ *
+ * Contributors:
+ *     <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> - initial API and implementation
+ ******************************************************************************/
 package org.iff.infra.util;
 
 import java.util.Collections;
@@ -13,6 +20,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.PatternLayout;
 
+/**
+ * event bus helper.
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+ * @since 2013-2-28
+ */
 public class EventBusHelper {
 	private static EventBusHelper me = new EventBusHelper();
 	private static final ExecutorService executor = Executors.newFixedThreadPool(20,
@@ -28,12 +40,24 @@ public class EventBusHelper {
 		return me;
 	}
 
+	/**
+	 * init event bus and set deadEvent processor.
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public void init() {
 		if (!defaultBus.containsKey("deadEvent")) {
 			regist("deadEvent", new DeadEventProcessor());
 		}
 	}
 
+	/**
+	 * if bus is empty the can set a new bus.
+	 * @param bus
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public boolean setDefaultBus(LinkedHashMap<String, Map<String, EventProcess>> bus) {
 		if (defaultBus.isEmpty()) {
 			defaultBus = bus;
@@ -42,6 +66,14 @@ public class EventBusHelper {
 		return false;
 	}
 
+	/**
+	 * regist event.
+	 * @param eventPath
+	 * @param processor
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public boolean regist(String eventPath, EventProcess processor) {
 		Assert.notBlank(eventPath, "[EventBusHelper.regist]:eventPath is required!");
 		Assert.notNull(processor, "[EventBusHelper.regist]:processor is required!");
@@ -54,12 +86,27 @@ public class EventBusHelper {
 		return true;
 	}
 
+	/**
+	 * unregist event.
+	 * @param eventPath
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public boolean unregist(String eventPath) {
 		Assert.notBlank(eventPath, "[EventBusHelper.regist]:eventPath is required!");
 		Map<String, EventProcess> remove = defaultBus.remove(eventPath);
 		return remove != null;
 	}
 
+	/**
+	 * unregist event.
+	 * @param eventPath
+	 * @param processor
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public boolean unregist(String eventPath, EventProcess processor) {
 		Assert.notBlank(eventPath, "[EventBusHelper.regist]:eventPath is required!");
 		Assert.notNull(processor, "[EventBusHelper.regist]:processor is required!");
@@ -71,6 +118,14 @@ public class EventBusHelper {
 		return false;
 	}
 
+	/**
+	 * unregist event.
+	 * @param eventPath
+	 * @param processorName
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public boolean unregist(String eventPath, String processorName) {
 		Assert.notBlank(eventPath, "[EventBusHelper.regist]:eventPath is required!");
 		Assert.notBlank(processorName, "[EventBusHelper.regist]:processorName is required!");
@@ -82,6 +137,14 @@ public class EventBusHelper {
 		return false;
 	}
 
+	/**
+	 * asynchronized event.
+	 * @param eventPath
+	 * @param events
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public EventBusHelper asyncEvent(final String eventPath, final Object events) {
 		final Map<String, EventProcess> processors = defaultBus.get(eventPath);
 		if (processors != null && !processors.isEmpty()) {
@@ -102,6 +165,14 @@ public class EventBusHelper {
 		return this;
 	}
 
+	/**
+	 * Synchronized envent.
+	 * @param eventPath
+	 * @param events
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public EventBusHelper syncEvent(final String eventPath, final Object events) {
 		final Map<String, EventProcess> processors = defaultBus.get(eventPath);
 		if (processors != null && !processors.isEmpty()) {
@@ -118,12 +189,20 @@ public class EventBusHelper {
 		return this;
 	}
 
+	/**
+	 * EventProcess interface.
+	 * @author zhaochen
+	 */
 	public static interface EventProcess {
 		void listen(String eventPath, Object events);
 
 		String getName();
 	}
 
+	/**
+	 * defult dead event processor.
+	 * @author zhaochen
+	 */
 	public static class DeadEventProcessor implements EventProcess {
 
 		public void listen(String eventPath, Object events) {

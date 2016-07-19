@@ -17,19 +17,27 @@ import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.Thumbnails.Builder;
 
 /**
+ * image helper to process the image.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-7-20
  */
 public class ImageHelper {
 
 	public static void main(String[] args) throws Exception {
-		ImageHelper
-				.of(
-						"E:/workspace/JeeGalileo/software-market-front-project/src/main/webapp/images/logo.png")
+		ImageHelper.of("E:/workspace/JeeGalileo/software-market-front-project/src/main/webapp/images/logo.png")
 				.size(16, 16).toFile("C:\\Users\\Tyler\\Desktop\\testtest.ico");
 	}
 
-	public static void reize(int width, int height, File in, File out) {
+	/**
+	 * resize image from image file and out put to file.
+	 * @param width
+	 * @param height
+	 * @param in
+	 * @param out
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static void resize(int width, int height, File in, File out) {
 		try {
 			ImageHelper.of(in).size(width, height).toFile(out);
 		} catch (Exception e) {
@@ -37,7 +45,16 @@ public class ImageHelper {
 		}
 	}
 
-	public static void reize(int width, int height, File in, OutputStream out) {
+	/**
+	 * resize the image from output stream.
+	 * @param width
+	 * @param height
+	 * @param in
+	 * @param out
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static void resize(int width, int height, File in, OutputStream out) {
 		try {
 			ImageHelper.of(in).size(width, height).toOutputStream(out);
 		} catch (Exception e) {
@@ -172,8 +189,7 @@ public class ImageHelper {
 	 * @throws IllegalArgumentException	If the argument is an empty collection.
 	 * @since 	0.3.1
 	 */
-	public static Builder<InputStream> fromInputStreams(
-			Iterable<? extends InputStream> inputStreams) {
+	public static Builder<InputStream> fromInputStreams(Iterable<? extends InputStream> inputStreams) {
 		return Thumbnails.fromInputStreams(inputStreams);
 	}
 
@@ -188,8 +204,7 @@ public class ImageHelper {
 	 * @throws IllegalArgumentException	If the argument is an empty collection.
 	 * @since 	0.3.1
 	 */
-	public static Builder<BufferedImage> fromImages(
-			Iterable<BufferedImage> images) {
+	public static Builder<BufferedImage> fromImages(Iterable<BufferedImage> images) {
 		return Thumbnails.fromImages(images);
 	}
 }

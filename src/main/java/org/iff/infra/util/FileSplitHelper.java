@@ -11,11 +11,20 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 /**
+ * split file to small file.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-6-20
  */
 public class FileSplitHelper {
 
+	/**
+	 * split input stream by length.
+	 * @param is
+	 * @param length
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static Iterator<byte[]> split(final InputStream is, final int length) {
 		return new Iterator<byte[]>() {
 			byte[] buffer = null;
@@ -37,8 +46,7 @@ public class FileSplitHelper {
 						return buffer.length > 0;
 					}
 				} catch (Exception e) {
-					Exceptions.runtime(
-							"[9010][FileSplitHelper.Iterator.hasNext()]", e);
+					Exceptions.runtime("[9010][FileSplitHelper.Iterator.hasNext()]", e);
 				}
 				return false;
 			}
@@ -53,8 +61,7 @@ public class FileSplitHelper {
 			}
 
 			public void remove() {
-				Logger
-						.warn("[FileSplitHelper.Iterator.remove is not support!]");
+				Logger.warn("[FileSplitHelper.Iterator.remove is not support!]");
 			}
 		};
 	}

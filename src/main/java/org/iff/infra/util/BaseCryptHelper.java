@@ -10,6 +10,7 @@ package org.iff.infra.util;
 import java.io.ByteArrayOutputStream;
 
 /**
+ * base64, base62 encrypt dencrypt helper.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-9-28
  */
@@ -24,6 +25,13 @@ public class BaseCryptHelper {
 		}
 	}
 
+	/**
+	 * encode bytes to base64 StringBuffer.
+	 * @param data
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static StringBuffer encodeBase64(byte[] data) {
 		StringBuffer sb = new StringBuffer(data.length * 2);
 		int pos = 0, val = 0;
@@ -41,10 +49,24 @@ public class BaseCryptHelper {
 		return sb;
 	}
 
+	/**
+	 * encode string to base64 string.
+	 * @param toEncode
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String encodeBase64(String toEncode) {
 		return encodeBase64(toEncode.getBytes()).toString();
 	}
 
+	/**
+	 * decode base64 chars to bytes. 
+	 * @param data
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static byte[] decodeBase64(char[] data) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
 		int pos = 0, val = 0;
@@ -59,12 +81,26 @@ public class BaseCryptHelper {
 		return baos.toByteArray();
 	}
 
+	/**
+	 * decode base64 string to byte.
+	 * @param string
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static byte[] decodeBase64(String string) {
 		return decodeBase64(string.toCharArray());
 	}
 
-	//===============================Base64 END
-	//===============================Base62
+	/*===============================Base64 END*/
+	/*===============================Base62*/
+	/**
+	 * encode data to base62 StringBuffer.
+	 * @param data
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static StringBuffer encodeBase62(byte[] data) {
 		StringBuffer sb = new StringBuffer(data.length * 2);
 		int pos = 0, val = 0;
@@ -92,10 +128,24 @@ public class BaseCryptHelper {
 		return sb;
 	}
 
+	/**
+	 * encode string to base62 string.
+	 * @param string
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static String encodeBase62(String string) {
 		return encodeBase62(string.getBytes()).toString();
 	}
 
+	/**
+	 * decode base62 chars to bytes.
+	 * @param data
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static byte[] decodeBase62(char[] data) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
 		int pos = 0, val = 0;
@@ -120,6 +170,13 @@ public class BaseCryptHelper {
 		return baos.toByteArray();
 	}
 
+	/**
+	 * decode base62 string to bytes.
+	 * @param string
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
 	public static byte[] decodeBase62(String string) {
 		return decodeBase62(string.toCharArray());
 	}

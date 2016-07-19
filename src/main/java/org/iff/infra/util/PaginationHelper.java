@@ -17,6 +17,11 @@ import java.util.List;
 public class PaginationHelper {
 
 	/**
+	 * return 7 page numbers, and set currentPage on the midle.
+	 * <pre>
+	 * middleCurrentPage(10, 1000, 20) => [1, 18, 19, 20, 21, 22, 100]
+	 * middleCurrentPage(10, 0, 20) => [1, 1, 1]
+	 * </pre>
 	 * @param pageSize
 	 * @param totalCount
 	 * @param currentPage start from 1
@@ -60,6 +65,6 @@ public class PaginationHelper {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(middleCurrentPage(10, 0, 2));
+		System.out.println(middleCurrentPage(10, 1000, 20));
 	}
 }

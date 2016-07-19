@@ -7,74 +7,76 @@
  ******************************************************************************/
 package org.iff.infra.util;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
+import com.thoughtworks.xstream.XStream;
 
 /**
- * gson helper using gson.
+ * a helper for xstream.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2013-2-28
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class GsonHelper {
+public class XStreamHelper {
 
-	private GsonHelper() {
+	private static XStream xstream = new XStream();
+
+	private XStreamHelper() {
 	}
 
 	/**
-	 * json string to map.
-	 * @param json
+	 * return xstream instance.
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Jul 19, 2016
 	 */
-	public static Map toJsonMap(String json) {
-		Gson gson = JsonHelper.GSON;
-		LinkedHashMap fromJson = gson.fromJson(json, LinkedHashMap.class);
-		return fromJson;
+	public static XStream getXstream() {
+		return xstream;
 	}
 
 	/**
-	 * json string to list object.
-	 * @param json
-	 * @return
-	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since Jul 19, 2016
-	 */
-	public static List toJsonList(String json) {
-		Gson gson = JsonHelper.GSON;
-		List fromJson = (List) gson.fromJson(json, ArrayList.class);
-		return fromJson;
-	}
-
-	/**
-	 * json string to object list or map.
-	 * @param json
-	 * @return
-	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since Jul 19, 2016
-	 */
-	public static <T> T toJson(String json) {
-		if (json != null && (json = json.trim()).startsWith("[")) {
-			return (T) toJsonList(json);
-		} else {
-			return (T) toJsonMap(json);
-		}
-	}
-
-	/**
-	 * object to json string.
+	 * convert object to xml content.
 	 * @param obj
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Jul 19, 2016
 	 */
-	public static String toJsonString(Object obj) {
-		Gson gson = JsonHelper.GSON;
-		return gson.toJson(obj);
+	public static String toXml(Object obj) {
+		return xstream.toXML(obj);
+	}
+
+	/**
+	 * convert xml to object.
+	 * @param xml
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static <T> T fromXml(String xml) {
+		return (T) xstream.fromXML(xml);
+	}
+
+	/**
+	 * convert xml to an exists object root.
+	 * @param xml
+	 * @param root
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static <T> T fromXml(String xml, Object root) {
+		return (T) xstream.fromXML(xml, root);
+	}
+
+	/**
+	 * convert xml to map.
+	 * @param xml
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static Map fromXmlToMap(String xml) {
+		return (Map) xstream.fromXML(xml, new LinkedHashMap());
 	}
 }
