@@ -40,7 +40,7 @@ public class Main {
 				TimeUnit.SECONDS.sleep(1);
 				if (SocketHelper.test("localhost", 8080)) {
 					Object instance = InstanceFactory.getInstance("TC_COM_RT_string");
-					Object invoke = ReflectHelper.invoke(instance, "returnType", "test", "111");
+					Object invoke = ReflectHelper.invoke(instance, "returnType", new Object[] { "test", "111" });
 					System.err.println("instance:" + instance + ", value:" + invoke);
 				}
 			} catch (Exception e) {

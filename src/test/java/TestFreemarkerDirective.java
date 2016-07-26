@@ -44,12 +44,12 @@ public class TestFreemarkerDirective {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main5(String[] args) {
 		try {
 			FreeMarkerConfiguration config = new FreeMarkerConfiguration();
 			config.setDirectoryForTemplateLoading(
 					new File("/Users/zhaochen/dev/workspace/cocoa/tc-util-project/src/test/resources/ftl"));
-			
+
 			System.out.println(config.getDefaultEncoding());
 			System.out.println(config.getOutputEncoding());
 
@@ -102,6 +102,21 @@ public class TestFreemarkerDirective {
 			//获取模板,并设置编码方式，这个编码必须要与页面中的编码格式一致  
 			Template template = config.getTemplate("mvel.ftl", "UTF-8");
 			//合并数据模型与模板  
+			template.process(MapHelper.toMap("test", "123"), new PrintWriter(System.out));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		try {
+			FreeMarkerConfiguration config = new FreeMarkerConfiguration();
+			config.setDirectoryForTemplateLoading(
+					new File("/Users/zhaochen/dev/workspace/cocoa/tc-util-project/src/test/resources/ftl"));
+
+			config.setDirectivePath("org.iff.infra.util.freemarker.model");
+
+			Template template = config.getTemplate("test_groovy.ftl", "UTF-8");
 			template.process(MapHelper.toMap("test", "123"), new PrintWriter(System.out));
 		} catch (Exception e) {
 			e.printStackTrace();

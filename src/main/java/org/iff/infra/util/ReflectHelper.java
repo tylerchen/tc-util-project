@@ -289,7 +289,42 @@ public class ReflectHelper {
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Jul 19, 2016
 	 */
-	public static Object invoke(Object instance, String methodName, Object... args) {
+	public static Object invoke(Object instance, String methodName, Object[] args) {
+		Assert.notNull(instance, "args [instance] is required!");
+		Assert.notBlank(methodName, "args [methodName] is required!");
+		try {
+			if (instance instanceof GroovyObject) {
+				GroovyObject go = (GroovyObject) instance;
+				return go.invokeMethod(methodName, args);
+			} else {//static invoke
+				List<String> argsType = new ArrayList<String>();
+				if (args != null) {
+					for (Object arg : args) {
+						argsType.add(arg.getClass().getName());
+					}
+				}
+				Method method = getMethod((Class) instance, methodName, argsType.toArray(new String[argsType.size()]));
+				if (instance instanceof Class) {
+					return method.invoke(null, args);
+				} else {
+					return method.invoke(instance, args);
+				}
+			}
+		} catch (Exception e) {
+			Exceptions.runtime(FCS.get("invoke method {0} error.", methodName), e);
+		}
+		return null;
+	}
+	/**
+	 * invoke object by unique method name and json or xstream arguments.
+	 * @param instance
+	 * @param methodName
+	 * @param args
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static Object invokeByUniqueMethod(Object instance, String methodName, List<String> args) {
 		Assert.notNull(instance, "args [instance] is required!");
 		Assert.notBlank(methodName, "args [methodName] is required!");
 		try {

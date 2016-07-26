@@ -14,17 +14,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.iff.infra.util.Exceptions;
+import org.iff.infra.util.FCS;
+import org.iff.infra.util.Logger;
 import org.iff.infra.util.freemarker.FreeMarkerTemplateModel;
 import org.mvel2.MVEL;
 import org.mvel2.templates.TemplateRuntime;
 
 import freemarker.core.Environment;
-import freemarker.ext.util.WrapperTemplateModel;
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
+import freemarker.template.utility.DeepUnwrap;
 
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -41,31 +44,37 @@ public class MvelDirective implements TemplateDirectiveModel {
 		{
 			StringWriter stringWriter = new StringWriter(256);
 			body.render(stringWriter);
-			String mvel = stringWriter.toString();
-			if (mvel.length() < 1) {
+			String script = stringWriter.toString();
+			if (script.length() < 1) {
 				return;
 			}
 			Map root = new HashMap();
 			{
 				for (Entry entry : (Set<Entry>) params.entrySet()) {
-					if (entry.getValue() instanceof WrapperTemplateModel) {
-						root.put(entry.getKey().toString(),
-								((WrapperTemplateModel) entry.getValue()).getWrappedObject());
+					Object model = entry.getValue();
+					String key = entry.getKey().toString();
+					if (model instanceof TemplateModel) {
+						root.put(key, DeepUnwrap.unwrap((TemplateModel) model));
 					}
 				}
 			}
-			if ("template".equalsIgnoreCase(type)) {
-				eval = TemplateRuntime.eval(mvel, root);
-			} else {
-				eval = MVEL.eval(mvel, root);
-			}
-			if (var != null && var.length() > 0) {
-				env.setVariable(var, env.getConfiguration().getObjectWrapper().wrap(eval));
-			} else if ("template".equalsIgnoreCase(type)) {
-				if (eval != null) {
-					env.getOut().write(eval.toString());
-					body.render(env.getOut());
+			try {
+				if ("template".equalsIgnoreCase(type)) {
+					eval = TemplateRuntime.eval(script, root);
+				} else {
+					eval = MVEL.eval(script, root);
 				}
+				if (var != null && var.length() > 0) {
+					env.setVariable(var, env.getConfiguration().getObjectWrapper().wrap(eval));
+				} else if ("template".equalsIgnoreCase(type)) {
+					if (eval != null) {
+						env.getOut().write(eval.toString());
+						body.render(env.getOut());
+					}
+				}
+			} catch (Exception e) {
+				Logger.debug(FCS.get("====MVEL Script====\r\n{0}\r\n===MVEL binding===\r\n{1}", script, root), e);
+				Exceptions.runtime(FCS.get("====MVEL Script====\r\n{0}\r\n===MVEL binding===\r\n{1}", script, root), e);
 			}
 		}
 	}
