@@ -10,10 +10,12 @@ package org.iff.infra.util.mybatis.plugin;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.iff.infra.util.BeanHelper;
+import org.iff.infra.util.MapHelper;
 
 /**
  * Page query
@@ -34,9 +36,10 @@ public class Page implements Serializable, Cloneable {
 	/* 记录偏移量 */
 	private int offset;
 	private boolean offsetPage = false;
-
 	/* 分页结果 */
 	private List rows = new ArrayList();
+	/*order by*/
+	private List<Map> orderBy = new ArrayList<Map>();
 
 	public Page() {
 	}
@@ -62,7 +65,7 @@ public class Page implements Serializable, Cloneable {
 			page.setTotalCount(totalCount);
 			rows = rows == null ? page.getRows() : rows;
 			page.setRows(rows);
-			page.setTotalCount(rows.size());
+			page.setTotalCount(Math.max(rows.size(), totalCount));
 		}
 		return page;
 	}
@@ -152,6 +155,45 @@ public class Page implements Serializable, Cloneable {
 		this.rows = rows;
 	}
 
+	public List<Map> getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(List<Map> orderBy) {
+		this.orderBy = orderBy;
+	}
+
+	/**
+	 * add asc order by.
+	 * @param name
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Aug 12, 2016
+	 */
+	public Page addAscOrderBy(String name) {
+		orderBy.add(MapHelper.toMap("name", name, "order", "asc"));
+		return this;
+	}
+
+	/**
+	 * add desc order by.
+	 * @param name
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Aug 12, 2016
+	 */
+	public Page addDescOrderBy(String name) {
+		orderBy.add(MapHelper.toMap("name", name, "order", "desc"));
+		return this;
+	}
+
+	/**
+	 * convert row list object to other object.
+	 * @param voClass
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Aug 12, 2016
+	 */
 	public Page toPage(Class<?> voClass) {
 		if (this.rows == null || this.rows.isEmpty()) {
 			return this;
@@ -180,5 +222,19 @@ public class Page implements Serializable, Cloneable {
 	public String toString() {
 		return "Pages [currentPage=" + currentPage + ", pageSize=" + pageSize + ", rows=" + rows + ", totalCount="
 				+ totalCount + "]";
+	}
+
+	/**
+	 * return a not null page. if the page is null then return a default one.
+	 * @param page
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Aug 12, 2016
+	 */
+	public static Page notNullPage(Page page) {
+		if (page == null) {
+			return Page.offsetPage(0, 10, null);
+		}
+		return page;
 	}
 }
