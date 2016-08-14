@@ -113,9 +113,9 @@ public class PropertiesHelper {
 				}
 				Logger.debug(FCS.get("[org.iff.infra.util.PropertiesHelper.loadProperties][{file}]: loaded.", url));
 			} catch (Exception e) {
-				Logger.warn(FCS.get(
-						"[org.iff.infra.util.PropertiesHelper.loadProperties][{file}]: loading property file error! ",
-						url));
+				Logger.warn(
+						FCS.get("[org.iff.infra.util.PropertiesHelper.loadProperties][{file}]: loading property file error! ",
+								url));
 			} finally {
 				try {
 					is.close();

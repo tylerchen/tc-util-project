@@ -313,21 +313,7 @@ public class ResourceHelper {
 	 * @since 2015-4-8
 	 */
 	public static boolean wildCardMatch(String text, String pattern) {
-		if (pattern == null || pattern.length() < 1 || "*".equals(pattern)) {
-			return true;
-		}
-		if (text == null || text.length() < 1) {
-			return false;
-		}
-		String[] cards = pattern.split("\\*");
-		for (String card : cards) {
-			int idx = text.indexOf(card);
-			if (idx == -1) {
-				return false;
-			}
-			text = text.substring(idx + card.length());
-		}
-		return true;
+		return StringHelper.wildCardMatch(text, pattern);
 	}
 
 	/**

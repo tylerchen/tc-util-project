@@ -335,7 +335,7 @@ public class HttpHelper {
 	}
 
 	/**
-	 * get ip address.
+	 * get ip address, get proxy id first.
 	 * @param request
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -353,6 +353,32 @@ public class HttpHelper {
 			ip = request.getRemoteAddr();
 		}
 		return ip;
+	}
+
+	/**
+	 * get direct or remote access ip address.
+	 * @param request
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static String getRemoteIpAddr(HttpServletRequest request) {
+		String mark = request.getHeader("proxy-enable");
+		if (mark == "1") {
+			String ip = request.getHeader("x-forwarded-for");
+			if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+				ip = request.getHeader("Proxy-Client-IP");
+			}
+			if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+				ip = request.getHeader("WL-Proxy-Client-IP");
+			}
+			if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+				ip = request.getRemoteAddr();
+			}
+			return ip;
+		} else {
+			return request.getRemoteAddr();
+		}
 	}
 
 	/**

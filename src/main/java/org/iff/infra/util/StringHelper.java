@@ -554,6 +554,44 @@ public final class StringHelper {
 		return index < 1 ? source : source.substring(index);
 	}
 
+	/**
+	 * test the text match the wild char "*"
+	 * @param text    example: helloworld
+	 * @param pattern example: hell*world
+	 * @return 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2015-4-8
+	 */
+	public static boolean wildCardMatch(String text, String pattern) {
+		if (pattern == null || pattern.length() < 1 || "*".equals(pattern)) {
+			return true;
+		}
+		if (text == null || text.length() < 1) {
+			return false;
+		}
+		String[] cards = pattern.split("\\*");
+		/*
+		 * is starts with "*"
+		 * because "a/*".split("\\*") == "*a/".split("\\*");
+		 * so we need to handle this situation.
+		 */
+		boolean starStart = pattern.charAt(0) == '*';
+		for (int i = 0; i < cards.length; i++) {
+			String card = cards[i];
+			int idx = -1;
+			if (i == 0 && starStart) {// if starts with "*" then test the indexOf.
+				idx = text.indexOf(card);
+			} else {// if not starts with "*", must match string start.
+				idx = text.startsWith(card) ? 0 : -1;
+			}
+			if (idx == -1) {// not match
+				return false;
+			}
+			text = text.substring(idx + card.length());
+		}
+		return true;
+	}
+
 	public static void main(String[] args) {
 		System.out.println(pathBuild("file:///g:/a/b/c", "/"));
 		System.out.println(subUniCodeString("我ABC汉DEF", 60));
