@@ -579,10 +579,14 @@ public final class StringHelper {
 		for (int i = 0; i < cards.length; i++) {
 			String card = cards[i];
 			int idx = -1;
-			if (i == 0 && starStart) {// if starts with "*" then test the indexOf.
+			if (i == 0) {/* if starts with "*" then test the indexOf.*/
+				if (starStart) {
+					continue;
+				} else {/*if not starts with "*", must match string start.*/
+					idx = text.startsWith(card) ? 0 : -1;
+				}
+			} else {
 				idx = text.indexOf(card);
-			} else {// if not starts with "*", must match string start.
-				idx = text.startsWith(card) ? 0 : -1;
 			}
 			if (idx == -1) {// not match
 				return false;
@@ -593,6 +597,12 @@ public final class StringHelper {
 	}
 
 	public static void main(String[] args) {
+		boolean match = org.iff.infra.util.StringHelper.wildCardMatch("	<artifactId>foss-qdp-project</artifactId>",
+				"*<artifactId>*");
+		System.out.println(match);
+	}
+
+	public static void main1(String[] args) {
 		System.out.println(pathBuild("file:///g:/a/b/c", "/"));
 		System.out.println(subUniCodeString("我ABC汉DEF", 60));
 		System.out.println(subUniCodeString("我ABC汉DEF", 4));
