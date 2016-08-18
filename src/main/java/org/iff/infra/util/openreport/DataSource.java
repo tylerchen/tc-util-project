@@ -15,7 +15,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.iff.infra.util.BaseCryptHelper;
 import org.iff.infra.util.MapHelper;
+import org.iff.infra.util.RSAHelper;
 import org.iff.infra.util.RegisterHelper;
 import org.iff.infra.util.StringHelper;
 
@@ -29,7 +31,8 @@ import groovy.lang.GroovyShell;
 public interface DataSource {
 
 	javax.sql.DataSource create(String name, String user, String password, String url, String driverClass,
-			String testSql, String encryptMethod, String privateKeyBase64, int initConnection, int maxConnection);
+			String testSql, String encryptMethod, String privateKeyBase64, int initConnection, int maxConnection,
+			boolean force);
 
 	public static class Factory {
 		public static final Factory FACTORY = new Factory();
@@ -74,12 +77,24 @@ public interface DataSource {
 
 			public javax.sql.DataSource create(String name, String user, String password, String url,
 					String driverClass, String testSql, String encryptMethod, String privateKeyBase64,
-					int initConnection, int maxConnection) {
-				String key = StringHelper.concat(user, "|", password, "|", url);
+					int initConnection, int maxConnection, boolean force) {
+				String key = StringHelper.concat(user, "|", url);
 				javax.sql.DataSource ds = dataSourceCacheMap.get(key);
-				if (ds == null) {
+				if (ds == null || force) {
+					if (ds != null) {
+						try {
+							String script = "ds.close()";
+							Binding binding = new Binding();
+							{
+								binding.setVariable("ds", ds);
+							}
+							GroovyShell shell = new GroovyShell(binding);
+							shell.evaluate(script);
+						} catch (Exception e) {
+						}
+					}
 					ds = datasource.create(name, user, password, url, driverClass, testSql, encryptMethod,
-							privateKeyBase64, initConnection, maxConnection);
+							privateKeyBase64, initConnection, maxConnection, force);
 					dataSourceCacheMap.put(key, ds);
 				}
 				return ds;
@@ -90,10 +105,16 @@ public interface DataSource {
 
 	public static class DruidDataSource implements DataSource {
 		public javax.sql.DataSource create(String name, String user, String password, String url, String driverClass,
-				String testSql, String encryptMethod, String privateKeyBase64, int initConnection, int maxConnection) {
+				String testSql, String encryptMethod, String privateKeyBase64, int initConnection, int maxConnection,
+				boolean force) {
 			String script = "com.alibaba.druid.pool.DruidDataSourceFactory.createDataSource(props)";
 			Binding binding = new Binding();
 			{
+				if ("base64".equalsIgnoreCase(encryptMethod)) {
+					password = new String(BaseCryptHelper.decodeBase64(password));
+				} else if ("rsa".equalsIgnoreCase(encryptMethod) && StringUtils.isNotBlank(privateKeyBase64)) {
+					password = RSAHelper.decrypt(password, RSAHelper.getPrivateKeyFromBase64(privateKeyBase64));
+				}
 				Map props = MapHelper.toMap(/**/
 						"username", user, /**/
 						"password", password, /**/
@@ -101,9 +122,9 @@ public interface DataSource {
 						"driverClassName",
 						StringUtils.defaultIfBlank(driverClass, GuessDriverClass.guessByUrl(url)), /**/
 						"filters", "stat", /**/
-						"initialSize", initConnection, /**/
+						"initialSize", String.valueOf(Math.max(initConnection, 3)), /**/
 						"minIdle", "1", /**/
-						"maxActive", maxConnection, /**/
+						"maxActive", String.valueOf(Math.max(maxConnection, 3)), /**/
 						"maxWait", "60000", /**/
 						"timeBetweenEvictionRunsMillis", "60000", /**/
 						"minEvictableIdleTimeMillis", "300000", /**/
@@ -124,10 +145,16 @@ public interface DataSource {
 
 	public static class BasicDataSource implements DataSource {
 		public javax.sql.DataSource create(String name, String user, String password, String url, String driverClass,
-				String testSql, String encryptMethod, String privateKeyBase64, int initConnection, int maxConnection) {
+				String testSql, String encryptMethod, String privateKeyBase64, int initConnection, int maxConnection,
+				boolean force) {
 			String script = "org.apache.commons.dbcp.BasicDataSourceFactory.createDataSource(props)";
 			Binding binding = new Binding();
 			{
+				if ("base64".equalsIgnoreCase(encryptMethod)) {
+					password = new String(BaseCryptHelper.decodeBase64(password));
+				} else if ("rsa".equalsIgnoreCase(encryptMethod) && StringUtils.isNotBlank(privateKeyBase64)) {
+					password = RSAHelper.decrypt(password, RSAHelper.getPrivateKeyFromBase64(privateKeyBase64));
+				}
 				Map map = MapHelper.toMap(/**/
 						"username", user, /**/
 						"password", password, /**/
@@ -135,8 +162,8 @@ public interface DataSource {
 						"driverClassName",
 						StringUtils.defaultIfBlank(driverClass, GuessDriverClass.guessByUrl(url)), /**/
 						"defaultAutoCommit", "false", /**/
-						"initialSize", initConnection, /**/
-						"maxActive", maxConnection, /**/
+						"initialSize", String.valueOf(Math.max(initConnection, 3)), /**/
+						"maxActive", String.valueOf(Math.max(maxConnection, 3)), /**/
 						"maxWait", "60000", /**/
 						"validationQuery",
 						StringUtils.defaultIfBlank(testSql, GuessValidationQuery.guessByUrl(url)), /**/
