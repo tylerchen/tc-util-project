@@ -23,15 +23,16 @@ public class UUIDKeyGenerator implements KeyGenerator {
 		if (ms.getSqlCommandType() != SqlCommandType.INSERT) {
 			return;
 		}
-		if (parameter != null && ms.getKeyProperties() != null) {
+		String[] keyProperties = ms.getKeyProperties();
+		if (parameter != null && keyProperties != null && keyProperties.length > 0) {
 			try {
 				Configuration configuration = ms.getConfiguration();
 				MetaObject metaParam = configuration.newMetaObject(parameter);
-				String keyProperty = ms.getKeyProperties()[0];
-				//if (metaParam.getGetterType(keyProperty) == String.class && metaParam.hasGetter(keyProperty)
-				//		&& metaParam.hasSetter(keyProperty) && metaParam.getValue(keyProperty) == null) {
-				metaParam.setValue(keyProperty, StringHelper.uuid());
-				//}
+				String keyProperty = keyProperties[0];
+				if (metaParam.getGetterType(keyProperty) == String.class && metaParam.hasGetter(keyProperty)
+						&& metaParam.hasSetter(keyProperty) && metaParam.getValue(keyProperty) == null) {
+					metaParam.setValue(keyProperty, StringHelper.uuid());
+				}
 			} catch (Exception e) {
 				throw new ExecutorException("Error selecting key or setting result to parameter object. Cause: " + e,
 						e);

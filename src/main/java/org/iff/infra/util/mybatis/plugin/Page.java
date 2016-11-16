@@ -9,9 +9,11 @@ package org.iff.infra.util.mybatis.plugin;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.iff.infra.util.BeanHelper;
@@ -24,22 +26,24 @@ import org.iff.infra.util.MapHelper;
  */
 @SuppressWarnings({ "serial", "unchecked", "rawtypes" })
 @XmlRootElement(name = "Page")
-public class Page implements Serializable, Cloneable {
+public class Page<T> implements Serializable, Cloneable {
 	/* 显示数目 */
-	private static int PAGE_SIZE_DEFAULT = 10;
+	public static final int PAGE_SIZE_DEFAULT = 10;
 	/* 当页显示数目 */
-	private int pageSize = PAGE_SIZE_DEFAULT;
+	protected int pageSize = PAGE_SIZE_DEFAULT;
 	/* 总记录数 */
-	private int totalCount;
+	protected int totalCount;
 	/* 当前页 */
-	private int currentPage;
+	protected int currentPage;
 	/* 记录偏移量 */
-	private int offset;
-	private boolean offsetPage = false;
+	protected int offset;
+	protected boolean offsetPage = false;
 	/* 分页结果 */
-	private List rows = new ArrayList();
+	@XmlElementWrapper(name = "rows")
+	@XmlElement(name = "row")
+	protected List<T> rows = new ArrayList<T>();
 	/*order by*/
-	private List<Map> orderBy = new ArrayList<Map>();
+	protected List<LinkedHashMap> orderBy = new ArrayList<LinkedHashMap>();
 
 	public Page() {
 	}
@@ -110,7 +114,7 @@ public class Page implements Serializable, Cloneable {
 		this.offset = offset;
 	}
 
-	// @Override org.apache.ibatis.session.RowBounds.getLimit()
+	/*@Override org.apache.ibatis.session.RowBounds.getLimit()*/
 	public int getLimit() {
 		return pageSize;
 	}
@@ -147,19 +151,19 @@ public class Page implements Serializable, Cloneable {
 		return totalPage;
 	}
 
-	public <T> List<T> getRows() {
-		return rows;
+	public List<T> getRows() {
+		return (List<T>) rows;
 	}
 
 	public void setRows(List rows) {
 		this.rows = rows;
 	}
 
-	public List<Map> getOrderBy() {
+	public List<LinkedHashMap> getOrderBy() {
 		return orderBy;
 	}
 
-	public void setOrderBy(List<Map> orderBy) {
+	public void setOrderBy(List<LinkedHashMap> orderBy) {
 		this.orderBy = orderBy;
 	}
 
@@ -171,7 +175,7 @@ public class Page implements Serializable, Cloneable {
 	 * @since Aug 12, 2016
 	 */
 	public Page addAscOrderBy(String name) {
-		orderBy.add(MapHelper.toMap("name", name, "order", "asc"));
+		orderBy.add((LinkedHashMap) MapHelper.toMap("name", name, "order", "asc"));
 		return this;
 	}
 
@@ -183,7 +187,7 @@ public class Page implements Serializable, Cloneable {
 	 * @since Aug 12, 2016
 	 */
 	public Page addDescOrderBy(String name) {
-		orderBy.add(MapHelper.toMap("name", name, "order", "desc"));
+		orderBy.add((LinkedHashMap) MapHelper.toMap("name", name, "order", "desc"));
 		return this;
 	}
 
@@ -194,34 +198,42 @@ public class Page implements Serializable, Cloneable {
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Aug 12, 2016
 	 */
-	public Page toPage(Class<?> voClass) {
-		if (this.rows == null || this.rows.isEmpty()) {
-			return this;
+	public <E> Page<E> toPage(Class<E> voClass) {
+		if (this.rows == null) {
+			setRows(new ArrayList<T>());
 		}
-		List list = new ArrayList(this.rows.size());
+		List<E> list = new ArrayList<E>(this.rows.size());
 		for (Object o : this.rows) {
 			try {
-				list.add(BeanHelper.copyProperties(voClass.getConstructor().newInstance(), o));
+				list.add((E) BeanHelper.copyProperties(voClass.getConstructor().newInstance(), o));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+		Page<E> page = null;
 		if (isOffsetPage()) {
-			return Page.offsetPage(offset, pageSize, list);
+			page = Page.offsetPage(offset, pageSize, list);
+		} else {
+			page = Page.pageable(pageSize, currentPage, totalCount, list);
 		}
-		return Page.pageable(pageSize, currentPage, totalCount, list);
+		page.getOrderBy().addAll(this.getOrderBy());
+		return page;
 	}
 
-	public Page clone() {
+	public Page<T> clone() {
+		Page<T> page = null;
 		if (isOffsetPage()) {
-			return Page.offsetPage(offset, pageSize, rows);
+			page = Page.offsetPage(offset, pageSize, rows);
+		} else {
+			page = Page.pageable(pageSize, currentPage, totalCount, rows);
 		}
-		return Page.pageable(pageSize, currentPage, totalCount, rows);
+		page.getOrderBy().addAll(this.getOrderBy());
+		return page;
 	}
 
 	public String toString() {
-		return "Pages [currentPage=" + currentPage + ", pageSize=" + pageSize + ", rows=" + rows + ", totalCount="
-				+ totalCount + "]";
+		return "Page [pageSize=" + pageSize + ", totalCount=" + totalCount + ", currentPage=" + currentPage
+				+ ", offset=" + offset + ", offsetPage=" + offsetPage + ", rows=" + rows + ", orderBy=" + orderBy + "]";
 	}
 
 	/**
@@ -231,9 +243,9 @@ public class Page implements Serializable, Cloneable {
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Aug 12, 2016
 	 */
-	public static Page notNullPage(Page page) {
+	public static <E> Page<E> notNullPage(Page<E> page) {
 		if (page == null) {
-			return Page.offsetPage(0, 10, null);
+			return Page.offsetPage(0, 10, new ArrayList<E>());
 		}
 		return page;
 	}

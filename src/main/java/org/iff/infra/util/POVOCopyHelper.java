@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -310,6 +311,7 @@ public class POVOCopyHelper {
 				+ "\n        java.util.Map srcMap = (java.util.Map) src;"/**/
 				+ "\n        dest = (dest == null || dest instanceof Class) ? new {destClass}() : dest;"/**/
 				+ "\n        {destClass} destCast = ({destClass}) dest;"/**/
+				+ "\n        {LookSameMapGetter} mapGetter=new {LookSameMapGetter}(srcMap);"/**/
 				+ "{copyMap}"/**/
 				+ "\n        return (T) destCast;"/**/
 				+ "\n    }"/**/
@@ -326,7 +328,7 @@ public class POVOCopyHelper {
 				Class<?> wildcardType = getParameter0WildcardType(setter);
 				String fragment = ""/**/
 						+ "\n        try {"/**/
-						+ "\n            Object obj = srcMap.get(\"{fieldName}\");"/**/
+						+ "\n            Object obj = mapGetter.get(\"{fieldName}\");"/**/
 						+ "\n            if(obj != null) {"/**/
 						+ "\n                if(obj instanceof {setterParamClass} && !(obj instanceof java.util.Collection)) {"/**/
 						+ "\n                    destCast.{setterName}( ({setterParamClass}) obj );"/**/
@@ -349,19 +351,27 @@ public class POVOCopyHelper {
 					copyTo = "copyListTo";
 				}
 				sb.append(StringHelper.replaceBlock(fragment,
-						MapHelper.toMap("fieldName", fieldName, "setterParamClass",
-								getObjectClassName(setterParamType.getName()), "setterName", setter.getName(),
-								"POVOCopyHelper", POVOCopyHelper.class.getName(), "copyTo", copyTo, "parameter",
-								parameter),
-						null));
+						MapHelper.toMap(/**/
+								"fieldName", fieldName, /**/
+								"setterParamClass", getObjectClassName(setterParamType.getName()), /**/
+								"setterName", setter.getName(), /**/
+								"POVOCopyHelper", POVOCopyHelper.class.getName(), /**/
+								"copyTo", copyTo, /**/
+								"parameter", parameter/**/
+				), null));
 			}
 		}
 		{
-			source = StringHelper.replaceBlock(source, MapHelper.toMap("className",
-					(StringUtils.replace(Map.class.getName(), ".", "_") + "$"
-							+ StringUtils.replace(destClass.getName(), ".", "_")),
-					"PoVoCopy", PoVoCopy.class.getName(), "destClass", getDefaultClass(destClass), "copyMap",
-					sb.toString()), null);
+			source = StringHelper.replaceBlock(source,
+					MapHelper.toMap(/**/
+							"className",
+							(StringUtils.replace(Map.class.getName(), ".", "_") + "$"
+									+ StringUtils.replace(destClass.getName(), ".", "_")), /**/
+							"PoVoCopy", PoVoCopy.class.getName(), /**/
+							"destClass", getDefaultClass(destClass), /**/
+							"copyMap", sb.toString(), /**/
+							"LookSameMapGetter", LookSameMapGetter.class.getName()/**/
+			), null);
 		}
 		//System.out.println(source);
 		try {
@@ -751,6 +761,13 @@ public class POVOCopyHelper {
 		return parent.isAssignableFrom(child);
 	}
 
+	/**
+	 * get primitive type's Object class name.
+	 * @param className
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Oct 21, 2016
+	 */
 	private static String getObjectClassName(String className) {
 		if ("boolean".equals(className)) {
 			return Boolean.class.getName();
@@ -772,4 +789,50 @@ public class POVOCopyHelper {
 		return className;
 	}
 
+	public static class LookSameMapGetter {
+		private Map origMap;
+		private Map lookSameMap;
+
+		public LookSameMapGetter(Map map) {
+			this.origMap = map == null ? new HashMap() : map;
+		}
+
+		public Object get(String fieldName) {
+			if (origMap.containsKey(fieldName)) {
+				return origMap.get(fieldName);
+			}
+			return getLookSameValue(fieldName);
+		}
+
+		public Object getLookSameValue(String fieldName) {
+			StringBuilder sb = new StringBuilder(32);
+			{
+				for (int i = 0; i < fieldName.length(); i++) {
+					char c = fieldName.charAt(i);
+					if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+						sb.append(c);
+					}
+				}
+				fieldName = sb.toString().toLowerCase();
+			}
+			if (lookSameMap == null) {
+				lookSameMap = new HashMap();
+				for (Entry entry : (Set<Entry>) origMap.entrySet()) {
+					Object key = entry.getKey();
+					if (key instanceof String) {
+						sb.setLength(0);
+						String strKey = (String) key;
+						for (int i = 0; i < strKey.length(); i++) {
+							char c = strKey.charAt(i);
+							if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+								sb.append(c);
+							}
+						}
+						lookSameMap.put(sb.toString().toLowerCase(), entry.getValue());
+					}
+				}
+			}
+			return lookSameMap.get(fieldName);
+		}
+	}
 }

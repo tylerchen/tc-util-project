@@ -12,12 +12,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialClob;
 
 import org.apache.commons.lang3.time.DateUtils;
 
@@ -77,31 +82,33 @@ public class TypeConvertHelper {
 		typeConverts.put(java.sql.Timestamp.class.getName(), new DateTypeConvert());
 		typeConverts.put(java.sql.Date.class.getName(), new DateTypeConvert());
 		typeConverts.put(java.sql.Time.class.getName(), new DateTypeConvert());
+		typeConverts.put(java.sql.Clob.class.getName(), new ClobTypeConvert());
+		typeConverts.put(java.sql.Blob.class.getName(), new BlobTypeConvert());
 		//
-		typeConverts.put("[Z", new BooleanArrTypeConvert());
-		typeConverts.put("[Ljava.lang.Boolean;", new BooleanArrTypeConvert());
-		typeConverts.put("[B", new ByteArrTypeConvert());
-		typeConverts.put("[Ljava.lang.Byte;", new ByteArrTypeConvert());
-		typeConverts.put("[S", new ShortArrTypeConvert());
-		typeConverts.put("[Ljava.lang.Short;", new ShortArrTypeConvert());
-		typeConverts.put("[I", new IntegerArrTypeConvert());
-		typeConverts.put("[Ljava.lang.Integer;", new IntegerArrTypeConvert());
-		typeConverts.put("[L", new LongArrTypeConvert());
-		typeConverts.put("[Ljava.lang.Long;", new LongArrTypeConvert());
-		typeConverts.put("[F", new FloatArrTypeConvert());
-		typeConverts.put("[Ljava.lang.Float;", new FloatArrTypeConvert());
-		typeConverts.put("[D", new DoubleArrTypeConvert());
-		typeConverts.put("[Ljava.lang.Double;", new DoubleArrTypeConvert());
-		typeConverts.put("[Ljava.math.BigDecimal;", new BigDecimalArrTypeConvert());
-		typeConverts.put("[Ljava.math.BigInteger;", new BigIntegerArrTypeConvert());
-		typeConverts.put("[C", new CharArrTypeConvert());
-		typeConverts.put("[Ljava.lang.Character;", new CharArrTypeConvert());
-		typeConverts.put("[Ljava.lang.CharSequence;", new CharSequenceArrTypeConvert());
-		typeConverts.put("[Ljava.lang.String;", new StringArrTypeConvert());
-		typeConverts.put("[Ljava.util.Date;", new DateArrTypeConvert());
-		typeConverts.put("[Ljava.sql.Timestamp;", new DateArrTypeConvert());
-		typeConverts.put("[Ljava.sql.Date;", new DateArrTypeConvert());
-		typeConverts.put("[Ljava.sql.Time;", new DateArrTypeConvert());
+		typeConverts.put(boolean[].class.getName(), new BooleanArrTypeConvert());
+		typeConverts.put(Boolean[].class.getName(), new BooleanArrTypeConvert());
+		typeConverts.put(byte[].class.getName(), new ByteArrTypeConvert());
+		typeConverts.put(Byte[].class.getName(), new ByteArrTypeConvert());
+		typeConverts.put(short[].class.getName(), new ShortArrTypeConvert());
+		typeConverts.put(Short[].class.getName(), new ShortArrTypeConvert());
+		typeConverts.put(int[].class.getName(), new IntegerArrTypeConvert());
+		typeConverts.put(Integer[].class.getName(), new IntegerArrTypeConvert());
+		typeConverts.put(long[].class.getName(), new LongArrTypeConvert());
+		typeConverts.put(Long[].class.getName(), new LongArrTypeConvert());
+		typeConverts.put(float[].class.getName(), new FloatArrTypeConvert());
+		typeConverts.put(Float[].class.getName(), new FloatArrTypeConvert());
+		typeConverts.put(double[].class.getName(), new DoubleArrTypeConvert());
+		typeConverts.put(Double[].class.getName(), new DoubleArrTypeConvert());
+		typeConverts.put(BigDecimal[].class.getName(), new BigDecimalArrTypeConvert());
+		typeConverts.put(BigInteger[].class.getName(), new BigIntegerArrTypeConvert());
+		typeConverts.put(char[].class.getName(), new CharArrTypeConvert());
+		typeConverts.put(Character[].class.getName(), new CharArrTypeConvert());
+		typeConverts.put(CharSequence[].class.getName(), new CharSequenceArrTypeConvert());
+		typeConverts.put(String[].class.getName(), new StringArrTypeConvert());
+		typeConverts.put(java.util.Date[].class.getName(), new DateArrTypeConvert());
+		typeConverts.put(java.sql.Timestamp[].class.getName(), new DateArrTypeConvert());
+		typeConverts.put(java.sql.Date[].class.getName(), new DateArrTypeConvert());
+		typeConverts.put(java.sql.Time[].class.getName(), new DateArrTypeConvert());
 		//
 	}
 
@@ -538,6 +545,89 @@ public class TypeConvertHelper {
 	}
 
 	/**
+	 * clob type converter.
+	 * @author zhaochen
+	 */
+	public class ClobTypeConvert implements TypeConvert {
+		public String getName() {
+			return Clob.class.getName();
+		}
+
+		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
+			SerialClob clob = null;
+			try {
+				clob = new SerialClob(new char[0]);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (sourceCls.getName().equals(targetClassName)) {
+				return sourceValue;
+			} else if (sourceValue == null) {
+				return clob;
+			} else {
+				char[] cs = null;
+				if (sourceValue instanceof char[]) {
+					cs = (char[]) sourceValue;
+				} else {
+					TypeConvert tc = get(String.class.getName());
+					String convert = (String) tc.convert(String.class.getName(), sourceValue, sourceCls, sourceType);
+					cs = convert == null ? null : convert.toCharArray();
+				}
+				if (cs == null) {
+					cs = new char[0];
+				}
+				try {
+					clob = new SerialClob(cs);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return clob;
+			}
+		}
+	}
+
+	/**
+	 * blob type converter.
+	 * @author zhaochen
+	 */
+	public class BlobTypeConvert implements TypeConvert {
+		public String getName() {
+			return Blob.class.getName();
+		}
+
+		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
+			SerialBlob blob = null;
+			try {
+				blob = new SerialBlob(new byte[0]);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (sourceCls.getName().equals(targetClassName)) {
+				return sourceValue;
+			} else if (sourceValue == null) {
+				return blob;
+			} else {
+				byte[] bs = null;
+				if (sourceValue instanceof byte[]) {
+					bs = (byte[]) bs;
+				} else {
+					TypeConvert tc = get(byte[].class.getName());
+					bs = (byte[]) tc.convert(byte[].class.getName(), sourceValue, sourceCls, sourceType);
+				}
+				if (bs == null) {
+					bs = new byte[0];
+				}
+				try {
+					blob = new SerialBlob(bs);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return blob;
+			}
+		}
+	}
+
+	/**
 	 * date type converter.
 	 * @author zhaochen
 	 */
@@ -568,7 +658,7 @@ public class TypeConvertHelper {
 						date = (Date) sourceValue;
 					} else {
 						date = DateUtils.parseDate(sourceValue.toString(), "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd",
-								"yyyy/MMdd HH:mm:ss", "yyyy/MM/dd");
+								"yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd");
 					}
 				} catch (Exception e) {
 				}
@@ -597,7 +687,7 @@ public class TypeConvertHelper {
 	 */
 	public class BooleanArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[Z";
+			return boolean[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -605,13 +695,14 @@ public class TypeConvertHelper {
 			if (sourceValue == null) {
 				return null;
 			} else if (sourceCls.getName().equals(targetClassName)) {
-				if (targetClassName.equals("[Z")) {
+				if (targetClassName.equals(boolean[].class.getName())) {
 					return Arrays.copyOf((boolean[]) sourceValue, ((boolean[]) sourceValue).length);
 				} else {
 					return Arrays.copyOf((Boolean[]) sourceValue, ((Boolean[]) sourceValue).length);
 				}
-			} else if (sourceCls.getName().equals("[Z") || sourceCls.getName().equals("[Ljava.lang.Boolean;")) {
-				if (targetClassName.equals("[Z")) {
+			} else if (sourceCls.getName().equals(boolean[].class.getName())
+					|| sourceCls.getName().equals(Boolean[].class.getName())) {
+				if (targetClassName.equals(boolean[].class.getName())) {
 					boolean[] arr = new boolean[((Boolean[]) sourceValue).length];
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = ((Boolean[]) sourceValue)[i] == null ? false : ((Boolean[]) sourceValue)[i];
@@ -625,7 +716,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceCls.isArray()) {
-				if (targetClassName.equals("[Z")) {
+				if (targetClassName.equals(boolean[].class.getName())) {
 					boolean[] arr = new boolean[Array.getLength(sourceValue)];
 					for (int i = 0; i < arr.length; i++) {
 						Object object = Array.get(sourceValue, i);
@@ -641,7 +732,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceValue instanceof Collection<?>) {
-				if (targetClassName.equals("[Z")) {
+				if (targetClassName.equals(boolean[].class.getName())) {
 					boolean[] arr = new boolean[((Collection<?>) sourceValue).size()];
 					int i = 0;
 					for (Object object : (Collection<?>) sourceValue) {
@@ -659,7 +750,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else {
-				if (targetClassName.equals("[Z")) {
+				if (targetClassName.equals(boolean[].class.getName())) {
 					return new boolean[] {
 							(Boolean) tc.convert(boolean.class.getName(), sourceValue, sourceCls, sourceType) };
 				} else {
@@ -676,7 +767,7 @@ public class TypeConvertHelper {
 	 */
 	public class ByteArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[B";
+			return byte[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -684,13 +775,14 @@ public class TypeConvertHelper {
 			if (sourceValue == null) {
 				return null;
 			} else if (sourceCls.getName().equals(targetClassName)) {
-				if (targetClassName.equals("[B")) {
+				if (targetClassName.equals(byte[].class.getName())) {
 					return Arrays.copyOf((byte[]) sourceValue, ((byte[]) sourceValue).length);
 				} else {
 					return Arrays.copyOf((Byte[]) sourceValue, ((Byte[]) sourceValue).length);
 				}
-			} else if (sourceCls.getName().equals("[B") || sourceCls.getName().equals("[Ljava.lang.Byte;")) {
-				if (targetClassName.equals("[B")) {
+			} else if (sourceCls.getName().equals(byte[].class.getName())
+					|| sourceCls.getName().equals(Byte[].class.getName())) {
+				if (targetClassName.equals(byte[].class.getName())) {
 					byte[] arr = new byte[((Byte[]) sourceValue).length];
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = ((Byte[]) sourceValue)[i] == null ? 0 : ((Byte[]) sourceValue)[i];
@@ -704,7 +796,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceCls.isArray()) {
-				if (targetClassName.equals("[B")) {
+				if (targetClassName.equals(byte[].class.getName())) {
 					byte[] arr = new byte[Array.getLength(sourceValue)];
 					for (int i = 0; i < arr.length; i++) {
 						Object object = Array.get(sourceValue, i);
@@ -720,7 +812,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceValue instanceof Collection<?>) {
-				if (targetClassName.equals("[B")) {
+				if (targetClassName.equals(byte[].class.getName())) {
 					byte[] arr = new byte[((Collection<?>) sourceValue).size()];
 					int i = 0;
 					for (Object object : (Collection<?>) sourceValue) {
@@ -738,7 +830,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else {
-				if (targetClassName.equals("[B")) {
+				if (targetClassName.equals(byte[].class.getName())) {
 					return new byte[] { (Byte) tc.convert(byte.class.getName(), sourceValue, sourceCls, sourceType) };
 				} else {
 					return new Byte[] { (Byte) tc.convert(Byte.class.getName(), sourceValue, sourceCls, sourceType) };
@@ -753,7 +845,7 @@ public class TypeConvertHelper {
 	 */
 	public class ShortArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[S";
+			return short[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -761,13 +853,14 @@ public class TypeConvertHelper {
 			if (sourceValue == null) {
 				return null;
 			} else if (sourceCls.getName().equals(targetClassName)) {
-				if (targetClassName.equals("[S")) {
+				if (targetClassName.equals(short[].class.getName())) {
 					return Arrays.copyOf((short[]) sourceValue, ((short[]) sourceValue).length);
 				} else {
 					return Arrays.copyOf((Short[]) sourceValue, ((Short[]) sourceValue).length);
 				}
-			} else if (sourceCls.getName().equals("[S") || sourceCls.getName().equals("[Ljava.lang.Short;")) {
-				if (targetClassName.equals("[S")) {
+			} else if (sourceCls.getName().equals(short[].class.getName())
+					|| sourceCls.getName().equals(Short[].class.getName())) {
+				if (targetClassName.equals(short[].class.getName())) {
 					short[] arr = new short[((Short[]) sourceValue).length];
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = ((Short[]) sourceValue)[i] == null ? 0 : ((Short[]) sourceValue)[i];
@@ -781,7 +874,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceCls.isArray()) {
-				if (targetClassName.equals("[S")) {
+				if (targetClassName.equals(short[].class.getName())) {
 					short[] arr = new short[Array.getLength(sourceValue)];
 					for (int i = 0; i < arr.length; i++) {
 						Object object = Array.get(sourceValue, i);
@@ -797,7 +890,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceValue instanceof Collection<?>) {
-				if (targetClassName.equals("[S")) {
+				if (targetClassName.equals(short[].class.getName())) {
 					short[] arr = new short[((Collection<?>) sourceValue).size()];
 					int i = 0;
 					for (Object object : (Collection<?>) sourceValue) {
@@ -815,7 +908,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else {
-				if (targetClassName.equals("[S")) {
+				if (targetClassName.equals(short[].class.getName())) {
 					return new short[] {
 							(Short) tc.convert(short.class.getName(), sourceValue, sourceCls, sourceType) };
 				} else {
@@ -832,7 +925,7 @@ public class TypeConvertHelper {
 	 */
 	public class IntegerArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[I";
+			return int[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -840,13 +933,14 @@ public class TypeConvertHelper {
 			if (sourceValue == null) {
 				return null;
 			} else if (sourceCls.getName().equals(targetClassName)) {
-				if (targetClassName.equals("[I")) {
+				if (targetClassName.equals(int[].class.getName())) {
 					return Arrays.copyOf((int[]) sourceValue, ((int[]) sourceValue).length);
 				} else {
 					return Arrays.copyOf((Integer[]) sourceValue, ((Integer[]) sourceValue).length);
 				}
-			} else if (sourceCls.getName().equals("[I") || sourceCls.getName().equals("[Ljava.lang.Integer;")) {
-				if (targetClassName.equals("[I")) {
+			} else if (sourceCls.getName().equals(int[].class.getName())
+					|| sourceCls.getName().equals(Integer[].class.getName())) {
+				if (targetClassName.equals(int[].class.getName())) {
 					int[] arr = new int[((Integer[]) sourceValue).length];
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = ((Integer[]) sourceValue)[i] == null ? 0 : ((Integer[]) sourceValue)[i];
@@ -860,7 +954,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceCls.isArray()) {
-				if (targetClassName.equals("[I")) {
+				if (targetClassName.equals(int[].class.getName())) {
 					int[] arr = new int[Array.getLength(sourceValue)];
 					for (int i = 0; i < arr.length; i++) {
 						Object object = Array.get(sourceValue, i);
@@ -876,7 +970,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceValue instanceof Collection<?>) {
-				if (targetClassName.equals("[I")) {
+				if (targetClassName.equals(int[].class.getName())) {
 					int[] arr = new int[((Collection<?>) sourceValue).size()];
 					int i = 0;
 					for (Object object : (Collection<?>) sourceValue) {
@@ -894,7 +988,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else {
-				if (targetClassName.equals("[I")) {
+				if (targetClassName.equals(int[].class.getName())) {
 					return new int[] { (Integer) tc.convert(int.class.getName(), sourceValue, sourceCls, sourceType) };
 				} else {
 					return new Integer[] {
@@ -910,7 +1004,7 @@ public class TypeConvertHelper {
 	 */
 	public class LongArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[J";
+			return long[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -918,13 +1012,14 @@ public class TypeConvertHelper {
 			if (sourceValue == null) {
 				return null;
 			} else if (sourceCls.getName().equals(targetClassName)) {
-				if (targetClassName.equals("[J")) {
+				if (targetClassName.equals(long[].class.getName())) {
 					return Arrays.copyOf((long[]) sourceValue, ((long[]) sourceValue).length);
 				} else {
 					return Arrays.copyOf((Long[]) sourceValue, ((Long[]) sourceValue).length);
 				}
-			} else if (sourceCls.getName().equals("[J") || sourceCls.getName().equals("[Ljava.lang.Long;")) {
-				if (targetClassName.equals("[J")) {
+			} else if (sourceCls.getName().equals(long[].class.getName())
+					|| sourceCls.getName().equals(Long[].class.getName())) {
+				if (targetClassName.equals(long[].class.getName())) {
 					long[] arr = new long[((Long[]) sourceValue).length];
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = ((Long[]) sourceValue)[i] == null ? 0 : ((Long[]) sourceValue)[i];
@@ -938,7 +1033,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceCls.isArray()) {
-				if (targetClassName.equals("[J")) {
+				if (targetClassName.equals(long[].class.getName())) {
 					long[] arr = new long[Array.getLength(sourceValue)];
 					for (int i = 0; i < arr.length; i++) {
 						Object object = Array.get(sourceValue, i);
@@ -954,7 +1049,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceValue instanceof Collection<?>) {
-				if (targetClassName.equals("[J")) {
+				if (targetClassName.equals(long[].class.getName())) {
 					long[] arr = new long[((Collection<?>) sourceValue).size()];
 					int i = 0;
 					for (Object object : (Collection<?>) sourceValue) {
@@ -972,7 +1067,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else {
-				if (targetClassName.equals("[J")) {
+				if (targetClassName.equals(long[].class.getName())) {
 					return new long[] { (Long) tc.convert(long.class.getName(), sourceValue, sourceCls, sourceType) };
 				} else {
 					return new Long[] { (Long) tc.convert(Long.class.getName(), sourceValue, sourceCls, sourceType) };
@@ -987,7 +1082,7 @@ public class TypeConvertHelper {
 	 */
 	public class FloatArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[F";
+			return float[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -995,13 +1090,14 @@ public class TypeConvertHelper {
 			if (sourceValue == null) {
 				return null;
 			} else if (sourceCls.getName().equals(targetClassName)) {
-				if (targetClassName.equals("[F")) {
+				if (targetClassName.equals(float[].class.getName())) {
 					return Arrays.copyOf((float[]) sourceValue, ((float[]) sourceValue).length);
 				} else {
 					return Arrays.copyOf((Float[]) sourceValue, ((Float[]) sourceValue).length);
 				}
-			} else if (sourceCls.getName().equals("[F") || sourceCls.getName().equals("[Ljava.lang.Float;")) {
-				if (targetClassName.equals("[F")) {
+			} else if (sourceCls.getName().equals(float[].class.getName())
+					|| sourceCls.getName().equals(Float[].class.getName())) {
+				if (targetClassName.equals(float[].class.getName())) {
 					float[] arr = new float[((Float[]) sourceValue).length];
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = ((Float[]) sourceValue)[i] == null ? 0 : ((Float[]) sourceValue)[i];
@@ -1015,7 +1111,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceCls.isArray()) {
-				if (targetClassName.equals("[F")) {
+				if (targetClassName.equals(float[].class.getName())) {
 					float[] arr = new float[Array.getLength(sourceValue)];
 					for (int i = 0; i < arr.length; i++) {
 						Object object = Array.get(sourceValue, i);
@@ -1031,7 +1127,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceValue instanceof Collection<?>) {
-				if (targetClassName.equals("[F")) {
+				if (targetClassName.equals(float[].class.getName())) {
 					float[] arr = new float[((Collection<?>) sourceValue).size()];
 					int i = 0;
 					for (Object object : (Collection<?>) sourceValue) {
@@ -1049,7 +1145,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else {
-				if (targetClassName.equals("[F")) {
+				if (targetClassName.equals(float[].class.getName())) {
 					return new float[] {
 							(Float) tc.convert(float.class.getName(), sourceValue, sourceCls, sourceType) };
 				} else {
@@ -1066,7 +1162,7 @@ public class TypeConvertHelper {
 	 */
 	public class DoubleArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[D";
+			return double[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -1074,13 +1170,14 @@ public class TypeConvertHelper {
 			if (sourceValue == null) {
 				return null;
 			} else if (sourceCls.getName().equals(targetClassName)) {
-				if (targetClassName.equals("[D")) {
+				if (targetClassName.equals(double[].class.getName())) {
 					return Arrays.copyOf((double[]) sourceValue, ((double[]) sourceValue).length);
 				} else {
 					return Arrays.copyOf((Double[]) sourceValue, ((Double[]) sourceValue).length);
 				}
-			} else if (sourceCls.getName().equals("[D") || sourceCls.getName().equals("[Ljava.lang.Double;")) {
-				if (targetClassName.equals("[D")) {
+			} else if (sourceCls.getName().equals(double[].class.getName())
+					|| sourceCls.getName().equals(Double[].class.getName())) {
+				if (targetClassName.equals(double[].class.getName())) {
 					double[] arr = new double[((Double[]) sourceValue).length];
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = ((Double[]) sourceValue)[i] == null ? 0 : ((Double[]) sourceValue)[i];
@@ -1094,7 +1191,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceCls.isArray()) {
-				if (targetClassName.equals("[D")) {
+				if (targetClassName.equals(double[].class.getName())) {
 					double[] arr = new double[Array.getLength(sourceValue)];
 					for (int i = 0; i < arr.length; i++) {
 						Object object = Array.get(sourceValue, i);
@@ -1110,7 +1207,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceValue instanceof Collection<?>) {
-				if (targetClassName.equals("[D")) {
+				if (targetClassName.equals(double[].class.getName())) {
 					double[] arr = new double[((Collection<?>) sourceValue).size()];
 					int i = 0;
 					for (Object object : (Collection<?>) sourceValue) {
@@ -1128,7 +1225,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else {
-				if (targetClassName.equals("[D")) {
+				if (targetClassName.equals(double[].class.getName())) {
 					return new double[] {
 							(Double) tc.convert(double.class.getName(), sourceValue, sourceCls, sourceType) };
 				} else {
@@ -1145,7 +1242,7 @@ public class TypeConvertHelper {
 	 */
 	public class BigDecimalArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[Ljava.math.BigDecimal;";
+			return BigDecimal[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -1182,7 +1279,7 @@ public class TypeConvertHelper {
 	 */
 	public class BigIntegerArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[Ljava.math.BigInteger;";
+			return BigInteger[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -1219,7 +1316,7 @@ public class TypeConvertHelper {
 	 */
 	public class NumberArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[Ljava.lang.Number;";
+			return Number[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -1263,7 +1360,7 @@ public class TypeConvertHelper {
 	 */
 	public class CharArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[C";
+			return char[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -1271,13 +1368,14 @@ public class TypeConvertHelper {
 			if (sourceValue == null) {
 				return null;
 			} else if (sourceCls.getName().equals(targetClassName)) {
-				if (targetClassName.equals("[C")) {
+				if (targetClassName.equals(char[].class.getName())) {
 					return Arrays.copyOf((char[]) sourceValue, ((char[]) sourceValue).length);
 				} else {
 					return Arrays.copyOf((Character[]) sourceValue, ((Character[]) sourceValue).length);
 				}
-			} else if (sourceCls.getName().equals("[C") || sourceCls.getName().equals("[Ljava.lang.Character;")) {
-				if (targetClassName.equals("[C")) {
+			} else if (sourceCls.getName().equals(char[].class.getName())
+					|| sourceCls.getName().equals(Character[].class.getName())) {
+				if (targetClassName.equals(char[].class.getName())) {
 					char[] arr = new char[((Character[]) sourceValue).length];
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = ((Character[]) sourceValue)[i] == null ? 0 : ((Character[]) sourceValue)[i];
@@ -1291,7 +1389,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceCls.isArray()) {
-				if (targetClassName.equals("[C")) {
+				if (targetClassName.equals(char[].class.getName())) {
 					char[] arr = new char[Array.getLength(sourceValue)];
 					for (int i = 0; i < arr.length; i++) {
 						Object object = Array.get(sourceValue, i);
@@ -1307,7 +1405,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else if (sourceValue instanceof Collection<?>) {
-				if (targetClassName.equals("[C")) {
+				if (targetClassName.equals(char[].class.getName())) {
 					char[] arr = new char[((Collection<?>) sourceValue).size()];
 					int i = 0;
 					for (Object object : (Collection<?>) sourceValue) {
@@ -1325,7 +1423,7 @@ public class TypeConvertHelper {
 					return arr;
 				}
 			} else {
-				if (targetClassName.equals("[C")) {
+				if (targetClassName.equals(char[].class.getName())) {
 					return new char[] {
 							(Character) tc.convert(char.class.getName(), sourceValue, sourceCls, sourceType) };
 				} else {
@@ -1342,7 +1440,7 @@ public class TypeConvertHelper {
 	 */
 	public class CharSequenceArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[Ljava.lang.CharSequence;";
+			return CharSequence[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -1389,7 +1487,7 @@ public class TypeConvertHelper {
 	 */
 	public class StringArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[Ljava.lang.String;";
+			return String[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
@@ -1434,7 +1532,7 @@ public class TypeConvertHelper {
 	 */
 	public class DateArrTypeConvert implements TypeConvert {
 		public String getName() {
-			return "[Ljava.util.Date;";
+			return java.util.Date[].class.getName();
 		}
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {

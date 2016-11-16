@@ -86,7 +86,7 @@ public class ActionHelper {
 		return sb.toString();
 	}
 
-	public String urlEncode(String url) {
+	public static String urlEncode(String url) {
 		if (url != null && url.length() > 0) {
 			try {
 				return URLEncoder.encode(url, urlCharset);
@@ -97,7 +97,7 @@ public class ActionHelper {
 		return "";
 	}
 
-	public String urlDecode(String url) {
+	public static String urlDecode(String url) {
 		if (url != null && url.length() > 0) {
 			try {
 				return URLDecoder.decode(url, urlCharset);

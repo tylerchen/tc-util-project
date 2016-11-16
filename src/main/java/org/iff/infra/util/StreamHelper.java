@@ -99,8 +99,10 @@ public class StreamHelper {
 			}
 			if (close instanceof Closeable) {
 				((Closeable) close).close();
+			} else if (close instanceof AutoCloseable) {
+				((AutoCloseable) close).close();
 			} else {
-				Logger.warn("The object not implement Closeable interface, Can't be close!");
+				Logger.warn("The object not implement Closeable or AutoCloseable interface, Can't be close!");
 			}
 		} catch (Exception e) {
 		}
