@@ -141,12 +141,14 @@ public class HttpHelper {
 
 	/**
 	 * put url and return content.
+	 * deprecated @see org.iff.infra.util.HttpBuilderHelper.put
 	 * @param request
 	 * @param data
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Jul 19, 2016
 	 */
+	@Deprecated
 	public static String put(String request, String data) {
 		BufferedReader reader = null;
 		HttpURLConnection connection = null;
@@ -192,12 +194,14 @@ public class HttpHelper {
 
 	/**
 	 * post url and return content.
+	 * deprecated @see org.iff.infra.util.HttpBuilderHelper.post
 	 * @param request
 	 * @param data
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Jul 19, 2016
 	 */
+	@Deprecated
 	public static String post(String request, String data) {
 		BufferedReader reader = null;
 		HttpURLConnection connection = null;
@@ -245,11 +249,13 @@ public class HttpHelper {
 
 	/**
 	 * get url content.
+	 * deprecated @see org.iff.infra.util.HttpBuilderHelper.get
 	 * @param requestUrl
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Jul 19, 2016
 	 */
+	@Deprecated
 	public static String get(String requestUrl) {
 		BufferedReader reader = null;
 		HttpURLConnection connection = null;
@@ -292,12 +298,14 @@ public class HttpHelper {
 
 	/**
 	 * get url content.
+	 * deprecated @see org.iff.infra.util.HttpBuilderHelper.get
 	 * @param requestUrl
 	 * @param paramString
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Jul 19, 2016
 	 */
+	@Deprecated
 	public static String get(String requestUrl, String paramString) {
 		BufferedReader reader = null;
 		HttpURLConnection connection = null;
