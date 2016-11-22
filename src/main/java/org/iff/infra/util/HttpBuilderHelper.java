@@ -12,8 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,15 +50,18 @@ public class HttpBuilderHelper {
 						return result;
 					}
 				});
-		get().s02_toUrl("http://www.myip.cn/").s03_connectByHttpProxy("182.37.5.12", 8888)
-				.s04_doOutput().s05_doInput().s06_redirect().s07_useCaches().s08_connectTimeout().s09_readTimeout()
-				.s11_accept().s12_charset().s13_userAgent().s14_contentType().s15_request()
-				.s16_html(new Process<Get, String>() {
+		get().s02_toUrl("http://www.myip.cn/").s03_connectByHttpProxy("182.37.5.12", 8888).s04_doOutput().s05_doInput()
+				.s06_redirect().s07_useCaches().s08_connectTimeout().s09_readTimeout().s11_accept().s12_charset()
+				.s13_userAgent().s14_contentType().s15_request().s16_html(new Process<Get, String>() {
 					public Object run(Get get, String result) {
 						System.out.println(result);
 						return result;
 					}
 				});
+	}
+
+	public static String version() {
+		return "1.0.0";
 	}
 
 	/**
@@ -661,31 +662,7 @@ public class HttpBuilderHelper {
 	 * @since Nov 21, 2016
 	 */
 	private static String urlEncode(String url) {
-		if (url != null && url.length() > 0) {
-			try {
-				return URLEncoder.encode(url, "UTF-8");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return "";
+		return BaseCryptHelper.urlEncode(url);
 	}
 
-	/**
-	 * decode url.
-	 * @param url
-	 * @return
-	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since Nov 21, 2016
-	 */
-	private static String urlDecode(String url) {
-		if (url != null && url.length() > 0) {
-			try {
-				return URLDecoder.decode(url, "UTF-8");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return "";
-	}
 }

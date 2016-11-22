@@ -9,8 +9,6 @@ package org.iff.infra.util;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ActionHelper {
 
-	private static final String urlCharset = "UTF-8";
 	private HttpServletRequest request = null;
 	private HttpServletResponse response = null;
 	private Map<String, Object> userAgent = new HashMap<String, Object>();
@@ -87,25 +84,11 @@ public class ActionHelper {
 	}
 
 	public static String urlEncode(String url) {
-		if (url != null && url.length() > 0) {
-			try {
-				return URLEncoder.encode(url, urlCharset);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return "";
+		return BaseCryptHelper.urlEncode(url);
 	}
 
 	public static String urlDecode(String url) {
-		if (url != null && url.length() > 0) {
-			try {
-				return URLDecoder.decode(url, urlCharset);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return "";
+		return BaseCryptHelper.urlDecode(url);
 	}
 
 	public ActionHelper addUrlParam(String key, Object value) {

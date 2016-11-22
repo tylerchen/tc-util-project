@@ -8,9 +8,11 @@
 package org.iff.infra.util;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
- * base64, base62 encrypt dencrypt helper.
+ * base64, base62 encrypt dencrypt, URLDecoder.decode, URLDecoder.encode helper.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-9-28
  */
@@ -182,4 +184,40 @@ public class BaseCryptHelper {
 	}
 
 	//===============================Base62 END
+
+	/**
+	 * encode url.
+	 * @param url
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Nov 21, 2016
+	 */
+	public static String urlEncode(String url) {
+		if (url != null && url.length() > 0) {
+			try {
+				return URLEncoder.encode(url, "UTF-8");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return "";
+	}
+
+	/**
+	 * decode url.
+	 * @param url
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Nov 21, 2016
+	 */
+	public static String urlDecode(String url) {
+		if (url != null && url.length() > 0) {
+			try {
+				return URLDecoder.decode(url, "UTF-8");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return "";
+	}
 }
