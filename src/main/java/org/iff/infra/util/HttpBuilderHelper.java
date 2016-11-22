@@ -224,7 +224,7 @@ public class HttpBuilderHelper {
 
 		public T s10_baseAuth(String username, String password) {
 			String encoded = new String(BaseCryptHelper.encodeBase64(username + ":" + password));
-			s10_head("Proxy-Authorization", "Basic " + encoded);
+			s10_head("Authorization", "Basic " + encoded);
 			return (T) this;
 		}
 
