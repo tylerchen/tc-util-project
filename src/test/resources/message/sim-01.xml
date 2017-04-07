@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msgtpl type="position" version="1.0.0">
+	<description>
+<![CDATA[]]>
+	</description>
+	<parse>
+		<match>
+			<row start="2"></row>
+		</match>
+		<process>
+			<str range="2,2">
+				<set name="TIME_TYPE" />
+			</str>
+			<str range="3,5">
+				<set name="COM_CODE" />
+			</str>
+			<str range="7,10">
+				<set name="VER" />
+			</str>
+			<str range="11,11">
+				<set name="SEASON" />
+			</str>
+			<str range="12,13">
+				<set name="YEAR" />
+			</str>
+			<str range="15,21">
+				<set name="START_TIME" />
+			</str>
+			<str range="22,28">
+				<set name="END_TIME" />
+			</str>
+		</process>
+	</parse>
+	<parse>
+		<match>
+			<row start="3"></row>
+		</match>
+		<process>
+			<str range="2,2">
+				<set name="plans/{_lineNumber}/FLT_SEQ" />
+			</str>
+			<str range="3,5">
+				<set name="plans/{_lineNumber}/COM_CODE" />
+			</str>
+			<str range="6,9">
+				<set name="plans/{_lineNumber}/FLT_NUM" />
+			</str>
+			<str range="14,14">
+				<set name="plans/{_lineNumber}/FLT_PROP" />
+			</str>
+			<str range="15,21">
+				<set name="plans/{_lineNumber}/FLT_DT" />
+			</str>
+			<str range="29,35">
+				<set name="plans/{_lineNumber}/FLT_WD" />
+			</str>
+			<str range="37,39">
+				<set name="plans/{_lineNumber}/DEP_CD" />
+			</str>
+			<str range="44,47">
+				<set name="plans/{_lineNumber}/DEP_T" />
+			</str>
+			<str range="48,52">
+				<set name="plans/{_lineNumber}/DIF_DEP_T" />
+			</str>
+			<str range="55,57">
+				<set name="plans/{_lineNumber}/ARR_CD" />
+			</str>
+			<str range="58,61">
+				<set name="plans/{_lineNumber}/ARR_T" />
+			</str>
+			<str range="66,70">
+				<set name="plans/{_lineNumber}/DIF_ARR_T" />
+			</str>
+			<str range="73,75">
+				<set name="plans/{_lineNumber}/FLE_TP" />
+			</str>
+		</process>
+	</parse>
+</msgtpl>

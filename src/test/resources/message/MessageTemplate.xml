@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msgtpl type="position" version="1.0.0">
+	<description>
+	<![CDATA[
+	1, 列，起始列，结束列，代表意义；
+	2, 行，起始行，结束行，代表意义；
+	3, 标志，内容查询；
+	4, 字符串匹配，起始，结束；
+	]]>
+	</description>
+	<parse>
+		<description></description>
+		<match>
+			<row range="1"></row>
+			<col range="3,4"></col>
+			<pattern></pattern>
+		</match>
+		<do>
+			<split sp=" " for="$this">
+				<set name="bbb" format="" />
+			</split>
+			<str for="tmpArr" range="1,4" join="">
+				<set name="aaa" format="" />
+			</str>
+		</do>
+	</parse>
+</msgtpl>

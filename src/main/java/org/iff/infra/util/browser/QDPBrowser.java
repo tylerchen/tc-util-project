@@ -35,6 +35,7 @@ public class QDPBrowser implements Browser.ActionListener {
 	public static void main(String[] args) {
 		try {
 			QDPBrowser qdp = new QDPBrowser();
+			System.setProperty("qdp.client.url", "file:///Users/zhaochen/dev/workspace/cocoa/foss-qdp-project-v3/src/main/webapp/WEB-INF/project_base_framework/client.zip");
 			InputStream is = qdp.getRemoteStream(qdp.getRemoteUrl());
 			Map<String, byte[]> loadZip = qdp.loadZip(is);
 			Class<?> parseClass = gcl.parseClass(new String(loadZip.get("groovy/QDPClient.groovy"), "UTF-8"));

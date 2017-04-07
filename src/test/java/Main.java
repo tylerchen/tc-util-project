@@ -1,10 +1,17 @@
 import java.util.concurrent.TimeUnit;
 
 import org.iff.infra.domain.InstanceFactory;
+import org.iff.infra.util.ActionHelper;
+import org.iff.infra.util.GsonHelper;
+import org.iff.infra.util.HttpBuilderHelper;
+import org.iff.infra.util.MapHelper;
 import org.iff.infra.util.ReflectHelper;
 import org.iff.infra.util.SocketHelper;
+import org.iff.infra.util.HttpBuilderHelper.Get;
+import org.iff.infra.util.HttpBuilderHelper.Process;
 import org.iff.infra.util.moduler.TCApplication;
 import org.iff.infra.util.moduler.TCServer;
+import org.iff.infra.util.mybatis.plugin.Page;
 
 import net.sf.cglib.beans.BeanCopier;
 import tet.ModelProperty;
@@ -26,8 +33,21 @@ import tet.ModelPropertyVO;
 public class Main {
 
 	public static void main(String[] args) {
-		BeanCopier.create(ModelPropertyVO.class, ModelProperty.class, false).copy(new ModelPropertyVO(),
-				new ModelProperty(), null);
+		HttpBuilderHelper.get().s02_toUrl("http://www.youdaili.net/Daili/guonei/36044.html").s03_connect().s04_doOutput().s05_doInput()
+		.s06_redirect().s07_useCaches().s08_connectTimeout().s09_readTimeout().s11_accept().s12_charset()
+		.s13_userAgent().s14_contentType().s15_request().s16_html(new Process<Get, String>() {
+			public Object run(Get get, String result) {
+				System.out.println(result);
+				return result;
+			}
+		});
+	}
+
+	public static void main6(String[] args) {
+		//		BeanCopier.create(ModelPropertyVO.class, ModelProperty.class, false).copy(new ModelPropertyVO(),
+		//				new ModelProperty(), null);
+		System.out.println(GsonHelper.toJsonString(Page.pageable(10, 1, 0, null)));
+		System.out.println(ActionHelper.urlEncode(GsonHelper.toJsonString(Page.pageable(10, 1, 0, null))));
 	}
 
 	public static void main5(String[] args) {

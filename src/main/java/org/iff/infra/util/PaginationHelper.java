@@ -13,6 +13,29 @@ import java.util.List;
 /**
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-9-28
+ * <pre>
+ * totalPage, totalCount, pageSize, currentPage: [cp, +1, +2, +3, +4] [-2, -1, cp, +1, +2] [-4, -3, -2, -1, cp]
+ * var cp=currentPage, pageLink=[cp-2, cp-1, cp, cp+1, cp+2];//先把5页准备好
+ * for(var i=0;i<pageLink.length;i++){ (pageLink[i]<1||pageLink[i]>totalPage) && (pageLink.splice(i,1) && (i=i-1)); }//移除不超范围的分页
+ * if( pageLink.length<5 && pageLink[0]>(cp-2) ){ (cp+3)<=totalPage && pageLink.push(cp+3); }//如果移除了前面的，则添加后面分页，最多两页
+ * if( pageLink.length<5 && pageLink[0]>(cp-2) ){ (cp+4)<=totalPage && pageLink.push(cp+4); }//如果移除了前面的，则添加后面分页，最多两页
+ * if( pageLink.length<5 ){ (cp-3)>0 && pageLink.splice(0,0,cp-3);}//如果移除了后面的，则添加前面分页，最多两页
+ * if( pageLink.length<5 ){ (cp-4)>0 && pageLink.splice(0,0,cp-4); }//如果移除了后面的，则添加前面分页，最多两页
+ * 总记录: {{totalCount}}, 总页数: {{totalPage}}
+ * for(var i=0; i<pageLink.length;i++){
+ * if(i==0){
+ *   <a href="?pn={{1}}" class="page_up" title="首页"><<</a>
+ * }
+ * if(pageLink[i]==currentPage){
+ *   <span class="page_cur">{{currentPage}}
+ * } else {
+ *   <a href="?pn={{pageLink[i]}}">{{pageLink[i]}}</a>
+ * }
+ * if(i==pageLink.length-1){
+ *   <a href="?pn={{totalPage}}" class="page_down" title="末页">>></a>
+ * }
+ * }
+ * </pre>
  */
 public class PaginationHelper {
 

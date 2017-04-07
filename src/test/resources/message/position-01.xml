@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msgtpl type="position" version="1.0.0">
+	<description>
+<![CDATA[QU PVGASIJ
+.QXSXMXS 221220
+FML
+FI IJ8763/AN B-2433
+DT QXT AOW2 221220 F22A
+-  POSN43070W088173,BAE,122020,262,BGOSH,123124,DLH,M29,25438,1426,,10BA]]>
+	</description>
+	<parse>
+		<description>source</description>
+		<match>
+			<row range="1"></row>
+		</match>
+		<do>
+			<split sp=" ">
+				<set name="$tmp" />
+			</split>
+			<str for="$tmp" range="1">
+				<set name="mark"/>
+			</str>
+			<str for="$tmp" range="2">
+				<set name="source"/>
+			</str>
+		</do>
+	</parse>
+	<parse>
+		<description></description>
+		<match>
+			<row range="1"></row>
+			<col range="3,4"></col>
+			<pattern></pattern>
+		</match>
+		<do>
+			<split sp=" " for="$this">
+				<set name="bbb" format="" />
+			</split>
+			<str for="tmpArr" range="1,4" join="">
+				<set name="aaa" format="" />
+			</str>
+		</do>
+	</parse>
+</msgtpl>

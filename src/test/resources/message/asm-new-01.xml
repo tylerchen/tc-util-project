@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<msgtpl type="position" version="1.0.0">
+	<description>
+<![CDATA[
+QD PEKAACA FFFPPPF 
+.MMMCCCM 
+ASM
+UTC
+16OCT00000E000
+NEW RSON
+CA099/18OCT04 PEK/SHA/HKG
+J 734 F0C6Y102 B1234
+PEK180600 SHA180800  
+SHA180830 HKG181100  
+SI CHANGE REASON:
+SI ASM: INSERTION OF NEW FLIGHT CA099
+NNNN
+]]>
+	</description>
+	<parse>
+		<match>
+			<row range="4"></row>
+		</match>
+		<process>
+			<str>
+				<set name="DT_TP" />
+			</str>
+		</process>
+	</parse>
+	<parse>
+		<match>
+			<row range="5"></row>
+		</match>
+		<process>
+			<str range="1,5">
+				<set name="DATE" />
+			</str>
+			<str range="6,10">
+				<set name="GROUP" />
+			</str>
+			<str range="11,11">
+				<set name="MARK" />
+			</str>
+			<str range="12,14">
+				<set name="SEQ" />
+			</str>
+		</process>
+	</parse>
+	<parse>
+		<match>
+			<row range="6"></row>
+		</match>
+		<process>
+			<split sp=" ">
+				<set name="_test" />
+			</split>
+			<join for="_test" range="1,1">
+				<set name="ACTION" />
+			</join>
+			<join for="_test" range="2,2">
+				<set name="RESION" />
+			</join>
+		</process>
+	</parse>
+</msgtpl>
