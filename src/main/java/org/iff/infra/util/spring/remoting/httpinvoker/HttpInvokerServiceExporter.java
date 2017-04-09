@@ -46,6 +46,8 @@ import org.springframework.web.util.NestedServletException;
  */
 public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExporter implements HttpRequestHandler {
 
+	private static final org.iff.infra.util.Logger.Log Logger = org.iff.infra.util.Logger.get("HttpInvoker");
+
 	/**
 	 * Reads a remote invocation from the request, executes it,
 	 * and writes the remote invocation result to the response.
@@ -99,7 +101,6 @@ public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExpor
 	protected RemoteInvocation readRemoteInvocation(HttpServletRequest request, InputStream is)
 			throws IOException, ClassNotFoundException {
 
-		System.out.println("============Server USING KryoRedisSerializer.deserialize============");
 		return KryoRedisSerializer.deserialize(SocketHelper.getByte(is, true));
 	}
 
@@ -149,7 +150,6 @@ public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExpor
 	protected void writeRemoteInvocationResult(HttpServletRequest request, HttpServletResponse response,
 			RemoteInvocationResult result, OutputStream os) throws IOException {
 
-		System.out.println("============Server USING KryoRedisSerializer.serialize============");
 		os.write(KryoRedisSerializer.serialize(result));
 	}
 

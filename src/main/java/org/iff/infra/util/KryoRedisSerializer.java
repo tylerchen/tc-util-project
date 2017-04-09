@@ -11,6 +11,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferOutput;
 import com.esotericsoftware.kryo.io.Input;
 
+import de.javakaffee.kryoserializers.KryoReflectionFactorySupport;
+
 /**
  * KryoRedisSerializer.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -27,7 +29,7 @@ public class KryoRedisSerializer {
 	 * @since Jul 19, 2016
 	 */
 	public static byte[] serialize(Object t) {
-		Kryo kryo = new Kryo();
+		Kryo kryo = new KryoReflectionFactorySupport();
 		ByteBufferOutput output = new ByteBufferOutput(2048, 1024 * 1024);
 		kryo.writeClassAndObject(output, t);
 		return output.toBytes();
@@ -41,7 +43,7 @@ public class KryoRedisSerializer {
 	 * @since Jul 19, 2016
 	 */
 	public static <T> T deserialize(byte[] bytes) {
-		Kryo kryo = new Kryo();
+		Kryo kryo = new KryoReflectionFactorySupport();
 		Input input = new Input(bytes);
 		T t = (T) kryo.readClassAndObject(input);
 		return t;

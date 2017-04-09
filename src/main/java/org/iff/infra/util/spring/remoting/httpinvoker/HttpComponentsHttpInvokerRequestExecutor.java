@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -26,9 +29,9 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.iff.infra.util.FCS;
 import org.iff.infra.util.GsonHelper;
 import org.iff.infra.util.KryoRedisSerializer;
-import org.iff.infra.util.Logger;
 import org.iff.infra.util.SocketHelper;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -57,6 +60,8 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor
  */
 public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvokerRequestExecutor {
+
+	private static final org.iff.infra.util.Logger.Log Logger = org.iff.infra.util.Logger.get("HttpInvoker");
 
 	private static final int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
 
@@ -226,11 +231,10 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
 	protected RemoteInvocationResult doExecuteRequest(HttpInvokerClientConfiguration config, ByteArrayOutputStream baos)
 			throws IOException, ClassNotFoundException {
 		if (loadBalancerRoundRobin == null) {
-			loadBalancerRoundRobin = new LoadBalancerRoundRobin(org.apache.commons.lang3.StringUtils
-					.split(org.apache.commons.lang3.StringUtils.trim(config.getServiceUrl()), ","));
+			loadBalancerRoundRobin = new LoadBalancerRoundRobin(processServiceUrl(config.getServiceUrl()));
 		}
 		String serviceUrl = loadBalancerRoundRobin.next();
-		System.out.println("====LoadBalancerRoundRobin====" + serviceUrl);
+		Logger.debug(FCS.get("====LoadBalancerRoundRobin===={0}", serviceUrl));
 
 		HttpPost postMethod = createHttpPost(config, serviceUrl);
 		setRequestBody(config, postMethod, baos);
@@ -246,6 +250,34 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
 		} finally {
 			postMethod.releaseConnection();
 		}
+	}
+
+	/**
+	 * <pre>
+	 * Convert: {http://host1:port1/xxx,http://host2:port2/xxx}/beanName
+	 * TO     : [http://host1:port1/xxx/beanName, http://host2:port2/xxx/beanName]
+	 * </pre>
+	 * @param serviceUrl
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Apr 7, 2017
+	 */
+	protected String[] processServiceUrl(String serviceUrl) {
+		List<String> list = new ArrayList<String>();
+		String url = org.apache.commons.lang3.StringUtils.trim(serviceUrl);
+		if (url.indexOf('}') < 1) {
+			list.add(serviceUrl);
+		} else {
+			String[] hostNameSplit = org.apache.commons.lang3.StringUtils.split(url, "}");
+			if (hostNameSplit.length == 2) {
+				String host = org.apache.commons.lang3.StringUtils.remove(hostNameSplit[0], '{');
+				String[] hosts = org.apache.commons.lang3.StringUtils.split(host, ",");
+				for (String pre : hosts) {
+					list.add(pre.trim() + hostNameSplit[1]);
+				}
+			}
+		}
+		return list.toArray(new String[list.size()]);
 	}
 
 	/**
@@ -416,7 +448,6 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
 	 */
 	@Override
 	protected void writeRemoteInvocation(RemoteInvocation invocation, OutputStream os) throws IOException {
-		System.out.println("============USING KryoRedisSerializer.serialize============");
 		os.write(KryoRedisSerializer.serialize(invocation));
 	}
 
@@ -439,7 +470,6 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
 	@Override
 	protected RemoteInvocationResult readRemoteInvocationResult(InputStream is, String codebaseUrl)
 			throws IOException, ClassNotFoundException {
-		System.out.println("============USING KryoRedisSerializer.deserialize============");
 		return KryoRedisSerializer.deserialize(SocketHelper.getByte(is, true));
 	}
 
@@ -458,13 +488,14 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
 			for (int i = 0; i < urls.length; i++) {
 				this.urls[i] = new Object[] { //
 						urls[i]/*0: URL            */, //
-						true/*   1: available      */, //
+						false/*   1: available      */, //
 						0L/*     2: last test time */, //
 						0/*      3: service times  */, //
 						0/*      4: fail times     */, //
 						0/*      5: recover times  *///
 				};
 			}
+			currentIndex = Math.max(0, new Random().nextInt(this.urls.length));
 		}
 
 		void disable(String url) {
@@ -500,7 +531,7 @@ public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvoke
 				lastPrintLogTime = System.currentTimeMillis();
 				Logger.info(toString());
 			}
-			for (Object[] tmp : urls) {
+			for (int i = 0; i < urls.length * 2; i++) {
 				currentIndex = currentIndex % urls.length;
 				Object[] ual = urls[currentIndex++];
 				if ((boolean) ual[1]) {
