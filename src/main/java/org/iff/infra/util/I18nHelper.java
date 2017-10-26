@@ -132,8 +132,10 @@ public class I18nHelper {
 			try {
 				String content = "";
 				String fileName = StringUtils.substringAfterLast(resource, "/");
-				if (!StringUtils.contains(resource, ".jar!/")) {
-					File file = new File(new URL(resource).toURI());
+				// resource maybe jar or war or ear file.
+				URL url = ResourceHelper.url(resource);
+				if (!StringUtils.contains(resource, "!/")) {
+					File file = new File(url.toURI());
 					{
 						if (!file.exists() || !file.isFile()) {
 							continue;
@@ -142,7 +144,7 @@ public class I18nHelper {
 					FileInputStream is = new FileInputStream(file);
 					content = SocketHelper.getContent(is, false);
 				} else {
-					content = SocketHelper.getContent(new URL(resource).openStream(), false);
+					content = SocketHelper.getContent(url.openStream(), false);
 				}
 				Properties prop = new Properties();
 				{

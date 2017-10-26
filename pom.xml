@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.iff</groupId>
 	<artifactId>tc-util</artifactId>
-	<version>1.0.17</version>
+	<version>1.0.19</version>
 	<name>tc-util-project</name>
 	<url>http://maven.apache.org</url>
 
@@ -253,6 +253,12 @@
 			<version>5.1.20</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- jdbc driver end -->
 		<!-- <dependency> <groupId>org.jasypt</groupId> <artifactId>jasypt</artifactId> 
 			<version>1.9.2</version> </dependency> -->
@@ -418,7 +424,13 @@
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
-			<version>2.9.1</version>
+			<version>2.10.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.9.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- cache end -->
@@ -496,6 +508,14 @@
 			<version>2.9.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- monitor -->
+		<dependency>
+			<groupId>net.bull.javamelody</groupId>
+			<artifactId>javamelody-core</artifactId>
+			<version>1.62.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- monitor-END -->
 	</dependencies>
 	<repositories>
 		<repository>
@@ -525,6 +545,21 @@
 			</testResource>
 		</testResources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>eot</nonFilteredFileExtension>
+						<nonFilteredFileExtension>svg</nonFilteredFileExtension>
+						<nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+						<nonFilteredFileExtension>woff</nonFilteredFileExtension>
+						<nonFilteredFileExtension>ftl</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>

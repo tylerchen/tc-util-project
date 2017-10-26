@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Properties;
 
 /**
@@ -82,16 +85,24 @@ public class PropertiesHelper {
 		for (String url : list) {
 			FileInputStream is = null;
 			try {
-				File file = new File(new URL(url).toURI());
-				{
-					if (!file.exists() || !file.isFile()) {
-						continue;
-					}
-				}
+
 				Properties prop = new Properties();
 				{
-					is = new FileInputStream(file);
-					prop.load(new StringReader(SocketHelper.getContent(is, false)));
+					String content = "";
+					// resource maybe jar or war or ear file.
+					URL urlPath = ResourceHelper.url(url);
+					if (!StringUtils.contains(url, "!/")) {
+						File file = new File(urlPath.toURI());
+						{
+							if (!file.exists() || !file.isFile()) {
+								continue;
+							}
+						}
+						content = StreamHelper.getContent(new FileInputStream(file), false);
+					} else {
+						content = StreamHelper.getContent(urlPath.openStream(), false);
+					}
+					prop.load(new StringReader(content));
 				}
 				Long version = 0L;
 				{

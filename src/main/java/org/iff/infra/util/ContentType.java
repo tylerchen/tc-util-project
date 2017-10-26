@@ -516,7 +516,7 @@ public class ContentType {
 
 		contentTypeMap.put(".sty", "application/x-sty");
 
-		contentTypeMap.put(".svg", "text/xml");
+		contentTypeMap.put(".svg", "image/svg+xml");
 
 		contentTypeMap.put(".swf", "application/x-shockwave-flash");
 
@@ -667,6 +667,16 @@ public class ContentType {
 		contentTypeMap.put(".x_b", "application/x-x_b");
 
 		contentTypeMap.put(".x_t", "application/x-x_t");
+		
+		contentTypeMap.put(".woff", "application/x-font-woff");
+		
+		contentTypeMap.put(".woff2", "application/x-font-woff");
+		
+		contentTypeMap.put(".ttf", "application/x-font-truetype");
+		
+		contentTypeMap.put(".otf", "application/x-font-opentype");
+		
+		contentTypeMap.put(".eot", "application/vnd.ms-fontobject");
 	}
 
 	private ContentType() {

@@ -59,6 +59,37 @@ public class StreamHelper {
 	}
 
 	/**
+	 * get the input stream content.
+	 * @param is
+	 * @param notClose
+	 * @param charsetName
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
+	public static String getContent(InputStream is, boolean notClose, String charsetName) {
+		StringBuilder sb = new StringBuilder(102400);
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(is, charsetName));
+			char[] cs = new char[102400];
+			int len = -1;
+			while ((len = br.read(cs)) != -1) {
+				sb.append(cs, 0, len);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (!notClose) {
+					is.close();
+				}
+			} catch (Exception e) {
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
 	 * get the input stream byte content.
 	 * @param is
 	 * @param notClose

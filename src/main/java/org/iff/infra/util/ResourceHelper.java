@@ -8,6 +8,9 @@
 package org.iff.infra.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -18,6 +21,7 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.iff.infra.util.jarurl.*;
 
 /**
  * Find the resources from jar or classpath or file system.
@@ -76,11 +80,16 @@ public class ResourceHelper {
 				try {
 					URL url = rs.nextElement();//jar:file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
 					filePath = new URLDecoder().decode(url.getFile(), "UTF-8");//file:///C:/Users/Tyler/Desktop/2015/groovy-2.4.0/bin/../lib/tc-util-project-1.0.jar!/META-INF/tc-framework/app/view/A.groovy
-					if (filePath.lastIndexOf(".jar!/") > -1) {
-						filePath = filePath.indexOf(':') > -1 ? StringUtils.substringAfter(filePath, ":") : filePath;
+					//file:/Users/zhaochen/dev/workspace/cocoa/foss-qdp-project-v4/target/foss-qdp-project-v4-4.0.0.war!/WEB-INF/classes!/META-INF/i18n
+					//file:/Users/zhaochen/dev/workspace/cocoa/foss-qdp-project-v4/target/foss-qdp-project-v4-4.0.0.jar!/META-INF/i18n
+					boolean isWar = StringUtils.contains(filePath, ".war!/");
+					boolean isJar = StringUtils.contains(filePath, ".jar!/");
+					if (isJar || isWar) {
+						filePath = StringUtils.contains(filePath, ":") ? StringUtils.substringAfter(filePath, ":")
+								: filePath;
 						filePath = StringUtils.substringBefore(filePath, "!/");
 						File file = new File(filePath);
-						java.util.jar.JarFile jarFile = new java.util.jar.JarFile(file);
+						JarFile jarFile = new JarFile(file);
 						Enumeration<JarEntry> entries = jarFile.entries();
 						while (entries.hasMoreElements()) {
 							JarEntry entry = entries.nextElement();
@@ -138,11 +147,25 @@ public class ResourceHelper {
 				try {
 					URL url = rs.nextElement();
 					filePath = new URLDecoder().decode(url.getFile(), "UTF-8");
-					if (filePath.lastIndexOf(".jar!/") > -1) {
-						filePath = filePath.indexOf(':') > -1 ? StringUtils.substringAfter(filePath, ":") : filePath;
+					//file:/Users/zhaochen/dev/workspace/cocoa/foss-qdp-project-v4/target/foss-qdp-project-v4-4.0.0.war!/WEB-INF/classes!/META-INF/i18n
+					//file:/Users/zhaochen/dev/workspace/cocoa/foss-qdp-project-v4/target/foss-qdp-project-v4-4.0.0.jar!/META-INF/i18n
+					boolean isWar = StringUtils.contains(filePath, ".war!/");
+					boolean isJar = StringUtils.contains(filePath, ".jar!/");
+					if (isJar || isWar) {
+						filePath = StringUtils.contains(filePath, ":") ? StringUtils.substringAfter(filePath, ":")
+								: filePath;
 						filePath = StringUtils.substringBefore(filePath, "!/");
+						String preDir = "";
+						{
+							//: WEB-INF/classes!/META-INF/i18n
+							//: WEB-INF/classes/META-INF/i18n
+							preDir = url.getFile();
+							preDir = StringUtils.contains(preDir, "!/") ? StringUtils.substringAfter(preDir, "!/")
+									: filePath;
+							preDir = StringUtils.replace(preDir, "!/", "/");
+						}
 						File file = new File(filePath);
-						java.util.jar.JarFile jarFile = new java.util.jar.JarFile(file);
+						JarFile jarFile = new JarFile(file);
 						Enumeration<JarEntry> entries = jarFile.entries();
 						while (entries.hasMoreElements()) {
 							JarEntry entry = entries.nextElement();
@@ -150,7 +173,7 @@ public class ResourceHelper {
 								continue;
 							}
 							String entryName = entry.getName();
-							if (!entryName.startsWith(fixPath)) {
+							if (!entryName.startsWith(preDir)) {
 								continue;
 							}
 							if (!(fileExt == null || fileExt.length() < 1 || "*".equals(fileExt)
@@ -184,6 +207,11 @@ public class ResourceHelper {
 		List<String> result = new ArrayList<String>();
 		result.addAll(list);
 		return result;
+	}
+
+	public static void main(String[] args) throws MalformedURLException, IOException {
+		String file = "jar:file:///Users/zhaochen/dev/workspace/cocoa/foss-qdp-project-v4/target/foss-qdp-project-v4-4.0.0.war!/WEB-INF/lib/tc-util-project-1.0.19.jar!/qdp-designer/index.html";
+		System.out.println(StreamHelper.getContent(openUrlStream(file), false));
 	}
 
 	/**
@@ -250,10 +278,10 @@ public class ResourceHelper {
 		try {
 			String preDir = "";
 			{
-				int index = resPath.indexOf("!/");
-				if (index > -1) {
-					preDir = resPath.substring(index + 2, resPath.length());
-				}
+				//: WEB-INF/classes!/META-INF/i18n
+				//: WEB-INF/classes/META-INF/i18n
+				preDir = StringUtils.contains(resPath, "!/") ? StringUtils.substringAfter(resPath, "!/") : resPath;
+				preDir = StringUtils.replace(preDir, "!/", "/");
 			}
 			File file = null;
 			{
@@ -270,7 +298,7 @@ public class ResourceHelper {
 					file = new File(realPath);
 				}
 			}
-			java.util.jar.JarFile jarFile = new java.util.jar.JarFile(file);
+			JarFile jarFile = new JarFile(file);
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
@@ -335,12 +363,7 @@ public class ResourceHelper {
 	 * @since Jul 19, 2016
 	 */
 	public static byte[] getByte(String url) {
-		try {
-			return SocketHelper.getByte(new URL(url).openStream(), false);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return StreamHelper.getByte(openUrlStream(url), false);
 	}
 
 	/**
@@ -351,14 +374,48 @@ public class ResourceHelper {
 	 * @since 2015-4-8
 	 */
 	public static String getText(String url) {
+		return StreamHelper.getContent(openUrlStream(url), false);
+	}
+
+	/**
+	 * get the input stream from url.
+	 * @param url    example: helloworld
+	 * @return 
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2015-4-8
+	 */
+	public static InputStream openUrlStream(String url) {
 		try {
-			return SocketHelper.getContent(new URL(url).openStream(), false);
+			return url(url).openStream();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.warn("Open URL stream: " + url);
 		}
 		return null;
 	}
 
+	/**
+	 * 考虑到 fat jar （JAR、WAR中包含JAR）的情况，需要返回不同的URL。
+	 * @param url
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Oct 25, 2017
+	 */
+	public static URL url(String url) {
+		if (StringUtils.isBlank(url)) {
+			return null;
+		}
+		try {
+			URL u = new URL(url);
+			boolean hasMore = url.indexOf("!/") != url.lastIndexOf("!/");
+			if (hasMore && "jar".equalsIgnoreCase(u.getProtocol())) {
+				return new URL(u.getProtocol(), u.getHost(), u.getPort(), u.getFile(), new Handler());
+			}
+			return u;
+		} catch (Exception e) {
+			Logger.warn("Create URL error: " + url);
+		}
+		return null;
+	}
 	//	public static void main(String[] args) {
 	//		//System.out.println(loadResources("jar://META-INF/tc-framework-test", ".groovy", "*", "*/TCMain.groovy"));
 	//		//System.out.println(loadResources("classpath://META-INF", ".groovy", "*", "*/TCMain.groovy"));

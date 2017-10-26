@@ -9,12 +9,40 @@ package org.iff.infra.util;
 
 import java.security.MessageDigest;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * A md5 helper.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2014-8-25
  */
 public class MD5Helper {
+
+	/**
+	 * String to md5-with-salt string
+	 * @param inStr
+	 * @param salt
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
+	public static String string2SaltMD5(String inStr, String salt) {
+		String value = string2MD5(inStr);
+		return string2MD5(value + salt);
+	}
+
+	/**
+	 * String to double-md5 string
+	 * @param inStr
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2015-2-6
+	 */
+	public static String string2DoubleMD5(String inStr) {
+		String value = string2MD5(inStr);
+		return string2MD5(value + StringUtils.reverse(value));
+	}
+
 	/**
 	 * String to md5 string
 	 * @param inStr
@@ -46,7 +74,7 @@ public class MD5Helper {
 			}
 			hexValue.append(Integer.toHexString(val));
 		}
-		return hexValue.toString();
+		return hexValue.toString().toUpperCase();
 	}
 
 	/**

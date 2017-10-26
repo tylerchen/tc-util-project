@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.iff.infra.util.Exceptions;
 import org.iff.infra.util.FCS;
 import org.iff.infra.util.MapHelper;
+import org.iff.infra.util.ResourceHelper;
 import org.iff.infra.util.SocketHelper;
 import org.iff.infra.util.ZipHelper;
 
@@ -35,7 +36,8 @@ public class QDPBrowser implements Browser.ActionListener {
 	public static void main(String[] args) {
 		try {
 			QDPBrowser qdp = new QDPBrowser();
-			System.setProperty("qdp.client.url", "file:///Users/zhaochen/dev/workspace/cocoa/foss-qdp-project-v3/src/main/webapp/WEB-INF/project_base_framework/client.zip");
+			System.setProperty("qdp.client.url",
+					"file:///Users/zhaochen/dev/workspace/cocoa/foss-qdp-project-v3/src/main/webapp/WEB-INF/project_base_framework/client.zip");
 			InputStream is = qdp.getRemoteStream(qdp.getRemoteUrl());
 			Map<String, byte[]> loadZip = qdp.loadZip(is);
 			Class<?> parseClass = gcl.parseClass(new String(loadZip.get("groovy/QDPClient.groovy"), "UTF-8"));
@@ -70,7 +72,7 @@ public class QDPBrowser implements Browser.ActionListener {
 
 	public InputStream getRemoteStream(String url) {
 		try {
-			byte[] bs = SocketHelper.getByte(new URL(url).openStream(), false);
+			byte[] bs = SocketHelper.getByte(ResourceHelper.openUrlStream(url), false);
 			return new ByteArrayInputStream(bs);
 		} catch (Exception e) {
 			Exceptions.runtime(FCS.get("Error getRemoteStream from URL: {0} !", url), e);

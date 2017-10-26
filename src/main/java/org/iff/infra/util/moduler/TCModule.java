@@ -111,11 +111,11 @@ public class TCModule {
 						}
 					}
 					{// load jar lib
-						List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(
-								basePath + "META-INF/lib/", ".jar", "*", null);
+						List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath + "META-INF/lib/",
+								".jar", "*", null);
 						for (String s : resources) {
 							System.out.println("Load jar lib:" + s);
-							classLoader.add(new URL(s).openStream());
+							classLoader.add(ResourceHelper.openUrlStream(s));
 						}
 					}
 					{// load classes
@@ -124,8 +124,8 @@ public class TCModule {
 					{// load resource
 						String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/",
 								"META-INF/resource/");
-						List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath
-								+ "META-INF/resource/", "*", "*", null);
+						List<String> resources = ResourceHelper
+								.loadResourcesInFileSystemJar(basePath + "META-INF/resource/", "*", "*", null);
 						for (String url : resources) {
 							if (url.startsWith(resDir)) {
 								resourceMap.put(StringHelper.pathConcat("/", url.substring(resDir.length())),
@@ -136,8 +136,8 @@ public class TCModule {
 					{// load groovy
 						String resDir = StringHelper.concat(basePath, basePath.endsWith("/") ? "" : "/",
 								"META-INF/groovy/");
-						List<String> resources = ResourceHelper.loadResourcesInFileSystemJar(basePath
-								+ "META-INF/groovy/", ".groovy", "*", null);
+						List<String> resources = ResourceHelper
+								.loadResourcesInFileSystemJar(basePath + "META-INF/groovy/", ".groovy", "*", null);
 						for (String url : resources) {
 							if (url.startsWith(resDir)) {
 								groovyMap.put(StringHelper.pathConcat("/", url.substring(resDir.length())),
@@ -157,7 +157,7 @@ public class TCModule {
 					{// load jar lib
 						List<String> resources = ResourceHelper.loadResources(basePath, ".jar", "*", null);
 						for (String s : resources) {
-							classLoader.add(new URL(s).openStream());
+							classLoader.add(ResourceHelper.openUrlStream(s));
 						}
 					}
 					{// load classes
@@ -267,8 +267,7 @@ public class TCModule {
 						continue;
 					}
 					//[clazz: cls, class_name: name, name: anno_name, order: anno_order, url:events.file_struct.url, instance: null]
-					beans.put(
-							annotation.name(),
+					beans.put(annotation.name(),
 							MapHelper.toMap("className", clazz.getName(), "name", annotation.name(), "type",
 									annotation.type(), "order", annotation.order(), "instance", null));
 					//System.out.println(beans.get(annotation.name()));
@@ -786,8 +785,7 @@ public class TCModule {
 		return Collections.unmodifiableMap(moduleConfig);
 	}
 
-	public static final String actionMethod = ""
-			+ //
+	public static final String actionMethod = "" + //
 			"cls.metaClass.params=[:]                                                                                           \n"
 			+ "cls.metaClass._request_params=[:]                                                                                  \n"
 			+ "cls.metaClass._request_userAgent=[:]                                                                               \n"

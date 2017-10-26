@@ -8,12 +8,16 @@
 package org.iff.infra.util.freemarker.model;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.iff.infra.util.Logger;
 import org.iff.infra.util.SocketHelper;
+import org.iff.infra.util.StreamHelper;
 import org.iff.infra.util.StringHelper;
 import org.iff.infra.util.freemarker.FreeMarkerTemplateModel;
 
@@ -36,6 +40,7 @@ public class FileWriterDirective implements TemplateDirectiveModel {
 		String type = getParameterName(params, "type");
 		String basedir = getParameterName(params, "basedir");
 		String name = getParameterName(params, "name");
+		String overwrite = getParameterName(params, "overwrite");
 		if (type == null || type.length() < 1) {
 			throw new TemplateException("Missing type parameter for filewirter directive", env);
 		}
@@ -73,10 +78,25 @@ public class FileWriterDirective implements TemplateDirectiveModel {
 			try {
 				File parentDir = new File(filePath);
 				parentDir.mkdirs();
-				fos = new FileOutputStream(new File(parentDir, fileName));
+				File target = new File(parentDir, fileName);
 				StringWriter stringWriter = new StringWriter(10240);
 				body.render(stringWriter);
-				fos.write(stringWriter.toString().getBytes("UTF-8"));
+				String genContent = StringUtils.defaultString(stringWriter.toString());
+				if (target.exists() && !Boolean.TRUE.toString().equalsIgnoreCase(overwrite)) {
+					String fileContent = StringUtils
+							.defaultString(StreamHelper.getContent(new FileInputStream(target), false));
+					fileContent = fileContent.trim();
+					if (StringUtils.equals(fileContent.trim(), genContent.trim())) {
+						Logger.debug("File not change: " + fileName);
+						return;
+					} else {
+						String targetName = fileName + ".qdpgen";
+						target = new File(parentDir, targetName);
+						Logger.debug("File has change: " + fileName);
+					}
+				}
+				fos = new FileOutputStream(target);
+				fos.write(genContent.getBytes("UTF-8"));
 			} finally {
 				SocketHelper.closeWithoutError(fos);
 			}

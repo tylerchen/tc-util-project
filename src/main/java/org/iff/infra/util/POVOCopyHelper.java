@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.iff.infra.util.TypeConvertHelper.TypeConvert;
 
+import com.esotericsoftware.minlog.Log;
+
 import groovy.lang.GroovyClassLoader;
 
 /**
@@ -535,7 +537,7 @@ public class POVOCopyHelper {
 							srcClass.getName(), "copy", sb),
 					null);
 		}
-		System.out.println(source);
+		Log.debug(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
 			PoVoCopy poVoCopy = clazz.newInstance();
