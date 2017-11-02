@@ -148,6 +148,25 @@ public class CacheHelper {
 		}
 	}
 
+	public static class DisabledCacheable implements Cacheable {
+
+		public <T> T get(String key) {
+			return null;
+		}
+
+		public void set(String key, Object value) {
+		}
+
+		public void set(String key, Object value, int seconds) {
+		}
+
+		public void set(String key, Object value, int timeToIdle, int timeToLive) {
+		}
+
+		public void del(String key) {
+		}
+	}
+
 	public static class CacheCallback<T> {
 		public static <T> T process(String key, int timeToIdle, int timeToLive, CacheCallback<T> callback) {
 			key = MD5Helper.string2MD5(key);
