@@ -22,7 +22,7 @@
 	<#list module.children as func>
 		<#assign class=javaClass(func.tableName,removePrefix)?cap_first/>
 		<#list func.children as item>
-			<#if item.type=='page' && item.name=='index'>
+			<#if item.type=='page' && item.name=='index' && (item.formType=='grid' || item.formType=='tree' || item.formType=='domainOnly')>
 				<#assign table=item pk=[] notNull=[] index=[] unique=[] autoInc=[] columns=[] foreign=[]/>
 				<#list table.fields as field>
 					<#if field.isPk><#assign pk=pk+[field]/></#if>

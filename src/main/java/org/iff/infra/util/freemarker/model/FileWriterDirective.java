@@ -86,7 +86,9 @@ public class FileWriterDirective implements TemplateDirectiveModel {
 					String fileContent = StringUtils
 							.defaultString(StreamHelper.getContent(new FileInputStream(target), false));
 					fileContent = fileContent.trim();
-					if (StringUtils.equals(fileContent.trim(), genContent.trim())) {
+					String fileContentWithoutDate = fileContent.replaceAll("[0-9]{4}-[0-9]{2}-[0-9]{2}", "date");
+					String genContentWithoutDate = genContent.replaceAll("[0-9]{4}-[0-9]{2}-[0-9]{2}", "date");
+					if (StringUtils.equals(fileContentWithoutDate.trim(), genContentWithoutDate.trim())) {
 						Logger.debug("File not change: " + fileName);
 						return;
 					} else {
