@@ -145,7 +145,7 @@ public class POVOCopyHelper {
 	class DefaultPoVoCopy implements PoVoCopy {
 		public <T> T copyTo(Object src, Object dest) {
 			Logger.warn("Using DefaultPoVoCopy to copy objects, lower efficiency!");
-			return BeanHelper.copyProperties(dest, src);
+			return BeanHelper.copyProperties(dest, src, false);
 		}
 	}
 

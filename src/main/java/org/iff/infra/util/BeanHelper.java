@@ -107,6 +107,19 @@ public class BeanHelper {
 	 * @since Feb 14, 2016
 	 */
 	public static <T> T copyProperties(Object dest, Object orig) {
+		return copyProperties(dest, orig, usePOVOCopyHelper);
+	}
+
+	/**
+	 * if usePOVOCopyHelper=true, then use POVOCopyHelper to copy the object @see POVOCopyHelper.
+	 * if usePOVOCopyHelper=false, then use Jackson serialize the origin object and de-serialize to destine object.
+	 * @param dest
+	 * @param orig
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Feb 14, 2016
+	 */
+	public static <T> T copyProperties(Object dest, Object orig, boolean usePOVOCopyHelper) {
 		if (orig == null) {
 			return (T) null;
 		}
@@ -134,6 +147,19 @@ public class BeanHelper {
 	 * @since Feb 14, 2016
 	 */
 	public static <T> T copyProperties(Class<T> clazz, Object orig) {
+		return copyProperties(clazz, orig, usePOVOCopyHelper);
+	}
+
+	/**
+	 * if usePOVOCopyHelper=true, then use POVOCopyHelper to copy the object @see POVOCopyHelper.
+	 * if usePOVOCopyHelper=false, then use GSON serialize the origin object and de-serialize to destine class.
+	 * @param clazz
+	 * @param orig
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Feb 14, 2016
+	 */
+	public static <T> T copyProperties(Class<T> clazz, Object orig, boolean usePOVOCopyHelper) {
 		if (orig == null) {
 			return (T) null;
 		}

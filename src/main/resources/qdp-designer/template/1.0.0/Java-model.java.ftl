@@ -534,6 +534,13 @@ public class ${class} implements Serializable {
 			<#if field.javaType=='Date' && ['updateTime','createTime','updateDate','createDate','updateDateTime','createDateTime']?seq_contains(javaFieldName) >
 				set${javaFieldName?cap_first}(new java.util.Date());
 			</#if>
+			<#if field.type.add=='password' && field.javaType=='String'>
+				if( StringUtils.isNotBlank(get${javaFieldName?cap_first}()) ){
+					set${javaFieldName?cap_first}(org.iff.infra.util.MD5Helper.secondSalt(org.iff.infra.util.MD5Helper.firstSalt(get${javaFieldName?cap_first}())));
+				} else {
+					set${javaFieldName?cap_first}( null );
+				}
+			</#if>
 		</#list>
 			}
 			<#--树的特有操作-->
@@ -656,6 +663,13 @@ public class ${class} implements Serializable {
 			</#if>
 			<#if field.javaType=='Date' && ['createTime','createDate','createDateTime']?seq_contains(javaFieldName) >
 				set${javaFieldName?cap_first}(null);
+			</#if>
+			<#if field.type.edit=='password' && field.javaType=='String'>
+				if( StringUtils.isNotBlank(get${javaFieldName?cap_first}()) ){
+					set${javaFieldName?cap_first}(org.iff.infra.util.MD5Helper.secondSalt(org.iff.infra.util.MD5Helper.firstSalt(get${javaFieldName?cap_first}())));
+				} else {
+					set${javaFieldName?cap_first}( null );
+				}
 			</#if>
 		</#list>
 			}
