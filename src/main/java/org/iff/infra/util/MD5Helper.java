@@ -18,6 +18,33 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class MD5Helper {
 
+	private static final String MD5_SALT = ":salt:tc";
+
+	/**
+	 * 对字符串进行MD5+salt加密：md5(md5(string)+":salt:tc")。
+	 * 这样设计是用于登录验证的场景：用户只需要传输【account:firstSalt】，到后台，后台把firstSalt进行secondSalt就可以与数据密码匹配，整个过程都不出现原始密码。
+	 * @param inStr
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Nov 8, 2017
+	 */
+	public static String firstSalt(String inStr) {
+		String value = string2MD5(inStr);
+		return string2MD5(value + MD5_SALT);
+	}
+
+	/**
+	 * 对firstSalt字符串进行MD5+salt加密：md5(string +":salt:tc")，数据库存储的是这个密码。
+	 * @param inStr
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Nov 8, 2017
+	 */
+	public static String secondSalt(String inStr) {
+		String value = string2MD5(inStr + MD5_SALT);
+		return value;
+	}
+
 	/**
 	 * String to md5-with-salt string
 	 * @param inStr
@@ -44,7 +71,7 @@ public class MD5Helper {
 	}
 
 	/**
-	 * String to md5 string
+	 * String to md5 string lowercase.
 	 * @param inStr
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -66,7 +93,7 @@ public class MD5Helper {
 			byteArray[i] = (byte) charArray[i];
 		}
 		byte[] md5Bytes = md5.digest(byteArray);
-		StringBuffer hexValue = new StringBuffer();
+		StringBuilder hexValue = new StringBuilder();
 		for (int i = 0; i < md5Bytes.length; i++) {
 			int val = ((int) md5Bytes[i]) & 0xff;
 			if (val < 16) {
@@ -74,7 +101,7 @@ public class MD5Helper {
 			}
 			hexValue.append(Integer.toHexString(val));
 		}
-		return hexValue.toString().toUpperCase();
+		return hexValue.toString();
 	}
 
 	/**
@@ -85,7 +112,6 @@ public class MD5Helper {
 	 * @since 2015-2-6
 	 */
 	public static String convertMD5(String inStr) {
-
 		char[] a = inStr.toCharArray();
 		for (int i = 0; i < a.length; i++) {
 			a[i] = (char) (a[i] ^ 't');

@@ -1032,9 +1032,9 @@
 					description : '',
 					addable : true,
 					editable : true,
-					listable : true,
+					listable : false,
 					infoable : true,
-					searchable : true,
+					searchable : false,
 					sortable : false,//
 					width : '',
 					wordbreak : false,
@@ -1202,6 +1202,10 @@
 									pa = parseInt(pa) || 10000, pb = parseInt(pb) || 10000;
 									return pa == pb ? (ta == tb ? 0 : (ta < tb ? -1 : 1)) : (pa < pb ? -1 : 1);
 								});
+								for (i=0; i < fs.length; i++) {
+									fs[i].seqNo = (i+1) * 10 + '';
+									console.log(fs[i].field);
+								}
 							}
 						});
 						func.children.sort(function(a, b) {
