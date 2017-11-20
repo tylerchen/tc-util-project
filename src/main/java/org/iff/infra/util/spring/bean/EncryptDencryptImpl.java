@@ -23,14 +23,20 @@ public class EncryptDencryptImpl implements EncryptDencrypt {
 		if (StringUtils.isEmpty(value)) {
 			return value;
 		}
-		if ("MD5".equalsIgnoreCase(method)) {
+		if (EncryptDencrypt.METHOD_MD5.equalsIgnoreCase(method)) {
 			return MD5Helper.string2MD5(value);
-		} else if ("MD5-2".equalsIgnoreCase(method)) {
+		} else if (EncryptDencrypt.METHOD_MD5_2.equalsIgnoreCase(method)) {
 			if (StringUtils.isNotEmpty(saltOrKey)) {
 				return MD5Helper.string2MD5(saltOrKey + "-" + MD5Helper.string2MD5(value));
 			}
 			return MD5Helper.string2MD5(MD5Helper.string2MD5(value));
-		} else if ("RSA".equalsIgnoreCase(method)) {
+		} else if (EncryptDencrypt.METHOD_MD5_FIRST.equalsIgnoreCase(method)) {
+			return MD5Helper.firstSalt(value);
+		} else if (EncryptDencrypt.METHOD_MD5_SECOND.equalsIgnoreCase(method)) {
+			return MD5Helper.secondSalt(value);
+		} else if (EncryptDencrypt.METHOD_MD5_BOTH.equalsIgnoreCase(method)) {
+			return MD5Helper.firstSalt(MD5Helper.secondSalt(value));
+		} else if (EncryptDencrypt.METHOD_RSA.equalsIgnoreCase(method)) {
 			if (StringUtils.isNotEmpty(saltOrKey)) {
 				return RSAHelper.encrypt(value, RSAHelper.getPublicKeyFromBase64(saltOrKey));
 			} else {
@@ -45,11 +51,17 @@ public class EncryptDencryptImpl implements EncryptDencrypt {
 		if (StringUtils.isEmpty(value)) {
 			return value;
 		}
-		if ("MD5".equalsIgnoreCase(method)) {
+		if (EncryptDencrypt.METHOD_MD5.equalsIgnoreCase(method)) {
 			Assert.error(FCS.get("Encrypt method {0} is not supported for dencrypt!", method));
-		} else if ("MD5-2".equalsIgnoreCase(method)) {
+		} else if (EncryptDencrypt.METHOD_MD5_2.equalsIgnoreCase(method)) {
 			Assert.error(FCS.get("Encrypt method {0} is not supported for dencrypt!", method));
-		} else if ("RSA".equalsIgnoreCase(method)) {
+		} else if (EncryptDencrypt.METHOD_MD5_FIRST.equalsIgnoreCase(method)) {
+			Assert.error(FCS.get("Encrypt method {0} is not supported for dencrypt!", method));
+		} else if (EncryptDencrypt.METHOD_MD5_SECOND.equalsIgnoreCase(method)) {
+			Assert.error(FCS.get("Encrypt method {0} is not supported for dencrypt!", method));
+		} else if (EncryptDencrypt.METHOD_MD5_BOTH.equalsIgnoreCase(method)) {
+			Assert.error(FCS.get("Encrypt method {0} is not supported for dencrypt!", method));
+		} else if (EncryptDencrypt.METHOD_RSA.equalsIgnoreCase(method)) {
 			if (StringUtils.isNotEmpty(saltOrKey)) {
 				return RSAHelper.decrypt(value, RSAHelper.getPrivateKeyFromBase64(saltOrKey));
 			} else {

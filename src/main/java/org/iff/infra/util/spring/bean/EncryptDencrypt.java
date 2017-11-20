@@ -13,6 +13,13 @@ package org.iff.infra.util.spring.bean;
  */
 public interface EncryptDencrypt {
 
+	public static final String METHOD_MD5 = "MD5";
+	public static final String METHOD_MD5_2 = "MD5-2";
+	public static final String METHOD_MD5_FIRST = "MD5-first";
+	public static final String METHOD_MD5_SECOND = "MD5-second";
+	public static final String METHOD_MD5_BOTH = "MD5-both";
+	public static final String METHOD_RSA = "RSA";
+
 	String encrypt(String method, String salt, String value);
 
 	String dencrypt(String method, String salt, String value);
