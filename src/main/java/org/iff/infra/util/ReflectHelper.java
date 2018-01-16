@@ -143,7 +143,8 @@ public class ReflectHelper {
 				return null;
 			}
 			parameterTypes = parameterTypes == null ? new String[0] : parameterTypes;
-			for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
+			for (Class<?> superClass = clazz; superClass != null
+					&& superClass != Object.class; superClass = superClass.getSuperclass()) {
 				try {
 					Method[] methods = superClass.getDeclaredMethods();
 					for (Method m : methods) {
@@ -315,6 +316,7 @@ public class ReflectHelper {
 		}
 		return null;
 	}
+
 	/**
 	 * invoke object by unique method name and json or xstream arguments.
 	 * @param instance
