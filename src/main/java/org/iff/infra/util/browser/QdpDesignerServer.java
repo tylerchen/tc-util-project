@@ -247,7 +247,7 @@ public class QdpDesignerServer {
 				String templateVersion = StringUtils.defaultIfBlank((String) pc.get("templateVersion"), "1.0.0");
 				{
 					if (StringUtils.contains(projectPath, "tc-util-project")) {
-						projectPath = "/Users/zhaochen/Desktop/temppath";
+						projectPath = StringHelper.pathConcat(projectPath, "temppath");
 					}
 					if (projectPath.endsWith(artifactId)) {
 						projectPath = projectPath.substring(0, projectPath.length() - artifactId.length());
