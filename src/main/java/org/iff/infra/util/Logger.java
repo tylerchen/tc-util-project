@@ -76,13 +76,31 @@ public class Logger {
 	}
 
 	public static void changeLevel(String loggerName, String level) {
-		if (loggerName == null || loggerName.length() < 1) {
-			Level lv = Level.toLevel(level);
-			LogManager.getRootLogger().setLevel(lv);
-		} else {
-			Level lv = Level.toLevel(level);
-			org.apache.log4j.Logger logger = LogManager.getLogger(loggerName);
-			logger.setLevel(lv);
+		try {// for log4j
+			if (loggerName == null || loggerName.length() < 1) {
+				Level lv = Level.toLevel(level);
+				LogManager.getRootLogger().setLevel(lv);
+			} else {
+				Level lv = Level.toLevel(level);
+				org.apache.log4j.Logger logger = LogManager.getLogger(loggerName);
+				logger.setLevel(lv);
+			}
+		} catch (Exception e) {
+		}
+		try {// for logback
+			if (loggerName == null || loggerName.length() < 1) {
+				org.slf4j.Logger logger2 = org.slf4j.LoggerFactory
+						.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+				if (logger2 instanceof ch.qos.logback.classic.Logger) {
+					((ch.qos.logback.classic.Logger) logger2).setLevel(ch.qos.logback.classic.Level.toLevel(level));
+				}
+			} else {
+				org.slf4j.Logger logger2 = org.slf4j.LoggerFactory.getLogger(loggerName);
+				if (logger2 instanceof ch.qos.logback.classic.Logger) {
+					((ch.qos.logback.classic.Logger) logger2).setLevel(ch.qos.logback.classic.Level.toLevel(level));
+				}
+			}
+		} catch (Exception e) {
 		}
 	}
 
