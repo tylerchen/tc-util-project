@@ -1445,11 +1445,16 @@ public class TypeConvertHelper {
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
 			TypeConvert tc = get(CharSequence.class.getName());
+			//如果源值为空就返回NULL。
 			if (sourceValue == null) {
 				return null;
-			} else if (sourceCls.getName().equals(targetClassName)) {
+			}
+			//如果源的类型与目标相同，那把源值复制（浅拷贝）后返回。
+			else if (sourceCls.getName().equals(targetClassName)) {
 				return Arrays.copyOf(((CharSequence[]) sourceValue), ((CharSequence[]) sourceValue).length);
-			} else if (sourceCls.isArray()) {
+			}
+			//如果源值已经数组类型，那就针对数组中的每个值进行类型转换。
+			else if (sourceCls.isArray()) {
 				CharSequence[] arr = new CharSequence[Array.getLength(sourceValue)];
 				for (int i = 0; i < arr.length; i++) {
 					Object object = Array.get(sourceValue, i);
@@ -1457,7 +1462,9 @@ public class TypeConvertHelper {
 							null);
 				}
 				return arr;
-			} else if (sourceValue instanceof Collection<?>) {
+			}
+			//如果源值已经集合类型，那就针对集合中的每个值进行类型转换。
+			else if (sourceValue instanceof Collection<?>) {
 				CharSequence[] arr = new CharSequence[((Collection<?>) sourceValue).size()];
 				int i = 0;
 				for (Object object : (Collection<?>) sourceValue) {
@@ -1469,10 +1476,12 @@ public class TypeConvertHelper {
 			} else {
 				try {
 					String tName = targetClassName.substring(2, targetClassName.length() - 1);
-					String sName = sourceCls.getName().substring(2, sourceCls.getName().length() - 1);
+					String sName = sourceCls.getName();
+					if (sourceCls.isArray()) {//取得非数组类型
+						sName = sName.substring(2, sName.length() - 1);
+					}
 					Object arr = Array.newInstance(Class.forName(tName), 1);
-					Array.set(arr, 0, new CharSequenceTypeConvert().convert(tName, sourceValue, Class.forName(sName),
-							sourceType));
+					Array.set(arr, 0, tc.convert(tName, sourceValue, Class.forName(sName), sourceType));
 					return arr;
 				} catch (Exception e) {
 					throw new RuntimeException(e);
@@ -1492,18 +1501,25 @@ public class TypeConvertHelper {
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
 			TypeConvert tc = get(String.class.getName());
+			//如果源值为空就返回NULL。
 			if (sourceValue == null) {
 				return null;
-			} else if (sourceCls.getName().equals(targetClassName)) {
+			}
+			//如果源的类型与目标相同，那把源值复制（浅拷贝）后返回。
+			else if (sourceCls.getName().equals(targetClassName)) {
 				return Arrays.copyOf(((String[]) sourceValue), ((String[]) sourceValue).length);
-			} else if (sourceCls.isArray()) {
+			}
+			//如果源值已经数组类型，那就针对数组中的每个值进行类型转换。
+			else if (sourceCls.isArray()) {
 				String[] arr = new String[Array.getLength(sourceValue)];
 				for (int i = 0; i < arr.length; i++) {
 					Object object = Array.get(sourceValue, i);
 					arr[i] = (String) tc.convert(String.class.getName(), object.getClass(), sourceCls, null);
 				}
 				return arr;
-			} else if (sourceValue instanceof Collection<?>) {
+			}
+			//如果源值已经集合类型，那就针对集合中的每个值进行类型转换。
+			else if (sourceValue instanceof Collection<?>) {
 				String[] arr = new String[((Collection<?>) sourceValue).size()];
 				int i = 0;
 				for (Object object : (Collection<?>) sourceValue) {
@@ -1513,11 +1529,13 @@ public class TypeConvertHelper {
 				return arr;
 			} else {
 				try {
-					String tName = targetClassName.substring(2, targetClassName.length() - 1);
-					String sName = sourceCls.getName().substring(2, sourceCls.getName().length() - 1);
+					String tName = String.class.getName();
+					String sName = sourceCls.getName();
+					if (sourceCls.isArray()) {//取得非数组类型
+						sName = sName.substring(2, sName.length() - 1);
+					}
 					Object arr = Array.newInstance(Class.forName(tName), 1);
-					Array.set(arr, 0,
-							new StringTypeConvert().convert(tName, sourceValue, Class.forName(sName), sourceType));
+					Array.set(arr, 0, tc.convert(tName, sourceValue, Class.forName(sName), sourceType));
 					return arr;
 				} catch (Exception e) {
 					throw new RuntimeException(e);
@@ -1537,18 +1555,25 @@ public class TypeConvertHelper {
 
 		public Object convert(String targetClassName, Object sourceValue, Class<?> sourceCls, Type sourceType) {
 			TypeConvert tc = get(Date.class.getName());
+			//如果源值为空就返回NULL。
 			if (sourceValue == null) {
 				return null;
-			} else if (sourceCls.getName().equals(targetClassName)) {
+			}
+			//如果源的类型与目标相同，那把源值复制（浅拷贝）后返回。
+			else if (sourceCls.getName().equals(targetClassName)) {
 				return Arrays.copyOf(((Date[]) sourceValue), ((Date[]) sourceValue).length);
-			} else if (sourceCls.isArray()) {
+			}
+			//如果源值已经数组类型，那就针对数组中的每个值进行类型转换。
+			else if (sourceCls.isArray()) {
 				Date[] arr = new Date[Array.getLength(sourceValue)];
 				for (int i = 0; i < arr.length; i++) {
 					Object object = Array.get(sourceValue, i);
 					arr[i] = (Date) tc.convert(Date.class.getName(), object.getClass(), sourceCls, null);
 				}
 				return arr;
-			} else if (sourceValue instanceof Collection<?>) {
+			}
+			//如果源值已经集合类型，那就针对集合中的每个值进行类型转换。
+			else if (sourceValue instanceof Collection<?>) {
 				Date[] arr = new Date[((Collection<?>) sourceValue).size()];
 				int i = 0;
 				for (Object object : (Collection<?>) sourceValue) {
@@ -1559,10 +1584,12 @@ public class TypeConvertHelper {
 			} else {
 				try {
 					String tName = targetClassName.substring(2, targetClassName.length() - 1);
-					String sName = sourceCls.getName().substring(2, sourceCls.getName().length() - 1);
+					String sName = sourceCls.getName();
+					if (sourceCls.isArray()) {//取得非数组类型
+						sName = sName.substring(2, sName.length() - 1);
+					}
 					Object arr = Array.newInstance(Class.forName(tName), 1);
-					Array.set(arr, 0,
-							new DateTypeConvert().convert(tName, sourceValue, Class.forName(sName), sourceType));
+					Array.set(arr, 0, tc.convert(tName, sourceValue, Class.forName(sName), sourceType));
 					return arr;
 				} catch (Exception e) {
 					throw new RuntimeException(e);
