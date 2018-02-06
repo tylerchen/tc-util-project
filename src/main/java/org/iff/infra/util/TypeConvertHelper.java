@@ -658,7 +658,8 @@ public class TypeConvertHelper {
 						date = (Date) sourceValue;
 					} else {
 						date = DateUtils.parseDate(sourceValue.toString(), "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd",
-								"yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd");
+								"yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd", "yyyy-MM-dd'T'HH:mm:ss.SSS",
+								"yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 					}
 				} catch (Exception e) {
 				}
