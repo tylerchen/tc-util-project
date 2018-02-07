@@ -85,7 +85,6 @@ ${class}.method.${javaField(columnField(item.fileName))}.method=PUT
 ${class}.method.${javaField(columnField(item.fileName))}.path=/${javaField(columnField(item.fileName))}
 ${class}.method.${javaField(columnField(item.fileName))}.arg0=${javaClass(columnField(item.fileName),'')?cap_first}VO
 </#if></#list>
-}
 </#macro>
 
 <#assign project=root.data.data />
