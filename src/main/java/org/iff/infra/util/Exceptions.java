@@ -7,10 +7,6 @@
  ******************************************************************************/
 package org.iff.infra.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * common exceptions.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -24,136 +20,146 @@ public class Exceptions {
 				try {
 					throw new Exception("null");
 				} catch (Exception e) {
-					Exceptions.runtime("entity", e);
+					Exceptions.runtime("entity", e, "ENT-001");
 				}
 			} catch (Exception e) {
-				Exceptions.exception("dao", e);
+				Exceptions.exception("dao", e, "DAO-001");
 			}
 		} catch (Exception e) {
-			Exceptions.runtime("service", e);
+			Exceptions.runtime("service", e, "SVC-001");
 		}
 	}
 
 	public static interface FossThrow {
-		FossThrow combineException(Throwable e);
-
-		FossThrow addMessage(List<CharSequence> messages);
-
-		FossThrow addMessage(CharSequence... messages);
-
-		List<CharSequence> getMessages();
+		String getErrorCode();
 	}
 
 	@SuppressWarnings("serial")
 	public static class FossException extends Exception implements FossThrow {
-		private List<CharSequence> messages = new ArrayList<CharSequence>();
+		/**
+		 * exception code.
+		 */
+		private String errorCode = "FOSS-000";
 
 		public FossException() {
 			super();
 		}
 
 		public FossException(String message, Throwable cause) {
-			super(message, cause);
-			addMessage(message);
-			combineException(cause);
+			super(message, cause, true, false);
+		}
+
+		public FossException(String message, String errorCode) {
+			super(message);
+			setErrorCode(errorCode == null ? "FOSS-000" : errorCode);
+		}
+
+		public FossException(String message, Throwable cause, String errorCode) {
+			super(message, cause, true, false);
+			setErrorCode(errorCode == null ? "FOSS-000" : errorCode);
 		}
 
 		public FossException(String message) {
 			super(message);
-			addMessage(message);
 		}
 
 		public String getMessage() {
-			StringBuilder sb = new StringBuilder().append('\n');
-			for (int i = 0; i < messages.size(); i++) {
-				sb.append(i < 9 ? "[0" : "[").append(i).append("] ").append(messages.get(i)).append("\n");
-			}
-			sb.append(messages.size() < 9 ? "[0" : "[").append(messages.size()).append("] ")
-					.append(getCause().getMessage()).append("\n");
+			StringBuilder sb = new StringBuilder();
+			sb.append('[').append(getErrorCode()).append("] ").append(super.getMessage());
 			return sb.toString();
 		}
 
-		public FossThrow combineException(Throwable e) {
-			if (e instanceof FossThrow) {
-				FossThrow ft = (FossThrow) e;
-				addMessage(ft.getMessages());
-			}
-			return this;
+		public String getErrorCode() {
+			return this.errorCode;
 		}
 
-		public FossThrow addMessage(List<CharSequence> msg) {
-			if (msg != null) {
-				messages.addAll(msg);
-			}
-			return this;
+		public void setErrorCode(String errorCode) {
+			this.errorCode = errorCode;
 		}
 
-		public FossThrow addMessage(CharSequence... msg) {
-			if (msg != null) {
-				messages.addAll(Arrays.asList(msg));
-			}
-			return this;
+		public String toString() {
+			String s = "FossThrow";
+			String message = getLocalizedMessage();
+			return (message != null) ? (s + ": " + message) : s;
 		}
 
-		public List<CharSequence> getMessages() {
-			return messages;
-		}
 	}
 
 	@SuppressWarnings("serial")
 	public static class FossRuntimeException extends RuntimeException implements FossThrow {
-		private List<CharSequence> messages = new ArrayList<CharSequence>();
+		/**
+		 * exception code.
+		 */
+		private String errorCode = "FOSS-001";
 
 		public FossRuntimeException() {
 			super();
 		}
 
 		public FossRuntimeException(String message, Throwable cause) {
-			super(message, cause);
-			addMessage(message);
-			combineException(cause);
+			super(message, cause, true, false);
+		}
+
+		public FossRuntimeException(String message, String errorCode) {
+			super(message);
+			setErrorCode(errorCode == null ? "FOSS-001" : errorCode);
+		}
+
+		public FossRuntimeException(String message, Throwable cause, String errorCode) {
+			super(message, cause, true, false);
+			setErrorCode(errorCode == null ? "FOSS-001" : errorCode);
 		}
 
 		public FossRuntimeException(String message) {
 			super(message);
-			addMessage(message);
 		}
 
 		public String getMessage() {
-			StringBuilder sb = new StringBuilder().append('\n');
-			for (int i = 0; i < messages.size(); i++) {
-				sb.append(i < 9 ? "[0" : "[").append(i).append("] ").append(messages.get(i)).append("\n");
-			}
-			sb.append(messages.size() < 9 ? "[0" : "[").append(messages.size()).append("] ")
-					.append(getCause().getMessage()).append("\n");
+			StringBuilder sb = new StringBuilder();
+			sb.append('[').append(getErrorCode()).append("] ").append(super.getMessage());
 			return sb.toString();
 		}
 
-		public FossThrow combineException(Throwable e) {
-			if (e instanceof FossThrow) {
-				FossThrow ft = (FossThrow) e;
-				addMessage(ft.getMessages());
-			}
-			return this;
+		public String getErrorCode() {
+			return this.errorCode;
 		}
 
-		public FossThrow addMessage(List<CharSequence> msg) {
-			if (msg != null) {
-				messages.addAll(msg);
-			}
-			return this;
+		public void setErrorCode(String errorCode) {
+			this.errorCode = errorCode;
 		}
 
-		public FossThrow addMessage(CharSequence... msg) {
-			if (msg != null) {
-				messages.addAll(Arrays.asList(msg));
-			}
-			return this;
+		public String toString() {
+			String s = "FossThrow";
+			String message = getLocalizedMessage();
+			return (message != null) ? (s + ": " + message) : s;
 		}
+	}
 
-		public List<CharSequence> getMessages() {
-			return messages;
-		}
+	/**
+	 * throw Exception with Throwable error
+	 * @param message you can use com.foreveross.infra.util.FormatableCharSequence.get
+	 * @param e
+	 * @param errorCode
+	 * @throws Exception
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2014-3-14
+	 */
+	public static void exception(CharSequence message, Throwable e, String errorCode) throws Exception {
+		String newMessage = message == null ? null : message.toString();
+		throw new FossException(newMessage, e, errorCode);
+	}
+
+	/**
+	 * throw Exception with Throwable error
+	 * @param message you can use com.foreveross.infra.util.FormatableCharSequence.get
+	 * @param errorCode
+	 * @throws Exception
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2014-3-14
+	 */
+	public static void exception(CharSequence message, String errorCode) throws Exception {
+		String newMessage = message == null ? null : message.toString();
+		throw new FossException(newMessage, errorCode);
 	}
 
 	/**
@@ -165,12 +171,8 @@ public class Exceptions {
 	 * @since 2014-3-14
 	 */
 	public static void exception(CharSequence message, Throwable e) throws Exception {
-		if (e instanceof FossThrow) {
-			FossException exception = new FossException(message.toString(), e.getCause());
-			exception.addMessage(((FossThrow) e).getMessages());
-			throw exception;
-		}
-		throw new FossException("[FOSS-1001][" + e.getClass().getSimpleName() + "][" + message + "]", e);
+		String newMessage = message == null ? null : message.toString();
+		throw new FossException(newMessage, e);
 	}
 
 	/**
@@ -181,7 +183,33 @@ public class Exceptions {
 	 * @since 2014-3-14
 	 */
 	public static void exception(CharSequence message) throws Exception {
-		throw new FossException("[FOSS-1002][Exception][" + message + "]");
+		String newMessage = message == null ? null : message.toString();
+		throw new FossException(newMessage);
+	}
+
+	/**
+	 * throw RuntimeException with Throwable error
+	 * @param message you can use com.foreveross.infra.util.FormatableCharSequence.get
+	 * @param e
+	 * @param errorCode
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2014-3-14
+	 */
+	public static void runtime(CharSequence message, Throwable e, String errorCode) {
+		String newMessage = message == null ? null : message.toString();
+		throw new FossRuntimeException(newMessage, e, errorCode);
+	}
+
+	/**
+	 * throw RuntimeException with Throwable error
+	 * @param message you can use com.foreveross.infra.util.FormatableCharSequence.get
+	 * @param errorCode
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since 2014-3-14
+	 */
+	public static void runtime(CharSequence message, String errorCode) {
+		String newMessage = message == null ? null : message.toString();
+		throw new FossRuntimeException(newMessage, errorCode);
 	}
 
 	/**
@@ -192,12 +220,8 @@ public class Exceptions {
 	 * @since 2014-3-14
 	 */
 	public static void runtime(CharSequence message, Throwable e) {
-		if (e instanceof FossThrow) {
-			FossRuntimeException exception = new FossRuntimeException(message.toString(), e.getCause());
-			exception.addMessage(((FossThrow) e).getMessages());
-			throw exception;
-		}
-		throw new FossRuntimeException("[FOSS-1003][" + e.getClass().getSimpleName() + "][" + message + "]", e);
+		String newMessage = message == null ? null : message.toString();
+		throw new FossRuntimeException(newMessage, e);
 	}
 
 	/**
@@ -207,6 +231,7 @@ public class Exceptions {
 	 * @since 2014-3-14
 	 */
 	public static void runtime(CharSequence message) {
-		throw new FossRuntimeException("[FOSS-1004][RuntimeException][" + message + "]");
+		String newMessage = message == null ? null : message.toString();
+		throw new FossRuntimeException(newMessage);
 	}
 }
