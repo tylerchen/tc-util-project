@@ -13,7 +13,7 @@ import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,8 +49,8 @@ public class PropertiesHelper {
 	 * @since 2015-5-28
 	 */
 	public static Map<String, String> loadPropertyFiles(final String[] resPaths, final String versionName) {
-		Map<String, String> map = new HashMap<String, String>();
-		Map<Long, List<Properties>> propMap = new HashMap<Long, List<Properties>>();
+		Map<String, String> map = new LinkedHashMap<String, String>();
+		Map<Long, List<Properties>> propMap = new LinkedHashMap<Long, List<Properties>>();
 		List<String> list = new ArrayList<String>();
 		for (String resPath : resPaths) {
 			list.addAll(ResourceHelper.loadResources(resPath, ".properties", "*", ""));
@@ -128,10 +128,7 @@ public class PropertiesHelper {
 						FCS.get("[org.iff.infra.util.PropertiesHelper.loadProperties][{file}]: loading property file error! ",
 								url));
 			} finally {
-				try {
-					is.close();
-				} catch (Exception e) {
-				}
+				StreamHelper.closeWithoutError(is);
 			}
 		}
 	}
