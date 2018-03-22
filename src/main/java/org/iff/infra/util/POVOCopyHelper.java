@@ -24,12 +24,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.iff.infra.util.TypeConvertHelper.TypeConvert;
 
-import com.esotericsoftware.minlog.Log;
-
 import groovy.lang.GroovyClassLoader;
 
 /**
- * Not deep copy.
+ * PO-to-VO拷贝，不支持深拷贝，通过动态生成Groovy代码进行拷贝，以提升效率。
  * Efficiency for po jo copy.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Feb 4, 2016
@@ -364,20 +362,21 @@ public class POVOCopyHelper {
 			}
 		}
 		{
+			String className = StringUtils.replace(Map.class.getName(), ".", "_") + "$"
+					+ StringUtils.replace(destClass.getName(), ".", "_");
 			source = StringHelper.replaceBlock(source,
 					MapHelper.toMap(/**/
-							"className",
-							(StringUtils.replace(Map.class.getName(), ".", "_") + "$"
-									+ StringUtils.replace(destClass.getName(), ".", "_")), /**/
+							"className", className, /**/
 							"PoVoCopy", PoVoCopy.class.getName(), /**/
 							"destClass", getDefaultClass(destClass), /**/
 							"copyMap", sb.toString(), /**/
 							"LookSameMapGetter", LookSameMapGetter.class.getName()/**/
 			), null);
+			Logger.info("Create POVO Copy Class Source:" + className + ".");
 		}
-		//System.out.println(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
+			Logger.info("Load POVO Copy Class:" + clazz.getName() + ".");
 			PoVoCopy poVoCopy = clazz.newInstance();
 			return poVoCopy;
 		} catch (Exception e) {
@@ -423,21 +422,28 @@ public class POVOCopyHelper {
 						+ "\n        destCast.put( \"{fieldName}\", srcCast.{getterName}() );"/**/
 						;
 				sb.append(StringHelper.replaceBlock(fragment,
-						MapHelper.toMap("fieldName", fieldName, "getterName", getter.getName()), null));
+						MapHelper.toMap(/**/
+								"fieldName", fieldName, /**/
+								"getterName", getter.getName()),
+						null));
 			}
 		}
 		{
+			String className = StringUtils.replace(getClassName(srcClass), ".", "_") + "$"
+					+ StringUtils.replace(getClassName(Map.class), ".", "_");
 			source = StringHelper.replaceBlock(source,
-					MapHelper.toMap("className",
-							StringUtils.replace(getClassName(srcClass), ".", "_") + "$"
-									+ StringUtils.replace(getClassName(Map.class), ".", "_"),
-							"PoVoCopy", getClassName(PoVoCopy.class), "destClass", getDefaultClass(destClass),
-							"srcClass", srcClass.getName(), "copyToMap", sb),
+					MapHelper.toMap(/**/
+							"className", className, /**/
+							"PoVoCopy", getClassName(PoVoCopy.class), /**/
+							"destClass", getDefaultClass(destClass), /**/
+							"srcClass", srcClass.getName(), /**/
+							"copyToMap", sb),
 					null);
+			Logger.info("Create POVO Copy Class Source:" + className + ".");
 		}
-		//System.out.println(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
+			Logger.info("Load POVO Copy Class:" + clazz.getName() + ".");
 			PoVoCopy poVoCopy = clazz.newInstance();
 			return poVoCopy;
 		} catch (Exception e) {
@@ -520,26 +526,32 @@ public class POVOCopyHelper {
 							+ "\n        }"/**/
 							;
 					sb.append(StringHelper.replaceBlock(fragment,
-							MapHelper.toMap("getterName", getter.getName(), "POVOCopyHelper",
-									getClassName(POVOCopyHelper.class), "setterName", setter.getName(), "setterType",
-									getObjectClassName(getClassName(setter.getParameterTypes()[0])), "fieldName",
-									fieldName),
+							MapHelper.toMap(/**/
+									"getterName", getter.getName(), /**/
+									"POVOCopyHelper", getClassName(POVOCopyHelper.class), /**/
+									"setterName", setter.getName(), /**/
+									"setterType", getObjectClassName(getClassName(setter.getParameterTypes()[0])), /**/
+									"fieldName", fieldName),
 							null));
 				}
 			}
 		}
 		{
+			String className = StringUtils.replace(getClassName(srcClass), ".", "_") + "$"
+					+ StringUtils.replace(getClassName(destClass), ".", "_");
 			source = StringHelper.replaceBlock(source,
-					MapHelper.toMap("className",
-							StringUtils.replace(getClassName(srcClass), ".", "_") + "$"
-									+ StringUtils.replace(getClassName(destClass), ".", "_"),
-							"PoVoCopy", PoVoCopy.class.getName(), "destClass", getDefaultClass(destClass), "srcClass",
-							srcClass.getName(), "copy", sb),
+					MapHelper.toMap(/**/
+							"className", className, /**/
+							"PoVoCopy", PoVoCopy.class.getName(), /**/
+							"destClass", getDefaultClass(destClass), /**/
+							"srcClass", srcClass.getName(), /**/
+							"copy", sb),
 					null);
+			Logger.info("Create POVO Copy Class Source:" + className + ".");
 		}
-		Log.debug(source);
 		try {
 			Class<PoVoCopy> clazz = gcl.parseClass(source);
+			Logger.info("Load POVO Copy Class:" + clazz.getName() + ".");
 			PoVoCopy poVoCopy = clazz.newInstance();
 			return poVoCopy;
 		} catch (Exception e) {

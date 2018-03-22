@@ -8,7 +8,6 @@
 package org.iff.infra.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +24,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
- * a helper for xstream.
+ * XStream用于XML及对象的相互转换。
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since 2013-2-28
  */
@@ -33,6 +32,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 public class XStreamHelper {
 
 	private static XStream xstream = new XStream();
+	private static XStream customMapxstream;
 
 	private XStreamHelper() {
 	}
@@ -48,6 +48,20 @@ public class XStreamHelper {
 	}
 
 	/**
+	 * return xstream instance.
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static XStream getCustomMapxstream() {
+		if (customMapxstream == null) {
+			customMapxstream = new XStream();
+			customMapxstream.registerConverter(new PojoMapConverter());
+		}
+		return customMapxstream;
+	}
+
+	/**
 	 * convert object to xml content.
 	 * @param obj
 	 * @return
@@ -55,7 +69,7 @@ public class XStreamHelper {
 	 * @since Jul 19, 2016
 	 */
 	public static String toXml(Object obj) {
-		return xstream.toXML(obj);
+		return getXstream().toXML(obj);
 	}
 
 	/**
@@ -66,7 +80,7 @@ public class XStreamHelper {
 	 * @since Jul 19, 2016
 	 */
 	public static <T> T fromXml(String xml) {
-		return (T) xstream.fromXML(xml);
+		return (T) getXstream().fromXML(xml);
 	}
 
 	/**
@@ -78,7 +92,7 @@ public class XStreamHelper {
 	 * @since Jul 19, 2016
 	 */
 	public static <T> T fromXml(String xml, Object root) {
-		return (T) xstream.fromXML(xml, root);
+		return (T) getXstream().fromXML(xml, root);
 	}
 
 	/**
@@ -89,27 +103,36 @@ public class XStreamHelper {
 	 * @since Jul 19, 2016
 	 */
 	public static Map fromXmlToMap(String xml) {
-		return (Map) xstream.fromXML(xml, new LinkedHashMap());
+		return (Map) getXstream().fromXML(xml, new LinkedHashMap());
 	}
 
 	/**
-	 * convert xml to map.
+	 * 把简单的XML{tag=key: content=value}类型的XML结构转换成MAP结构。
+	 * <pre>
+	 * 如下XML：
+	 * {@code
+	 * <Head><AA>1</AA><AA>2</AA><MessageSendDateTime>20150808102930</MessageSendDateTime><MessageSequence>125</MessageSequence><MessageType>OUT</MessageType><SourceSystemID>CA</SourceSystemID><DestinationSystemID>OMCCAAC</DestinationSystemID></Head>
+	 * }
+	 * 转换后MAP：
+	 * {"AA":["1","2"],"MessageSendDateTime":"20150808102930","MessageSequence":"125","MessageType":"OUT","SourceSystemID":"CA","DestinationSystemID":"OMCCAAC"}
+	 * </pre>
 	 * @param xml
 	 * @return
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Jul 19, 2016
 	 */
 	public static Map fromConstomXmlToMap(String xml) {
-		XStream custom = new XStream();
-		custom.registerConverter(new PojoMapConverter());
+		XStream custom = getCustomMapxstream();
 		int start = xml.indexOf('<');
 		if (start > -1) {
+			//跳过<? xml encoding="utf-8" .. ?>
 			if (xml.charAt(start + 1) == '?') {
 				start = xml.indexOf('<', start + 1);
 			}
 		}
 		if (start > -1) {
 			int end = xml.indexOf('>', start + 1);
+			//找到XML的root tag的名称
 			String name = StringUtils.substring(xml, start + 1, Math.max(start + 1, end)).trim();
 			if (name.indexOf(' ') > -1) {
 				name = StringUtils.split(name, ' ')[0];
@@ -119,6 +142,56 @@ public class XStreamHelper {
 		return (Map) custom.fromXML(xml, new LinkedHashMap());
 	}
 
+	/**
+	 * 把简单的Map或List&lt;Map&gt;类型的对象转换成XML结构：{@code <ROOT>...</ROOT>}。
+	 * <pre>
+	 * 如下MAP：
+	 * {"AA":["1","2"],"MessageSendDateTime":"20150808102930","MessageSequence":"125","MessageType":"OUT","SourceSystemID":"CA","DestinationSystemID":"OMCCAAC"}
+	 * 转换后XML：
+	 * {@code
+	 * <ROOT><AA>1</AA><AA>2</AA><MessageSendDateTime>20150808102930</MessageSendDateTime><MessageSequence>125</MessageSequence><MessageType>OUT</MessageType><SourceSystemID>CA</SourceSystemID><DestinationSystemID>OMCCAAC</DestinationSystemID></ROOT>
+	 * }
+	 * </pre>
+	 * @param xml
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static String toCustomXml(Object obj) {
+		return toCustomXml(obj, "ROOT");
+	}
+
+	/**
+	 * 把简单的Map或List&lt;Map&gt;类型的对象转换成XML结构。
+	 * <pre>
+	 * 如下MAP：
+	 * {"AA":["1","2"],"MessageSendDateTime":"20150808102930","MessageSequence":"125","MessageType":"OUT","SourceSystemID":"CA","DestinationSystemID":"OMCCAAC"}
+	 * 转换后XML：
+	 * {@code
+	 * <ROOT><AA>1</AA><AA>2</AA><MessageSendDateTime>20150808102930</MessageSendDateTime><MessageSequence>125</MessageSequence><MessageType>OUT</MessageType><SourceSystemID>CA</SourceSystemID><DestinationSystemID>OMCCAAC</DestinationSystemID></ROOT>
+	 * }
+	 * </pre>
+	 * @param obj 要转换的Map对象，或List&lt;Map&gt;类型
+	 * @param rootName XML的根tag名称
+	 * @return
+	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+	 * @since Jul 19, 2016
+	 */
+	public static String toCustomXml(Object obj, String rootName) {
+		XStream custom = getCustomMapxstream();
+		String xml = custom.toXML(obj);
+		rootName = PreCheckHelper.trimAndRemoveBlank(rootName);
+		if (StringUtils.isNotEmpty(rootName) && xml.indexOf('>') != xml.lastIndexOf('>')) {
+			xml = "<" + rootName + ">" + StringUtils.substringAfter(xml, ">");
+			xml = StringUtils.substringBeforeLast(xml, "<") + "</" + rootName + ">";
+		}
+		return xml;
+	}
+
+	/**
+	 * 
+	 * @author zhaochen
+	 */
 	public static class PojoMapConverter implements Converter {
 
 		public PojoMapConverter() {
@@ -161,7 +234,9 @@ public class XStreamHelper {
 								writer.endNode();
 							}
 						} else {
+							writer.startNode(key);
 							map2xml(subvalue, writer, context);
+							writer.endNode();
 						}
 					}
 				}
@@ -222,16 +297,5 @@ public class XStreamHelper {
 			}
 		}
 
-	}
-
-	public static void main(String[] args) {
-		String xml = "<Head><AA>1</AA><AA>2</AA><MessageSendDateTime>20150808102930</MessageSendDateTime><MessageSequence>125</MessageSequence><MessageType>OUT</MessageType><SourceSystemID>CA</SourceSystemID><DestinationSystemID>OMCCAAC</DestinationSystemID></Head>";
-		Map<String, Object> map = (Map<String, Object>) fromConstomXmlToMap(xml);
-		System.out.println(map);
-		xml = xstream.toXML(map);
-		System.out.println(xml);
-		System.out.println((Map<String, Object>) xstream.fromXML(xml));
-		xml = xstream.toXML(Arrays.asList(1, 2, 3, 4));
-		System.out.println(xml);
 	}
 }

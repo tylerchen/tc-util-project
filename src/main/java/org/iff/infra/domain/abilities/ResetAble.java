@@ -11,13 +11,7 @@ package org.iff.infra.domain.abilities;
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
  * @since Sep 27, 2017
  */
-public interface Abilities {
+public interface ResetAble {
 
-	//	void validateAdd(ValidateHelper validate);
-	//
-	//	void validateUpdate(ValidateHelper validate);
-	//
-	//	void validateDelete(ValidateHelper validate);
-
-	<T> T able();
+	<T> T add();
 }

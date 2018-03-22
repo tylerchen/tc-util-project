@@ -112,7 +112,11 @@ public class XmlHelper {
 	}
 
 	/**
-	 * parse the xml string structure to map.
+	 * 转换XML结构为Map结构，tag中的内容，会转换为{"nodeContent": text}，tag的属性也会转换为对应属性，Map的Key为tagName+@+attr[name]。
+	 * <pre>
+	 * 转换例子：{@code <A prop="world">hello</A>} 转换为：{"A":{"prop":"world","nodeContent":"hello"}}。
+	 * 转换例子：{@code <A name="world">hello</A>} 转换为：{"A@world":{"name":"world","nodeContent":"hello"}}。
+	 * </pre>
 	 * @param xml you can pass the exists map or null value.
 	 * @param xml string.
 	 * @return xml file map structure.

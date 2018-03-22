@@ -7,8 +7,6 @@
  ******************************************************************************/
 package org.iff.infra.domain.abilities;
 
-import java.util.Date;
-
 import org.apache.commons.lang3.StringUtils;
 import org.iff.infra.util.Assert;
 import org.iff.infra.util.ValidateHelper;

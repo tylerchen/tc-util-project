@@ -56,7 +56,6 @@ public interface DateAble {
 		public <T> T able() {
 			return null;
 		}
-
 	}
 
 }

@@ -7,6 +7,11 @@
  ******************************************************************************/
 package org.iff.infra.util.test;
 
+import org.iff.infra.util.TestPreCheckHelper;
+import org.iff.infra.util.TestXStreamHelper;
+import org.iff.infra.util.TestXmlHelper;
+
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -21,6 +26,9 @@ public class AllTest {
 		TestSuite suite = new TestSuite("Running all tests.");
 
 		suite.addTestSuite(TestHttpHelper.class);
+		suite.addTest(new JUnit4TestAdapter(TestXStreamHelper.class));
+		suite.addTest(new JUnit4TestAdapter(TestXmlHelper.class));
+		suite.addTest(new JUnit4TestAdapter(TestPreCheckHelper.class));
 
 		return suite;
 	}
