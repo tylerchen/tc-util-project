@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysQuery">
+	<resultMap id="SysQuery" type="com.foreveross.qdp.domain.system.common.SysQuery">
+        <id     property="id"           column="ID"/>                         
+        <result property="name"         column="NAME"/>                       
+        <result property="code"         column="CODE"/>                       
+        <result property="dataSource"   column="DATA_SOURCE"/>                
+        <result property="queryContent" column="QUERY_CONTENT"/>              
+        <result property="type1"        column="TYPE_1"/>                     
+        <result property="type2"        column="TYPE_2"/>                     
+        <result property="description"  column="DESCRIPTION"/>                
+        <result property="updateTime"   column="UPDATE_TIME"/>                
+        <result property="createTime"   column="CREATE_TIME"/>                
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'            : 'ID'           ,
+           'NAME'          : 'NAME'         ,
+           'CODE'          : 'CODE'         ,
+           'DATASOURCE'    : 'DATA_SOURCE'  ,
+           'DATA_SOURCE'   : 'DATA_SOURCE'  ,
+           'QUERYCONTENT'  : 'QUERY_CONTENT',
+           'QUERY_CONTENT' : 'QUERY_CONTENT',
+           'TYPE1'         : 'TYPE_1'       ,
+           'TYPE_1'        : 'TYPE_1'       ,
+           'TYPE2'         : 'TYPE_2'       ,
+           'TYPE_2'        : 'TYPE_2'       ,
+           'DESCRIPTION'   : 'DESCRIPTION'  ,
+           'UPDATETIME'    : 'UPDATE_TIME'  ,
+           'UPDATE_TIME'   : 'UPDATE_TIME'  ,
+           'CREATETIME'    : 'CREATE_TIME'  ,
+           'CREATE_TIME'   : 'CREATE_TIME'  
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getSysQueryById" parameterType="com.foreveross.qdp.domain.system.common.SysQuery" resultMap="SysQuery">
+		SELECT * 
+		FROM SYS_QUERY
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysQueryMapById" parameterType="com.foreveross.qdp.domain.system.common.SysQuery" resultType="hashmap">
+		SELECT 
+           SysQuery.ID             AS  id                    ,
+           SysQuery.NAME           AS  name                  ,
+           SysQuery.CODE           AS  code                  ,
+           SysQuery.DATA_SOURCE    AS  dataSource            ,
+           SysQuery.QUERY_CONTENT  AS  queryContent          ,
+           SysQuery.TYPE_1         AS  type1                 ,
+           SysQuery.TYPE_2         AS  type2                 ,
+           SysQuery.DESCRIPTION    AS  description           ,
+           SysQuery.UPDATE_TIME    AS  updateTime            ,
+           SysQuery.CREATE_TIME    AS  createTime            
+
+		FROM SYS_QUERY SysQuery
+
+		<where>
+				AND sysQuery.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindSysQuery" resultMap="SysQuery">
+		SELECT *
+		FROM SYS_QUERY
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                     "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                                
+           <if test="vo!=null and vo.name != null and vo.name != ''                 "> AND NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>         
+           <if test="vo!=null and vo.code != null and vo.code != ''                 "> AND CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>         
+           <if test="vo!=null and vo.dataSource != null and vo.dataSource != ''     "> AND DATA_SOURCE LIKE CONCAT('%',#{vo.dataSource,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.queryContent != null and vo.queryContent != '' "> AND QUERY_CONTENT = #{vo.queryContent,jdbcType=VARCHAR} </if>           
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''               "> AND TYPE_1 = #{vo.type1,jdbcType=VARCHAR} </if>                         
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''               "> AND TYPE_2 = #{vo.type2,jdbcType=VARCHAR} </if>                         
+           <if test="vo!=null and vo.description != null and vo.description != ''   "> AND DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>              
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''     "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''     "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>               
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindSysQueryMap" resultType="hashmap">
+		SELECT 
+           SysQuery.ID             AS  id                    ,
+           SysQuery.NAME           AS  name                  ,
+           SysQuery.CODE           AS  code                  ,
+           SysQuery.DATA_SOURCE    AS  dataSource            ,
+           SysQuery.QUERY_CONTENT  AS  queryContent          ,
+           SysQuery.TYPE_1         AS  type1                 ,
+           SysQuery.TYPE_2         AS  type2                 ,
+           SysQuery.DESCRIPTION    AS  description           ,
+           SysQuery.UPDATE_TIME    AS  updateTime            ,
+           SysQuery.CREATE_TIME    AS  createTime            
+
+		FROM SYS_QUERY SysQuery
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                     "> AND SysQuery.ID = #{vo.id,jdbcType=VARCHAR} </if>                       
+           <if test="vo!=null and vo.name != null and vo.name != ''                 "> AND SysQuery.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.code != null and vo.code != ''                 "> AND SysQuery.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.dataSource != null and vo.dataSource != ''     "> AND SysQuery.DATA_SOURCE LIKE CONCAT('%',#{vo.dataSource,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.queryContent != null and vo.queryContent != '' "> AND SysQuery.QUERY_CONTENT = #{vo.queryContent,jdbcType=VARCHAR} </if>  
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''               "> AND SysQuery.TYPE_1 = #{vo.type1,jdbcType=VARCHAR} </if>                
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''               "> AND SysQuery.TYPE_2 = #{vo.type2,jdbcType=VARCHAR} </if>                
+           <if test="vo!=null and vo.description != null and vo.description != ''   "> AND SysQuery.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>     
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''     "> AND SysQuery.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>      
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''     "> AND SysQuery.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>      
+
+		</where>
+		<bind name="aliasDot" value="'SysQuery.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertSysQuery" parameterType="com.foreveross.qdp.domain.system.common.SysQuery"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO SYS_QUERY
+			( ID, NAME, CODE, DATA_SOURCE, QUERY_CONTENT, TYPE_1, TYPE_2, DESCRIPTION, UPDATE_TIME, CREATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{name,jdbcType=VARCHAR},
+           #{code,jdbcType=VARCHAR},
+           #{dataSource,jdbcType=VARCHAR},
+           #{queryContent,jdbcType=VARCHAR},
+           #{type1,jdbcType=VARCHAR},
+           #{type2,jdbcType=VARCHAR},
+           #{description,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateSysQuery" parameterType="com.foreveross.qdp.domain.system.common.SysQuery">
+		UPDATE SYS_QUERY
+		<set>
+           <if test="id != null           "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="name != null         "> NAME = #{name,jdbcType=VARCHAR},</if>
+           <if test="code != null         "> CODE = #{code,jdbcType=VARCHAR},</if>
+           DATA_SOURCE = #{dataSource,jdbcType=VARCHAR},                                
+           <if test="queryContent != null "> QUERY_CONTENT = #{queryContent,jdbcType=VARCHAR},</if>
+           <if test="type1 != null        "> TYPE_1 = #{type1,jdbcType=VARCHAR},</if>
+           <if test="type2 != null        "> TYPE_2 = #{type2,jdbcType=VARCHAR},</if>
+           DESCRIPTION = #{description,jdbcType=VARCHAR},                                
+           <if test="updateTime != null   "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+           <if test="createTime != null   "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteSysQuery" parameterType="com.foreveross.qdp.domain.system.common.SysQuery">
+		DELETE FROM SYS_QUERY
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+	<select id="getSysQueryByName" parameterType="com.foreveross.qdp.domain.system.common.SysQuery" resultMap="SysQuery">
+		SELECT * 
+		FROM SYS_QUERY
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysQueryMapByName" parameterType="com.foreveross.qdp.domain.system.common.SysQuery" resultType="hashmap">
+		SELECT 
+           SysQuery.ID             AS  id                    ,
+           SysQuery.NAME           AS  name                  ,
+           SysQuery.CODE           AS  code                  ,
+           SysQuery.DATA_SOURCE    AS  dataSource            ,
+           SysQuery.QUERY_CONTENT  AS  queryContent          ,
+           SysQuery.TYPE_1         AS  type1                 ,
+           SysQuery.TYPE_2         AS  type2                 ,
+           SysQuery.DESCRIPTION    AS  description           ,
+           SysQuery.UPDATE_TIME    AS  updateTime            ,
+           SysQuery.CREATE_TIME    AS  createTime            
+
+		FROM SYS_QUERY SysQuery
+
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysQueryByCode" parameterType="com.foreveross.qdp.domain.system.common.SysQuery" resultMap="SysQuery">
+		SELECT * 
+		FROM SYS_QUERY
+		<where>
+			CODE = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysQueryMapByCode" parameterType="com.foreveross.qdp.domain.system.common.SysQuery" resultType="hashmap">
+		SELECT 
+           SysQuery.ID             AS  id                    ,
+           SysQuery.NAME           AS  name                  ,
+           SysQuery.CODE           AS  code                  ,
+           SysQuery.DATA_SOURCE    AS  dataSource            ,
+           SysQuery.QUERY_CONTENT  AS  queryContent          ,
+           SysQuery.TYPE_1         AS  type1                 ,
+           SysQuery.TYPE_2         AS  type2                 ,
+           SysQuery.DESCRIPTION    AS  description           ,
+           SysQuery.UPDATE_TIME    AS  updateTime            ,
+           SysQuery.CREATE_TIME    AS  createTime            
+
+		FROM SYS_QUERY SysQuery
+
+		<where>
+			CODE = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="countSysQueryByName" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM SYS_QUERY
+		<where>
+           NAME = #{vo.name,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+	<select id="countSysQueryByCode" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM SYS_QUERY
+		<where>
+           CODE = #{vo.code,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+</mapper>

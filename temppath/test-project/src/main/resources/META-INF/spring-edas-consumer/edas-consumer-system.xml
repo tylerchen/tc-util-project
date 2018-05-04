@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:hsf="http://www.taobao.com/hsf"
+	xsi:schemaLocation="http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.taobao.com/hsf
+		http://www.taobao.com/hsf/hsf.xsd">
+	<description>
+	<![CDATA[
+		EDAS
+	]]>
+	</description>
+	<hsf:consumer id="authAccountApplication"
+		   interface="com.foreveross.qdp.application.system.auth.rs.AuthAccountApplication"
+		       group="system" />
+	<hsf:consumer id="authOrganizationApplication"
+		   interface="com.foreveross.qdp.application.system.auth.rs.AuthOrganizationApplication"
+		       group="system" />
+	<hsf:consumer id="authResourceApplication"
+		   interface="com.foreveross.qdp.application.system.auth.rs.AuthResourceApplication"
+		       group="system" />
+	<hsf:consumer id="authUserApplication"
+		   interface="com.foreveross.qdp.application.system.auth.rs.AuthUserApplication"
+		       group="system" />
+	<hsf:consumer id="authRoleApplication"
+		   interface="com.foreveross.qdp.application.system.auth.rs.AuthRoleApplication"
+		       group="system" />
+	<hsf:consumer id="authMenuApplication"
+		   interface="com.foreveross.qdp.application.system.auth.rs.AuthMenuApplication"
+		       group="system" />
+	<hsf:consumer id="sysDictionaryApplication"
+		   interface="com.foreveross.qdp.application.system.common.rs.SysDictionaryApplication"
+		       group="system" />
+	<hsf:consumer id="sysOpenreportApplication"
+		   interface="com.foreveross.qdp.application.system.common.rs.SysOpenreportApplication"
+		       group="system" />
+	<hsf:consumer id="sysI18nApplication"
+		   interface="com.foreveross.qdp.application.system.common.rs.SysI18nApplication"
+		       group="system" />
+	<hsf:consumer id="sysExTableApplication"
+		   interface="com.foreveross.qdp.application.system.common.rs.SysExTableApplication"
+		       group="system" />
+	<hsf:consumer id="sysExDataApplication"
+		   interface="com.foreveross.qdp.application.system.common.rs.SysExDataApplication"
+		       group="system" />
+	<hsf:consumer id="sysQueryApplication"
+		   interface="com.foreveross.qdp.application.system.common.rs.SysQueryApplication"
+		       group="system" />
+	<hsf:consumer id="sysScriptApplication"
+		   interface="com.foreveross.qdp.application.system.common.rs.SysScriptApplication"
+		       group="system" />
+	<hsf:consumer id="logAccessApplication"
+		   interface="com.foreveross.qdp.application.system.log.rs.LogAccessApplication"
+		       group="system" />
+	<hsf:consumer id="logOperationApplication"
+		   interface="com.foreveross.qdp.application.system.log.rs.LogOperationApplication"
+		       group="system" />
+
+</beans>
+

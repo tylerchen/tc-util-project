@@ -111,6 +111,7 @@ public class QdpDesignerServer {
 
 	public static void main(String[] args) throws Exception {
 		///Users/zhaochen/dev/workspace/cocoa/tc-util-project/src/main/resources/qdp-designer
+		///Users/zhaochen/dev/workspace/idea/tc-util-project/src/main/resources/qdp-designer
 		String docRoot = new File("").getAbsolutePath();
 		if (docRoot != null) {
 			if (!docRoot.endsWith("tc-util-project")) {
@@ -432,6 +433,7 @@ public class QdpDesignerServer {
 
 		private void get(final HttpResponse response, String target) throws UnsupportedEncodingException {
 			String fileName = StringUtils.substringBeforeLast(target, "?");
+			fileName = "/".equals(fileName) || StringUtils.isBlank(fileName) ? "/index.html" : fileName;
 			String fileUrl = null;
 			if (IS_DEV) {
 				fileUrl = "file://" + new File("").getAbsolutePath() + "/src/main/resources/qdp-designer"

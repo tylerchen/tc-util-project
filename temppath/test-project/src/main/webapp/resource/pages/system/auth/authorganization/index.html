@@ -1,0 +1,1029 @@
+<template>
+	<div class="qdp-list-layout">
+		<!-- 搜索 -->
+		<!-- 搜索-END -->
+		<!-- 操作栏 -->
+		<el-row class="qdp-list-content qdp-el-action" type="flex" justify="end" align="top">
+			<el-button size="small" type="text" title="返回"    @click="onPost('action-bar','back')"><i class="el-icon-ion-arrow-left-a"></i></el-button>
+			<el-button size="small" type="text" title="刷新"    @click="onPost('action-bar','reload')"><i class="el-icon-ion-refresh"></i></el-button>
+			<el-button size="small" type="text" title="添加根节点" @click="onPost('action-bar','add')"><i class="el-icon-ion-plus-round"></i></el-button>
+			<el-button size="small" type="text" title="添加子节点" @click="onPost('action-bar','addChild')"><i class="el-icon-ion-plus-circled"></i></el-button>
+			<el-button size="small" type="text" title="修改"    @click="onPost('action-bar','edit')"><i class="el-icon-edit"></i></el-button>
+			<el-button size="small" type="text" title="详情"    @click="onPost('action-bar','info')"><i class="el-icon-ion-information"></i></el-button>
+			<el-button size="small" type="text" title="删除"    @click="onPost('action-bar','delete')"><i class="el-icon-ion-trash-b"></i></el-button>
+			<el-button size="small" type="text" title="分配菜单"  @click="onPost('action-bar','menuId')"><i class="el-icon-ion-ios-list-outline"></i></el-button>
+			<el-button size="small" type="text" title="分配用户"  @click="onPost('action-bar','userId')"><i class="el-icon-ion-ios-people"></i></el-button>
+
+		</el-row>
+		<!-- 操作栏-END- -->
+		<!-- 列表 -->
+		<!-- 列表-END -->
+		<!-- 分页 -->
+		<!-- 分页-END -->
+		<!-- 树 -->
+		<el-row class="qdp-list-content qdp-tree-form" type="flex" justify="center" align="top">
+			<el-col :span="6">
+				<el-tree :highlight-current="true" :show-checkbox="false" node-key="id" :data="tree.data" :default-checked-keys="tree.checked" :default-expanded-keys="tree.expanded" :props="tree.props"
+					@node-click="onPost('treeForm', 'node-click', arguments[0], arguments[1])"
+					@check-change="onPost('treeForm', 'check-change', arguments[0], arguments[1], arguments[2])"
+					:render-content="renderContent" ref="treeForm">
+				</el-tree>
+			</el-col>
+			<el-col :span="18">
+				<el-row type="flex" justify="start" align="top" class="qdp-info-form" v-if="infoForm.id">
+					<table>
+						<tbody>
+							<tr><td class="qdp-infoform-title">主键</td><td class="qdp-infoform-content"><div>{{infoForm.id}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">组织机构名称</td><td class="qdp-infoform-content"><div>{{infoForm.name}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">上级机构</td><td class="qdp-infoform-content"><div>{{infoForm.parentId}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">根机构</td><td class="qdp-infoform-content"><div>{{infoForm.rootId}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">组织机构编码</td><td class="qdp-infoform-content"><div>{{infoForm.code}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">使用根菜单</td><td class="qdp-infoform-content"><div><el-tag>{{getOption(infoForm, 'isUseRootMenu')}}</el-tag></div></td></tr>
+							<tr><td class="qdp-infoform-title">一级分类</td><td class="qdp-infoform-content"><div><el-tag>{{getOption(infoForm, 'type1')}}</el-tag></div></td></tr>
+							<tr><td class="qdp-infoform-title">二级分类</td><td class="qdp-infoform-content"><div><el-tag>{{getOption(infoForm, 'type2')}}</el-tag></div></td></tr>
+							<tr><td class="qdp-infoform-title">描述</td><td class="qdp-infoform-content"><div>{{infoForm.description}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">修改时间</td><td class="qdp-infoform-content"><div>{{infoForm.updateTime}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">创建时间</td><td class="qdp-infoform-content"><div>{{infoForm.createTime}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">菜单</td><td class="qdp-infoform-content"><div>{{infoForm.menuId}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">用户</td><td class="qdp-infoform-content"><div>{{infoForm.userId}}</div></td></tr>
+							<tr><td class="qdp-infoform-title">角色</td><td class="qdp-infoform-content"><div>{{infoForm.roleId}}</div></td></tr>
+						</tbody>
+					</table>
+				</el-row>
+			</el-col>
+		</el-row>
+		<!-- 树-END -->
+		<!-- 添加 -->
+		<el-dialog title="添加" :visible.sync="addFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
+			<el-row type="flex" justify="center" align="top">
+				<el-form class="qdp-add-form" :model="addForm" :rules="addFormRules" label-width="80px" inline ref="addForm" @keydown.13.native.stop="onPost('addForm', 'submit')">
+					<el-form-item label="组织机构名称" prop="name">
+						<el-input v-model="addForm.name" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="组织机构编码" prop="code">
+						<el-input v-model="addForm.code" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="使用根菜单" prop="isUseRootMenu">
+						<el-select v-model="addForm.isUseRootMenu" clearable placeholder="" size="small">
+					    	<el-option label="是"  value="Y"></el-option>
+					    	<el-option label="否"  value="N"></el-option>
+					   	</el-select>
+					</el-form-item>
+					<el-form-item label="一级分类" prop="type1">
+						<el-select v-model="addForm.type1" clearable placeholder="" size="small">
+					    	<el-option label="默认"  value="S"></el-option>
+					   	</el-select>
+					</el-form-item>
+					<el-form-item label="二级分类" prop="type2">
+						<el-select v-model="addForm.type2" clearable placeholder="" size="small">
+					    	<el-option label="默认"  value="S"></el-option>
+					   	</el-select>
+					</el-form-item>
+					<el-form-item label="描述" prop="description">
+						<el-input v-model="addForm.description" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="菜单" prop="menuIdName" ref="addForm-menuIdName">
+						<el-button icon="search" @click="openDialog('addForm','menuId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(addForm, 'menuIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addForm, 'menuId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="菜单" prop="menuId" v-show="false" ref="addForm-menuId">
+						<el-input v-model="addForm.menuId" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="用户" prop="userIdName" ref="addForm-userIdName">
+						<el-button icon="search" @click="openDialog('addForm','userId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(addForm, 'userIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addForm, 'userId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="用户" prop="userId" v-show="false" ref="addForm-userId">
+						<el-input v-model="addForm.userId" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="角色" prop="roleIdName" ref="addForm-roleIdName">
+						<el-button icon="search" @click="openDialog('addForm','roleId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(addForm, 'roleIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addForm, 'roleId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="角色" prop="roleId" v-show="false" ref="addForm-roleId">
+						<el-input v-model="addForm.roleId" placeholder="" size="small"></el-input>
+					</el-form-item>
+				</el-form>
+			</el-row>
+			<el-row type="flex" justify="center" align="top">
+				<el-button type="primary" @click="onPost('addForm','reset') " icon="ion-backspace-outline">重置</el-button>
+				<el-button type="primary" @click="onPost('addForm','submit')" icon="ion-checkmark">提交</el-button>
+			</el-row>
+		</el-dialog>
+		<!-- 添加-END -->
+		<!-- 添加子节点 -->
+		<el-dialog title="添加子节点" :visible.sync="addChildFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
+			<el-row type="flex" justify="center" align="top">
+				<el-form class="qdp-add-form" :model="addChildForm" :rules="addChildFormRules" label-width="80px" inline ref="addChildForm" @keydown.13.native.stop="onPost('addChildForm', 'submit')">
+					<el-form-item label="组织机构名称" prop="name">
+						<el-input v-model="addChildForm.name" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="组织机构编码" prop="code">
+						<el-input v-model="addChildForm.code" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="使用根菜单" prop="isUseRootMenu">
+						<el-select v-model="addChildForm.isUseRootMenu" clearable placeholder="" size="small">
+					    	<el-option label="是"  value="Y"></el-option>
+					    	<el-option label="否"  value="N"></el-option>
+					   	</el-select>
+					</el-form-item>
+					<el-form-item label="描述" prop="description">
+						<el-input v-model="addChildForm.description" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="菜单" prop="menuIdName" ref="addChildForm-menuIdName">
+						<el-button icon="search" @click="openDialog('addChildForm','menuId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(addChildForm, 'menuIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addChildForm, 'menuId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="菜单" prop="menuId" v-show="false" ref="addChildForm-menuId">
+						<el-input v-model="addChildForm.menuId" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="用户" prop="userIdName" ref="addChildForm-userIdName">
+						<el-button icon="search" @click="openDialog('addChildForm','userId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(addChildForm, 'userIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addChildForm, 'userId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="用户" prop="userId" v-show="false" ref="addChildForm-userId">
+						<el-input v-model="addChildForm.userId" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="角色" prop="roleIdName" ref="addChildForm-roleIdName">
+						<el-button icon="search" @click="openDialog('addChildForm','roleId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(addChildForm, 'roleIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addChildForm, 'roleId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="角色" prop="roleId" v-show="false" ref="addChildForm-roleId">
+						<el-input v-model="addChildForm.roleId" placeholder="" size="small"></el-input>
+					</el-form-item>
+				</el-form>
+			</el-row>
+			<el-row type="flex" justify="center" align="top">
+				<el-button type="primary" @click="onPost('addChildForm','reset') " icon="ion-backspace-outline">重置</el-button>
+				<el-button type="primary" @click="onPost('addChildForm','submit')" icon="ion-checkmark">提交</el-button>
+			</el-row>
+		</el-dialog>
+		<!-- 添加子节点-END -->
+		<!-- 修改 -->
+		<el-dialog title="修改" :visible.sync="editFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
+			<el-row type="flex" justify="center" align="top">
+				<el-form class="qdp-edit-form" :model="editForm" :rules="editFormRules" label-width="80px" inline ref="editForm" @keydown.13.native.stop="onPost('editForm', 'submit')">
+					<el-form-item label="组织机构名称" prop="name">
+						<el-input v-model="editForm.name" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="组织机构编码" prop="code">
+						<el-input v-model="editForm.code" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="使用根菜单" prop="isUseRootMenu">
+						<el-select v-model="editForm.isUseRootMenu" clearable placeholder="" size="small">
+					    	<el-option label="是"  value="Y"></el-option>
+					    	<el-option label="否"  value="N"></el-option>
+					   	</el-select>
+					</el-form-item>
+					<el-form-item label="一级分类" prop="type1">
+						<el-select v-model="editForm.type1" clearable placeholder="" size="small">
+					    	<el-option label="默认"  value="S"></el-option>
+					   	</el-select>
+					</el-form-item>
+					<el-form-item label="二级分类" prop="type2">
+						<el-select v-model="editForm.type2" clearable placeholder="" size="small">
+					    	<el-option label="默认"  value="S"></el-option>
+					   	</el-select>
+					</el-form-item>
+					<el-form-item label="描述" prop="description">
+						<el-input v-model="editForm.description" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="菜单" prop="menuIdName" ref="editForm-menuIdName">
+						<el-button icon="search" @click="openDialog('editForm','menuId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'menuIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'menuId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="菜单" prop="menuId" v-show="false" ref="editForm-menuId">
+						<el-input v-model="editForm.menuId" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="用户" prop="userIdName" ref="editForm-userIdName">
+						<el-button icon="search" @click="openDialog('editForm','userId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'userIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'userId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="用户" prop="userId" v-show="false" ref="editForm-userId">
+						<el-input v-model="editForm.userId" placeholder="" size="small"></el-input>
+					</el-form-item>
+					<el-form-item label="角色" prop="roleIdName" ref="editForm-roleIdName">
+						<el-button icon="search" @click="openDialog('editForm','roleId')" size="small" type="text"></el-button>
+						<div class="el-input el-input--small"><!--列表显示所有的选择-->
+							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'roleIdName')" v-if="value" :key="value">
+								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'roleId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
+								        </tr>
+							    	</table>
+							    </div>
+							</div>
+						</div>
+					</el-form-item>
+					<el-form-item label="角色" prop="roleId" v-show="false" ref="editForm-roleId">
+						<el-input v-model="editForm.roleId" placeholder="" size="small"></el-input>
+					</el-form-item>
+				</el-form>
+			</el-row>
+			<el-row type="flex" justify="center" align="top">
+				<el-button type="primary" @click="onPost('editForm','reset') " icon="ion-backspace-outline">重置</el-button>
+				<el-button type="primary" @click="onPost('editForm','submit')" icon="ion-checkmark">提交</el-button>
+			</el-row>
+		</el-dialog>
+		<!-- 修改-END -->
+		<!-- 详情 -->
+		<el-dialog title="详情" :visible.sync="infoFormVisible">
+			<el-row type="flex" justify="center" align="top" class="qdp-info-form">
+				<table>
+					<tbody>
+						<tr><td class="qdp-infoform-title">主键</td><td class="qdp-infoform-content"><div>{{infoForm.id}}</div></td></tr>
+						<tr><td class="qdp-infoform-title">组织机构名称</td><td class="qdp-infoform-content"><div>{{infoForm.name}}</div></td></tr>
+						<tr><td class="qdp-infoform-title">上级机构</td><td class="qdp-infoform-content"><div><el-tag>{{infoForm.parentIdName||""}}</el-tag></div></td></tr>
+						<tr><td class="qdp-infoform-title">根机构</td><td class="qdp-infoform-content"><div><el-tag>{{infoForm.rootIdName||""}}</el-tag></div></td></tr>
+						<tr><td class="qdp-infoform-title">组织机构编码</td><td class="qdp-infoform-content"><div>{{infoForm.code}}</div></td></tr>
+						<tr><td class="qdp-infoform-title">使用根菜单</td><td class="qdp-infoform-content"><div><el-tag>{{getOption(infoForm, 'isUseRootMenu')}}</el-tag></div></td></tr>
+						<tr><td class="qdp-infoform-title">一级分类</td><td class="qdp-infoform-content"><div><el-tag>{{getOption(infoForm, 'type1')}}</el-tag></div></td></tr>
+						<tr><td class="qdp-infoform-title">二级分类</td><td class="qdp-infoform-content"><div><el-tag>{{getOption(infoForm, 'type2')}}</el-tag></div></td></tr>
+						<tr><td class="qdp-infoform-title">描述</td><td class="qdp-infoform-content"><div>{{infoForm.description}}</div></td></tr>
+						<tr><td class="qdp-infoform-title">修改时间</td><td class="qdp-infoform-content"><div>{{infoForm.updateTime}}</div></td></tr>
+						<tr><td class="qdp-infoform-title">创建时间</td><td class="qdp-infoform-content"><div>{{infoForm.createTime}}</div></td></tr>
+						<tr><td class="qdp-infoform-title">菜单</td><td class="qdp-infoform-content"><div><el-tag v-for="value in split(infoForm, 'menuIdName')" v-if="value" :key="value">{{value}}</el-tag></div></td></tr>
+						<tr><td class="qdp-infoform-title">用户</td><td class="qdp-infoform-content"><div><el-tag v-for="value in split(infoForm, 'userIdName')" v-if="value" :key="value">{{value}}</el-tag></div></td></tr>
+						<tr><td class="qdp-infoform-title">角色</td><td class="qdp-infoform-content"><div><el-tag v-for="value in split(infoForm, 'roleIdName')" v-if="value" :key="value">{{value}}</el-tag></div></td></tr>
+					</tbody>
+				</table>
+			</el-row>
+		</el-dialog>
+		<!-- 详情-END -->
+		<!-- 图标选择 -->
+		<!-- 图标选择-END -->
+		<!-- 弹出选择：分配菜单 -->
+		<el-dialog class="qdp-form-dialog" title="分配菜单" :visible.sync="menuIdVisible" v-if="menuIdVisible">
+			<el-row type="flex" justify="center" align="top">
+				<el-col :span="24">
+					<Menuid v-if="currentFormName" :value.sync="this[currentFormName]" :multi="true" :field="'menuId'" :id-field="'id'" :enums="enums"></Menuid>
+				</el-col>
+			</el-row>
+			<el-row type="flex" justify="center" align="top" class="qdp-dialog-btns">
+				<el-button type="primary" @click="resetSelectionLabel(currentFormName, 'menuId'),menuIdVisible=false" icon="ion-backspace-outline">重置</el-button>
+				<el-button type="primary" @click="getSelectionLabel(currentFormName, 'menuId', 'name'),menuIdVisible=false" icon="ion-checkmark">选择</el-button>
+			</el-row>
+		</el-dialog>
+		<!-- 弹出选择：分配菜单-END -->
+		<!-- 弹出选择：分配角色 -->
+		<el-dialog class="qdp-form-dialog" title="分配角色" :visible.sync="roleIdVisible" v-if="roleIdVisible">
+			<el-row type="flex" justify="center" align="top">
+				<el-col :span="24">
+					<Roleid v-if="currentFormName" :value.sync="this[currentFormName]" :multi="true" :field="'roleId'" :id-field="'id'" :enums="enums"></Roleid>
+				</el-col>
+			</el-row>
+			<el-row type="flex" justify="center" align="top" class="qdp-dialog-btns">
+				<el-button type="primary" @click="resetSelectionLabel(currentFormName, 'roleId'),roleIdVisible=false" icon="ion-backspace-outline">重置</el-button>
+				<el-button type="primary" @click="getSelectionLabel(currentFormName, 'roleId', 'name'),roleIdVisible=false" icon="ion-checkmark">选择</el-button>
+			</el-row>
+		</el-dialog>
+		<!-- 弹出选择：分配角色-END -->
+		<!-- 弹出选择：分配用户 -->
+		<el-dialog class="qdp-form-dialog" title="分配用户" :visible.sync="userIdVisible" v-if="userIdVisible">
+			<el-row type="flex" justify="center" align="top">
+				<el-col :span="24">
+					<Userid v-if="currentFormName" :value.sync="this[currentFormName]" :multi="true" :field="'userId'" :id-field="'id'" :enums="enums"></Userid>
+				</el-col>
+			</el-row>
+			<el-row type="flex" justify="center" align="top" class="qdp-dialog-btns">
+				<el-button type="primary" @click="resetSelectionLabel(currentFormName, 'userId'),userIdVisible=false" icon="ion-backspace-outline">重置</el-button>
+				<el-button type="primary" @click="getSelectionLabel(currentFormName, 'userId', 'name'),userIdVisible=false" icon="ion-checkmark">选择</el-button>
+			</el-row>
+		</el-dialog>
+		<!-- 弹出选择：分配用户-END -->
+	</div>
+</template>
+<script type="text/javascript">
+	define([ 'vue', 'vuel!pages/system/auth/authorganization/menuId.html', 'vuel!pages/system/auth/authorganization/roleId.html', 'vuel!pages/system/auth/authorganization/userId.html'], function(Vue, Menuid, Roleid, Userid) {
+		return {
+			template : template, //
+			components : {
+				Menuid: Menuid, Roleid: Roleid, Userid: Userid
+			},
+			data : function() {
+				return {
+					menuIdVisible : false,
+					roleIdVisible : false,
+					userIdVisible : false,
+					menuIdLoadData : {
+						url : '/ws/json/authOrganizationApplication/pageFindAssignAuthMenu/arg0={{d.vo}}/arg1={{d.page}}', 
+						query : qdpObj({}, 'vo', {}, 'page', qdpObj({}, 'pageSize', 1000, 'currentPage', 1, 'orderBy', [])),
+						callback : function(data, callback, formName) {
+							var checkedAll = data || [], checkedArr = qdpIsArray(checkedAll) ? checkedAll : (checkedAll.rows || []);//要考虑返回是一个Page对象的情况
+							var checked = [], ids = [], names = [], form = this[formName];
+							qdpMap(checkedArr, function(value) {
+								checked.push(value.id), ids.push(value.id), names.push(value.name);
+							});
+							this.cache('authorganizationMenuId', checked);
+							if (form) {
+								form.menuId = ids.join(','), form.menuIdName = names.join(',');
+							}
+							typeof (callback) == 'function' && callback.call(this);
+						}
+					},
+					roleIdLoadData : {
+						url : '/ws/json/authOrganizationApplication/pageFindAssignAuthRole/arg0={{d.vo}}/arg1={{d.page}}', 
+						query : qdpObj({}, 'vo', {}, 'page', qdpObj({}, 'pageSize', 1000, 'currentPage', 1, 'orderBy', [])),
+						callback : function(data, callback, formName) {
+							var checkedAll = data || [], checkedArr = qdpIsArray(checkedAll) ? checkedAll : (checkedAll.rows || []);//要考虑返回是一个Page对象的情况
+							var checked = [], ids = [], names = [], form = this[formName];
+							qdpMap(checkedArr, function(value) {
+								checked.push(value.id), ids.push(value.id), names.push(value.name);
+							});
+							this.cache('authorganizationRoleId', checked);
+							if (form) {
+								form.roleId = ids.join(','), form.roleIdName = names.join(',');
+							}
+							typeof (callback) == 'function' && callback.call(this);
+						}
+					},
+					userIdLoadData : {
+						url : '/ws/json/authOrganizationApplication/pageFindAssignAuthUser/arg0={{d.vo}}/arg1={{d.page}}', 
+						query : qdpObj({}, 'vo', {}, 'page', qdpObj({}, 'pageSize', 1000, 'currentPage', 1, 'orderBy', [])),
+						callback : function(data, callback, formName) {
+							var checkedAll = data || [], checkedArr = qdpIsArray(checkedAll) ? checkedAll : (checkedAll.rows || []);//要考虑返回是一个Page对象的情况
+							var checked = [], ids = [], names = [], form = this[formName];
+							qdpMap(checkedArr, function(value) {
+								checked.push(value.id), ids.push(value.id), names.push(value.name);
+							});
+							this.cache('authorganizationUserId', checked);
+							if (form) {
+								form.userId = ids.join(','), form.userIdName = names.join(',');
+							}
+							typeof (callback) == 'function' && callback.call(this);
+						}
+					},
+					//===
+					hotKey : {
+						controlKey : 0, keyAction : {
+							'b' : 'back', 'r' : 'reload', 'a' : 'add', 'z' : 'addChild', 'e' : 'edit', 'i' : 'info', 'd' : 'delete', 'm' : 'menuId', 'u' : 'userId'
+						}
+					},
+					currentFormName : '',//addForm, editForm
+					searchForm : {
+					},
+					addFormUrl : '/ws/json/authOrganizationApplication/addAuthOrganization',
+					addFormVisible : false,
+					addForm : {
+						name : null, parentId : null, parentIdName : '', parentIdSelections : [], rootId : null, rootIdName : '', rootIdSelections : [], code : null, isUseRootMenu : null, type1 : null, type2 : null, description : null, menuId : null, menuIdName : '', menuIdSelections : [], userId : null, userIdName : '', userIdSelections : [], roleId : null, roleIdName : '', roleIdSelections : []
+					},
+					addFormRules : {"name":[{"type":"string","message":"组织机构名称必须为string类型"},{"required":true,"message":"组织机构名称不能为空"},{"min":1.0,"max":100.0,"message":"组织机构名称范围1至100"}],"parentId":[{"type":"string","message":"上级机构必须为string类型"},{"min":0.0,"max":40.0,"message":"上级机构范围0至40"}],"rootId":[{"type":"string","message":"根机构必须为string类型"},{"required":true,"message":"根机构不能为空"},{"min":1.0,"max":40.0,"message":"根机构范围1至40"}],"code":[{"type":"string","message":"组织机构编码必须为string类型"},{"required":true,"message":"组织机构编码不能为空"},{"min":1.0,"max":40.0,"message":"组织机构编码范围1至40"}],"isUseRootMenu":[{"type":"string","message":"使用根菜单必须为string类型"},{"required":true,"message":"使用根菜单不能为空"},{"len":1.0,"message":"使用根菜单长度为1"}],"type1":[{"type":"string","message":"一级分类必须为string类型"},{"required":true,"message":"一级分类不能为空"},{"min":1.0,"max":40.0,"message":"一级分类范围1至40"}],"type2":[{"type":"string","message":"二级分类必须为string类型"},{"required":true,"message":"二级分类不能为空"},{"min":1.0,"max":40.0,"message":"二级分类范围1至40"}],"description":[{"type":"string","message":"描述必须为string类型"},{"min":0.0,"max":200.0,"message":"描述范围0至200"}],"menuId":[{"type":"string","message":"菜单必须为string类型"}],"userId":[{"type":"string","message":"用户必须为string类型"}]},
+					editFormUrl : '/ws/json/authOrganizationApplication/updateAuthOrganization',
+					editFormVisible : false,
+					editForm : {
+						name : null, code : null, isUseRootMenu : null, type1 : null, type2 : null, description : null, menuId : null, menuIdName : '', menuIdSelections : [], userId : null, userIdName : '', userIdSelections : [], roleId : null, roleIdName : '', roleIdSelections : []
+					},
+					editFormRules : {"name":[{"type":"string","message":"组织机构名称必须为string类型"},{"required":true,"message":"组织机构名称不能为空"},{"min":1.0,"max":100.0,"message":"组织机构名称范围1至100"}],"code":[{"type":"string","message":"组织机构编码必须为string类型"},{"required":true,"message":"组织机构编码不能为空"},{"min":1.0,"max":40.0,"message":"组织机构编码范围1至40"}],"isUseRootMenu":[{"type":"string","message":"使用根菜单必须为string类型"},{"required":true,"message":"使用根菜单不能为空"},{"len":1.0,"message":"使用根菜单长度为1"}],"type1":[{"type":"string","message":"一级分类必须为string类型"},{"required":true,"message":"一级分类不能为空"},{"min":1.0,"max":40.0,"message":"一级分类范围1至40"}],"type2":[{"type":"string","message":"二级分类必须为string类型"},{"required":true,"message":"二级分类不能为空"},{"min":1.0,"max":40.0,"message":"二级分类范围1至40"}],"description":[{"type":"string","message":"描述必须为string类型"},{"min":0.0,"max":200.0,"message":"描述范围0至200"}],"menuId":[{"type":"string","message":"菜单必须为string类型"}],"userId":[{"type":"string","message":"用户必须为string类型"}]},
+					infoFormVisible : false,
+					infoForm : {
+						id : null, name : null, parentId : null, parentIdName : '', parentIdSelections : [], rootId : null, rootIdName : '', rootIdSelections : [], code : null, isUseRootMenu : null, type1 : null, type2 : null, description : null, updateTime : null, createTime : null, menuId : null, menuIdName : '', menuIdSelections : [], userId : null, userIdName : '', userIdSelections : [], roleId : null, roleIdName : '', roleIdSelections : []
+					},
+					deleteFormUrl : '/ws/json/authOrganizationApplication/removeAuthOrganizationById',
+					addChildFormUrl : '/ws/json/authOrganizationApplication/addAuthOrganization',
+					addChildFormVisible : false,
+					addChildForm : {
+						name : null, parentId : null, parentIdName : '', parentIdSelections : [], rootId : null, rootIdName : '', rootIdSelections : [], code : null, isUseRootMenu : null, type1 : null, type2 : null, description : null, menuId : null, menuIdName : '', menuIdSelections : [], userId : null, userIdName : '', userIdSelections : [], roleId : null, roleIdName : '', roleIdSelections : []
+					},
+					addChildFormRules : {"name":[{"type":"string","message":"组织机构名称必须为string类型"},{"required":true,"message":"组织机构名称不能为空"},{"min":1.0,"max":100.0,"message":"组织机构名称范围1至100"}],"parentId":[{"type":"string","message":"上级机构必须为string类型"},{"min":0.0,"max":40.0,"message":"上级机构范围0至40"}],"rootId":[{"type":"string","message":"根机构必须为string类型"},{"required":true,"message":"根机构不能为空"},{"min":1.0,"max":40.0,"message":"根机构范围1至40"}],"code":[{"type":"string","message":"组织机构编码必须为string类型"},{"required":true,"message":"组织机构编码不能为空"},{"min":1.0,"max":40.0,"message":"组织机构编码范围1至40"}],"isUseRootMenu":[{"type":"string","message":"使用根菜单必须为string类型"},{"required":true,"message":"使用根菜单不能为空"},{"len":1.0,"message":"使用根菜单长度为1"}],"type1":[{"type":"string","message":"一级分类必须为string类型"},{"required":true,"message":"一级分类不能为空"},{"min":1.0,"max":40.0,"message":"一级分类范围1至40"}],"type2":[{"type":"string","message":"二级分类必须为string类型"},{"required":true,"message":"二级分类不能为空"},{"min":1.0,"max":40.0,"message":"二级分类范围1至40"}],"description":[{"type":"string","message":"描述必须为string类型"},{"min":0.0,"max":200.0,"message":"描述范围0至200"}],"menuId":[{"type":"string","message":"菜单必须为string类型"}],"userId":[{"type":"string","message":"用户必须为string类型"}]},
+					enums : {"menuId":{"type1":{"S":"默认"},"type2":{"S":"默认"}},"index":{"isUseRootMenu":{"Y":"是","N":"否"},"type1":{"S":"默认"},"type2":{"S":"默认"}},"parentId":{"isUseRootMenu":{"Y":"是","N":"否"},"type1":{"S":"默认"},"type2":{"S":"默认"}},"rootId":{"isUseRootMenu":{"Y":"是","N":"否"},"type1":{"S":"默认"},"type2":{"S":"默认"}},"roleId":{"type1":{"S":"默认"},"type2":{"S":"默认","ADMIN":"管理员","OPERATOR":"业务员","USER":"普通用户"},"status":{"Y":"可用","N":"停用"}},"userId":{"status":{"Y":"可用","N":"停用"},"type":{"S":"默认"},"sex":{"F":"女","M":"男","N":"未知"}}},
+					tree : {
+						url : '/ws/json/authOrganizationApplication/pageFindAuthOrganizationMap/arg0={{d.vo}}/arg1={{d.page}}',
+						query : qdpObj({}, 'vo', {}, 'page', qdpObj({}, 'pageSize', 1000, 'currentPage', 1, 'orderBy', [])), oneSelection : null,
+						multiSelection : [], checked:[], expanded:[], props:{label: 'name', children:'children'}, data : []
+					}
+				};
+			}, //
+			created : function() {
+				this.loadTree();
+			}, //
+			mounted : function() {
+				//快捷键
+				document.addEventListener('keyup', this.onHotKey);
+				document.addEventListener('keydown', this.onHotKey);
+			},//
+			beforeDestroy : function() {
+				//快捷键
+				document.removeEventListener('keyup', this.onHotKey);
+				document.removeEventListener('keydown', this.onHotKey);
+			},//
+			methods : {
+				cache : getters.cache,//
+				accountId : getters.accountId,//
+				qdpIcon: function(config, value) {
+	                return qdpIcon(config, value) || 'el-icon-ion-android-menu';
+	            },//
+				// 加载Tree
+				loadTree : function() {
+					var root = this, tree = root.tree;
+					var query = tree.query, url = tree.url, params = params || {}, prefix="authorganization";
+					query.page && params.orderBy && (query.page.orderBy = params.orderBy);
+					query.page && qdpIsNumber(params.pageSize) && (query.page.pageSize = params.pageSize || 1) && (query.page.currentPage = 1);
+					query.page && qdpIsNumber(params.currentPage) && (query.page.currentPage = params.currentPage);
+					query = qdpCombine(root.queryContext(), query);
+					qdpMap(root.queryContext(), function(value, key){//把当前上下文参数传给VO
+						(query.vo||{})[key] = value;
+					});
+					url = qdpFormatUrl(ctx + url, query);//把参数替换到URL中去
+					LOG("FN: tree-load-data.url=" + url);
+					var callback = function(arr){
+						var treeData = [];
+						//如果设置分组，或检测到可以分组的进行自动按分组组装成树
+						if (tree.groupFields||(arr && arr.length>0 && !arr[0].parentId && !arr[0].rootId && arr[0].type1 && arr[0].type2)) {
+							treeData = qdpGroupByTree(tree.groupFields, arr, tree.labelField || "name", tree.idField || "id", tree.pidField || "parentId",
+									tree.isExpand !== false, tree.checked || [], tree.disabled || []);
+						} else {
+							treeData = qdpTree(arr, tree.labelField || "name", tree.idField || "id", tree.pidField || "parentId", tree.isExpand !== false,
+									tree.checked || [], tree.disabled || []);
+						}
+						Vue.set(tree, 'data', treeData);
+					};
+					root.$http.get(url).then(function(data) {
+						var all = qdpAjaxDataBody(data) || [], arr = qdpIsArray(all) ? all : (all.rows || []);//要考虑返回是一个Page对象的情况
+						callback(arr);
+					}, function(response) {
+						root.$notify({
+							title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
+						});
+					});
+				},
+				// 返回选择项的值
+				getOption : function(data, field) {
+					var fieldName = field.property || field, enums = ((this.enums || {}).index||{})[fieldName] || {};
+					var value = data[fieldName];
+					var option = enums[value == null ? '' : value];
+					return option == null ? (value == null ? '' : value) : option;
+				},
+				// 返回选择数据的值
+				getSelectionLabel : function(formName, field, labelField) {
+					var form = this[formName], names = [], ids = [], datas = form[field + 'Selections'];
+					qdpMap(datas, function(value) {
+						names.push(value[labelField]);
+						ids.push(value.id);
+					});
+					form[field + 'Name'] = names.join(',');
+					form[field] = ids.join(',');
+					return;
+				},
+				// 重置选择数据的值
+				resetSelectionLabel : function(formName, field) {
+					var ref = this.$refs[formName + '-' + field], ref2 = this.$refs[formName + '-' + field + 'Name'];
+					ref && ref.resetField();
+					ref2 && ref2.resetField();
+					this[formName][field + 'Selections'] = [];
+				},
+				// 分割字符串，预防空值
+				split : function(value, fieldName) {
+					return ((value||{})[fieldName]||',').split(',');
+				},
+				// 删除选择项
+				removeSelect : function(form, field, value) {
+					var root = this, names = root.split(form, field+'Name'), ids = root.split(form, field);
+					var index = names.indexOf(value);
+					if(index > -1 && names.length == ids.length){
+						names.splice(index,1), ids.splice(index,1);
+						form[field+'Name']=names.join(','), form[field]=ids.join(',');
+					}
+				},
+				// 展现树节点
+				renderContent: function(h, node_data_store){
+					var root=this, node=node_data_store.node, data=node_data_store.data, store=node_data_store.start;
+					return h('span', {'class': 'el-tree-node__label'}, [
+								h('i', {'class': root.qdpIcon(root.tree, data)}),
+								qdpLabel(root.tree, data)
+							]);
+				},
+				// 热键，默认就是Ctrl+其他键
+				onHotKey : function(event) {
+					var root = this;
+					if (event.type == "keyup") {
+						root.hotKey.controlKey = null;
+						return;
+					}
+					if (event.type != "keydown") {
+						return;
+					}
+					// 获取键值, Ctrl=17, Alt=18, Shit=16, Command=224
+					var keyCode = event.keyCode;
+					if (keyCode == 17) {
+						root.hotKey.controlKey = 17;
+						return;
+					}
+					var keyValue = String.fromCharCode(event.keyCode).toLowerCase();
+					if (root.hotKey.controlKey < 1) {
+						return;
+					}
+					var map = root.hotKey.keyAction, value = map[keyValue];
+					if (!value) {
+						return;
+					}
+					LOG("FN: onHotKey.Ctrl+" + keyValue);
+					event.stopPropagation(), event.preventDefault(); // 阻止事件冒泡 // 阻止该元素默认的keyup事件
+					root.onPost('action-bar', value);
+				},
+				// 打开弹窗
+				openDialog : function(formName, field) {
+					var root = this;
+					root.currentFormName = formName, root[field + 'Visible'] = true;
+				},
+				// 查询上下文
+				queryContext : function(value) {
+					var qc = qdpSGetItem('queryContext', {});
+					if (value === null || value != null) {
+						qc.authorganizationId = value;
+						qdpSSetItem('queryContext', qc);
+					}
+					return qc;
+				},
+				// 清除表单多余项
+				clearForm : function(formJson) {
+					var keys = [];
+					qdpMap(formJson, function(value, key) {
+						if (((key + 'Selections') in formJson) && (key + 'Name') in formJson) {
+							keys.push(key + 'Selections');
+							keys.push(key + 'Name');
+						}
+					});
+					qdpMap(keys, function(value, key) {
+						delete formJson[value];
+					});
+					return formJson;
+				},
+				//
+				onPost : function(eventType, arg0, arg1, arg2, arg3) {
+					LOG("EV: onPost." + eventType);
+					var root = this;
+					if ("searchForm" == eventType) {
+						LOG("searchForm:" + arg0);
+						var action = arg0;
+						if ('reset' == arg0) {
+							root.$refs.searchForm.resetFields();
+							qdpMap(root.searchForm, function(value, key) {
+								root.tree.query.vo[key] = value;
+							});
+						}
+						if ('search' == arg0) {
+							qdpMap(root.searchForm, function(value, key) {
+								root.tree.query.vo[key] = value;
+							});
+						}
+						root.loadTree();
+					}
+					if ("action-bar" == eventType) {
+						LOG("action-bar:" + arg0);
+						var action = arg0;
+						if ('back' == action) {
+							Router.go(-1);
+							return;
+						}
+						if ('refresh' == action) {
+							root.loadTree();
+							return;
+						}
+						if ('add' == action) {
+							root.addFormVisible = true;
+							return;
+						}
+						if ('addChild' == action) {
+							var one = root.tree.oneSelection;
+							if (one == null) {
+								root.$message.info("请选择数据!");
+								return;
+							}
+							root.addChildForm = qdpCombine({
+								parentId : '', parentIdName : '', parentIdSelections : [], rootId : '', rootIdName : '', rootIdSelections : [], menuId : '', menuIdName : '', menuIdSelections : [], userId : '', userIdName : '', userIdSelections : [], roleId : '', roleIdName : '', roleIdSelections : []
+							}, {});
+							qdpMap(['type1','type2','rootId'], function(value, key){
+								(one[value] != null) && (root.addChildForm[value] = one[value]);
+							});
+							(one.id != null) && (root.addChildForm.parentId = one.id);
+							//
+							qdpMap(root.addChildForm, function(value, field) {
+								var loadData = root[field + 'LoadData'];
+								if (!loadData) {
+									return;
+								}
+								var url = loadData.url, query = qdpCombine(root.queryContext(), loadData.query), prefix="authorganization";
+								qdpMap(root.queryContext(), function(value, key){//把当前上下文参数传给VO
+									if(key.indexOf(prefix) == 0){
+										var newKey = key.substring(prefix.length);
+										newKey = newKey.substring(0, 1).toLowerCase() + newKey.substring(1);
+										(query.vo||{})[newKey] = value;
+									}else{
+										(query.vo||{})[key] = value;
+									}
+								});
+								var processor = typeof (loadData.callback) == 'function' ? loadData.callback : noop;
+								url = qdpFormatUrl(ctx + url, query);
+								LOG("FN: edit-load-data.url=" + url);
+								root.$http.get(url).then(function(data) {
+									processor.call(root, qdpAjaxDataBody(data), null, 'editForm');
+								}, function(response) {
+									root.$notify({
+										title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
+									});
+									processor.call(root, null, null, 'addChildForm');
+								});
+							});
+							root.addChildFormVisible = true;
+							root.queryContext.authorganizationId = root.tree.oneSelection.id;
+							return;
+						}
+						if ('edit' == action) {
+							if (root.tree.oneSelection == null) {
+								root.$message.info("请选择数据!");
+								return;
+							}
+							root.editForm = qdpCombine({
+								menuId : '', menuIdName : '', menuIdSelections : [], userId : '', userIdName : '', userIdSelections : [], roleId : '', roleIdName : '', roleIdSelections : []
+							}, root.tree.oneSelection);
+							//
+							qdpMap(root.editForm, function(value, field) {
+								var loadData = root[field + 'LoadData'];
+								if (!loadData) {
+									return;
+								}
+								var url = loadData.url, query = qdpCombine(root.queryContext(), loadData.query), prefix="authorganization";
+								qdpMap(root.queryContext(), function(value, key){//把当前上下文参数传给VO
+									if(key.indexOf(prefix) == 0){
+										var newKey = key.substring(prefix.length);
+										newKey = newKey.substring(0, 1).toLowerCase() + newKey.substring(1);
+										(query.vo||{})[newKey] = value;
+									}else{
+										(query.vo||{})[key] = value;
+									}
+								});
+								var processor = typeof (loadData.callback) == 'function' ? loadData.callback : noop;
+								url = qdpFormatUrl(ctx + url, query);
+								LOG("FN: edit-load-data.url=" + url);
+								root.$http.get(url).then(function(data) {
+									processor.call(root, qdpAjaxDataBody(data), null, 'editForm');
+								}, function(response) {
+									root.$notify({
+										title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
+									});
+									processor.call(root, null, null, 'editForm');
+								});
+							});
+							root.editFormVisible = true;
+							root.queryContext.authorganizationId = root.tree.oneSelection.id;
+							return;
+						}
+						if ('delete' == action) {
+							root.onPost('deleteForm');
+							return;
+						}
+						if ('info' == action) {
+							if (root.tree.oneSelection == null) {
+								root.$message.info("请选择数据!");
+								return;
+							}
+							root.infoForm = qdpJsonCopy(root.tree.oneSelection);
+							root.infoFormVisible = true;
+							return;
+						}
+						if (root[action + 'Visible'] != null) {
+							if (root.tree.oneSelection == null) {
+								root.$message.info("请选择数据!");
+								return;
+							}
+							root[action + 'Form'] = qdpCombine(root[action + 'Form'], root.tree.oneSelection);
+							root.currentFormName = action + 'Form', root[action + 'Visible'] = true;
+							root.queryContext.authorganizationId = root.tree.oneSelection.id;
+							return;
+						}
+					}
+					if ('treeForm' == eventType) {
+						LOG("treeForm:" + arg0);
+						var action = arg0, tree = root.tree;
+						if ('check-change' == action) {
+							var cheched = root.$refs.treeForm.getCheckedNodes(true);
+							Vue.set(tree, 'multiSelection', cheched);
+						}
+						if ('node-click' == action) {
+							var data=arg1, nodeData=arg2, $node=arg3;
+							tree.oneSelection = data;
+							data && (root.infoForm = qdpJsonCopy(tree.oneSelection));
+							root.queryContext(qdpId(root, tree.oneSelection));
+						}
+						return;
+					}
+					if ('addForm' == eventType) {
+						LOG("addForm:" + arg0);
+						var action = arg0, $addForm = root.$refs.addForm, addForm = root.addForm;
+						if ('reset' == action) {
+							$addForm.resetFields();
+						}
+						if ('submit' == action) {
+							var contextCondition = {}, formData, url;
+							var success = function(data) {
+								if (qdpIsSuccess(data)) {
+									root.$message.success('成功');
+									root.addFormVisible = false;
+									root.loadTree();
+									$addForm.resetFields();
+								} else {
+									root.$notify({
+										title : 'Form Post=>Error', message : url + '\n<br/>' + qdpToString(qdpAjaxData(data)), duration : 0, type : 'error'
+									});
+								}
+							};
+							var error = function(response) {
+								root.$notify({
+									title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
+								});
+							};
+							var valid = function(valid) {
+								if (!valid) {
+									return;
+								}
+								root.$http.post(url, formData).then(success, error);
+							};
+							var then = function() {
+								formData = qdpJsonForm({arg0 : root.clearForm(qdpJsonCopy(addForm))});
+								//submit form
+								url = qdpFormatUrl(ctx + root.addFormUrl, contextCondition);
+								LOG("FN: addForm.url=" + url);
+								$addForm.validate(valid);
+							};
+							var confirm = {
+								confirmButtonText : '确定', cancelButtonText : '取消', type : 'warning'
+							};
+							root.$confirm('提交表单', '提示', confirm).then(then)['catch'](noop);
+						}
+						return;
+					}
+					if ('addChildForm' == eventType) {
+						LOG("addChildForm:" + arg0);
+						var action = arg0, $addChildForm = root.$refs.addChildForm, addChildForm = root.addChildForm;
+						if ('reset' == action) {
+							$addChildForm.resetFields();
+						}
+						if ('submit' == action) {
+							var contextCondition = {}, formData, url;
+							var success = function(data) {
+								if (qdpIsSuccess(data)) {
+									root.$message.success('成功');
+									$addChildForm.resetFields();
+									root.addChildFormVisible = false;
+									root.loadTree();
+								} else {
+									root.$notify({
+										title : 'Form Post=>Error', message : url + '\n<br/>' + qdpToString(qdpAjaxData(data)), duration : 0, type : 'error'
+									});
+								}
+							};
+							var error = function(response) {
+								root.$notify({
+									title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
+								});
+							};
+							var valid = function(valid) {
+								if (!valid) {
+									return;
+								}
+								root.$http.post(url, formData).then(success, error);
+							};
+							var then = function() {
+								formData = qdpJsonForm({arg0 : root.clearForm(qdpJsonCopy(addChildForm))});
+								//submit form
+								url = qdpFormatUrl(ctx + root.addChildFormUrl, contextCondition);
+								LOG("FN: addChildForm.url=" + url);
+								$addChildForm.validate(valid);
+							};
+							var confirm = {
+								confirmButtonText : '确定', cancelButtonText : '取消', type : 'warning'
+							};
+							root.$confirm('提交表单', '提示', confirm).then(then)['catch'](noop);
+						}
+						return;
+					}//addChildForm-END
+					if ('editForm' == eventType) {
+						LOG("editForm:" + arg0);
+						var action = arg0, $editForm = root.$refs.editForm, editForm = root.editForm;
+						if ('reset' == action) {
+							$editForm.resetFields();
+						}
+						if ('submit' == action) {
+							var contextCondition = {}, formData, url;
+							var success = function(data) {
+								if (qdpIsSuccess(data)) {
+									root.$message.success('成功');
+									$editForm.resetFields();
+									root.editFormVisible = false;
+									root.loadTree();
+								} else {
+									root.$notify({
+										title : 'Form Post=>Error', message : url + '\n<br/>' + qdpToString(qdpAjaxData(data)), duration : 0, type : 'error'
+									});
+								}
+							};
+							var error = function(response) {
+								root.$notify({
+									title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
+								});
+							};
+							var valid = function(valid) {
+								if (!valid) {
+									return;
+								}
+								root.$http.post(url, formData).then(success, error);
+							};
+							var then = function() {
+								formData = qdpJsonForm({arg0 : root.clearForm(qdpJsonCopy(editForm))});
+								//submit form
+								url = qdpFormatUrl(ctx + root.editFormUrl, contextCondition);
+								LOG("FN: editForm.url=" + url);
+								$editForm.validate(valid);
+							};
+							var confirm = {
+								confirmButtonText : '确定', cancelButtonText : '取消', type : 'warning'
+							};
+							root.$confirm('提交表单', '提示', confirm).then(then)['catch'](noop);
+						}
+						return;
+					}//editForm-END
+					if ('deleteForm' == eventType) {
+						var action = arg0, deleteForm = root.tree.oneSelection?[root.tree.oneSelection]:[];
+						var contextCondition = {}, formData, url, messages;
+						{
+							formData = [], messages = [];
+							if (deleteForm && deleteForm.length < 1) {
+								root.$message.info("请选择数据!");
+								return;
+							}
+							qdpMap(deleteForm, function(value) {
+								formData.push(qdpId(root, value));
+								messages.push(qdpLabel(root, value));
+							});
+						}
+						var success = function(data) {
+							if (qdpIsSuccess(data)) {
+								root.$message.success('成功');
+								root.loadTree();
+							} else {
+								root.$notify({
+									title : 'Form Post=>Error', message : url + '\n<br/>' + qdpToString(qdpAjaxData(data)), duration : 0, type : 'error'
+								});
+							}
+						};
+						var error = function(response) {
+							root.$notify({
+								title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
+							});
+						};
+						var then = function() {
+							//submit form
+							url = qdpFormatUrl(ctx + root.deleteFormUrl, contextCondition);
+							LOG("FN: deleteForm.url=" + url);
+							root.$http.post(url, {
+								arg0 : formData.join(',')
+							}).then(success, error);
+						};
+						var confirm = {
+							confirmButtonText : '确定', cancelButtonText : '取消', type : 'warning'
+						};
+						root.$confirm('确定删除：' + messages.join(','), '提示', confirm).then(then)['catch'](noop);
+						return;
+					}//deleteForm-END
+					if (eventType.endsWith('Form')) {
+						LOG(eventType + ":" + arg0);
+						var action = arg0, $form = root.$refs[eventType], form = root[eventType], actionBarName = eventType.substring(0, eventType
+								.indexOf('Form'));
+						if ('reset' == action) {
+							$form.resetFields();
+						}
+						if ('submit' == action) {
+							var contextCondition = {}, formData, url;
+							var success = function(data) {
+								if (qdpIsSuccess(data)) {
+									root.$message.success('成功');
+									root[actionBarName + 'Visible'] = false;
+									root.loadTree();
+									$form.resetFields();
+								} else {
+									root.$notify({
+										title : 'Form Post=>Error', message : url + '\n<br/>' + qdpToString(qdpAjaxData(data)), duration : 0, type : 'error'
+									});
+								}
+							};
+							var error = function(response) {
+								root.$notify({
+									title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
+								});
+							};
+							var valid = function(valid) {
+								if (!valid) {
+									return;
+								}
+								root.$http.post(url, formData).then(success, error);
+							};
+							var then = function() {
+								formData = qdpJsonForm({arg0 : root.clearForm(qdpJsonCopy(form))});
+								//submit form
+								url = qdpFormatUrl(ctx + root[eventType + 'Url'], contextCondition);
+								LOG("FN: form.url=" + url);
+								$form.validate(valid);
+							};
+							var confirm = {
+								confirmButtonText : '确定', cancelButtonText : '取消', type : 'warning'
+							};
+							root.$confirm('提交表单', '提示', confirm).then(then)['catch'](noop);
+						}
+						return;
+					}//*Form-END
+				}
+			}
+		};
+	});
+</script>
+

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AuthAutherMenu">
+	<resultMap id="AuthAutherMenu" type="com.foreveross.qdp.domain.system.auth.AuthAutherMenu">
+        <id     property="id"         column="ID"/>                       
+        <result property="autherId"   column="AUTHER_ID"/>                
+        <result property="menuId"     column="MENU_ID"/>                  
+        <result property="type"       column="TYPE"/>                     
+        <result property="sort"       column="SORT"/>                     
+        <result property="createTime" column="CREATE_TIME"/>              
+        <result property="updateTime" column="UPDATE_TIME"/>              
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'AUTHERID'    : 'AUTHER_ID'  ,
+           'AUTHER_ID'   : 'AUTHER_ID'  ,
+           'MENUID'      : 'MENU_ID'    ,
+           'MENU_ID'     : 'MENU_ID'    ,
+           'TYPE'        : 'TYPE'       ,
+           'SORT'        : 'SORT'       ,
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getAuthAutherMenuById" parameterType="com.foreveross.qdp.domain.system.auth.AuthAutherMenu" resultMap="AuthAutherMenu">
+		SELECT * 
+		FROM AUTH_AUTHER_MENU
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthAutherMenuMapById" parameterType="com.foreveross.qdp.domain.system.auth.AuthAutherMenu" resultType="hashmap">
+		SELECT 
+           AuthAutherMenu.ID           AS  id                        ,
+           AuthAutherMenu.AUTHER_ID    AS  autherId                  ,
+           AuthAutherMenu.MENU_ID      AS  menuId                    ,
+           AuthAutherMenu.TYPE         AS  type                      ,
+           AuthAutherMenu.SORT         AS  sort                      ,
+           AuthAutherMenu.CREATE_TIME  AS  createTime                ,
+           AuthAutherMenu.UPDATE_TIME  AS  updateTime                ,
+           menuIdAuthMenu.NAME         AS  menuIdName                
+
+		FROM AUTH_AUTHER_MENU AuthAutherMenu
+		LEFT JOIN AUTH_MENU menuIdAuthMenu ON AuthAutherMenu.MENU_ID = menuIdAuthMenu.ID                                           
+
+		<where>
+				AND authAutherMenu.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindAuthAutherMenu" resultMap="AuthAutherMenu">
+		SELECT *
+		FROM AUTH_AUTHER_MENU
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                 "> AND ID LIKE CONCAT('%',#{vo.id,jdbcType=VARCHAR},'%') </if>         
+           <if test="vo!=null and vo.autherId != null and vo.autherId != ''     "> AND AUTHER_ID LIKE CONCAT('%',#{vo.autherId,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.menuId != null and vo.menuId != ''         "> AND MENU_ID LIKE CONCAT('%',#{vo.menuId,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.type != null and vo.type != ''             "> AND TYPE LIKE CONCAT('%',#{vo.type,jdbcType=VARCHAR},'%') </if>     
+           <if test="vo!=null and vo.sort != null and vo.sort != ''             "> AND SORT = #{vo.sort,jdbcType=INTEGER} </if>                        
+           <if test="vo!=null and vo.createTime != null and vo.createTime != '' "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>           
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != '' "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>           
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindAuthAutherMenuMap" resultType="hashmap">
+		SELECT 
+           AuthAutherMenu.ID           AS  id                        ,
+           AuthAutherMenu.AUTHER_ID    AS  autherId                  ,
+           AuthAutherMenu.MENU_ID      AS  menuId                    ,
+           AuthAutherMenu.TYPE         AS  type                      ,
+           AuthAutherMenu.SORT         AS  sort                      ,
+           AuthAutherMenu.CREATE_TIME  AS  createTime                ,
+           AuthAutherMenu.UPDATE_TIME  AS  updateTime                ,
+           menuIdAuthMenu.NAME         AS  menuIdName                
+
+		FROM AUTH_AUTHER_MENU AuthAutherMenu
+		LEFT JOIN AUTH_MENU menuIdAuthMenu ON AuthAutherMenu.MENU_ID = menuIdAuthMenu.ID                                           
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                 "> AND AuthAutherMenu.ID LIKE CONCAT('%',#{vo.id,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.autherId != null and vo.autherId != ''     "> AND AuthAutherMenu.AUTHER_ID LIKE CONCAT('%',#{vo.autherId,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.menuId != null and vo.menuId != ''         "> AND AuthAutherMenu.MENU_ID LIKE CONCAT('%',#{vo.menuId,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.type != null and vo.type != ''             "> AND AuthAutherMenu.TYPE LIKE CONCAT('%',#{vo.type,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.sort != null and vo.sort != ''             "> AND AuthAutherMenu.SORT = #{vo.sort,jdbcType=INTEGER} </if>         
+           <if test="vo!=null and vo.createTime != null and vo.createTime != '' "> AND AuthAutherMenu.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != '' "> AND AuthAutherMenu.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>
+
+		</where>
+		<bind name="aliasDot" value="'AuthAutherMenu.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertAuthAutherMenu" parameterType="com.foreveross.qdp.domain.system.auth.AuthAutherMenu"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO AUTH_AUTHER_MENU
+			( ID, AUTHER_ID, MENU_ID, TYPE, SORT, CREATE_TIME, UPDATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{autherId,jdbcType=VARCHAR},
+           #{menuId,jdbcType=VARCHAR},
+           #{type,jdbcType=VARCHAR},
+           #{sort,jdbcType=INTEGER},
+           #{createTime,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateAuthAutherMenu" parameterType="com.foreveross.qdp.domain.system.auth.AuthAutherMenu">
+		UPDATE AUTH_AUTHER_MENU
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="autherId != null   "> AUTHER_ID = #{autherId,jdbcType=VARCHAR},</if>
+           <if test="menuId != null     "> MENU_ID = #{menuId,jdbcType=VARCHAR},</if>
+           <if test="type != null       "> TYPE = #{type,jdbcType=VARCHAR},</if>
+           <if test="sort != null       "> SORT = #{sort,jdbcType=INTEGER},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteAuthAutherMenu" parameterType="com.foreveross.qdp.domain.system.auth.AuthAutherMenu">
+		DELETE FROM AUTH_AUTHER_MENU
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+</mapper>

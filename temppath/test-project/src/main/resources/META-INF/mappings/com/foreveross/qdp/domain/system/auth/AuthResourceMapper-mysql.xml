@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AuthResource">
+	<resultMap id="AuthResource" type="com.foreveross.qdp.domain.system.auth.AuthResource">
+        <id     property="id"          column="ID"/>                        
+        <result property="name"        column="NAME"/>                      
+        <result property="code"        column="CODE"/>                      
+        <result property="status"      column="STATUS"/>                    
+        <result property="type1"       column="TYPE1"/>                     
+        <result property="type2"       column="TYPE2"/>                     
+        <result property="description" column="DESCRIPTION"/>               
+        <result property="updateTime"  column="UPDATE_TIME"/>               
+        <result property="createTime"  column="CREATE_TIME"/>               
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'NAME'        : 'NAME'       ,
+           'CODE'        : 'CODE'       ,
+           'STATUS'      : 'STATUS'     ,
+           'TYPE1'       : 'TYPE1'      ,
+           'TYPE2'       : 'TYPE2'      ,
+           'DESCRIPTION' : 'DESCRIPTION',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME',
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getAuthResourceById" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource" resultMap="AuthResource">
+		SELECT * 
+		FROM AUTH_RESOURCE
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthResourceMapById" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource" resultType="hashmap">
+		SELECT 
+           AuthResource.ID           AS  id                      ,
+           AuthResource.NAME         AS  name                    ,
+           AuthResource.CODE         AS  code                    ,
+           AuthResource.STATUS       AS  status                  ,
+           AuthResource.TYPE1        AS  type1                   ,
+           AuthResource.TYPE2        AS  type2                   ,
+           AuthResource.DESCRIPTION  AS  description             ,
+           AuthResource.UPDATE_TIME  AS  updateTime              ,
+           AuthResource.CREATE_TIME  AS  createTime              
+
+		FROM AUTH_RESOURCE AuthResource
+
+		<where>
+				AND authResource.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindAuthResource" resultMap="AuthResource">
+		SELECT *
+		FROM AUTH_RESOURCE
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                              
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>       
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>       
+           <if test="vo!=null and vo.status != null and vo.status != ''           "> AND STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>   
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                        
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                        
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>            
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>             
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindAuthResourceMap" resultType="hashmap">
+		SELECT 
+           AuthResource.ID           AS  id                      ,
+           AuthResource.NAME         AS  name                    ,
+           AuthResource.CODE         AS  code                    ,
+           AuthResource.STATUS       AS  status                  ,
+           AuthResource.TYPE1        AS  type1                   ,
+           AuthResource.TYPE2        AS  type2                   ,
+           AuthResource.DESCRIPTION  AS  description             ,
+           AuthResource.UPDATE_TIME  AS  updateTime              ,
+           AuthResource.CREATE_TIME  AS  createTime              
+
+		FROM AUTH_RESOURCE AuthResource
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND AuthResource.ID = #{vo.id,jdbcType=VARCHAR} </if>                 
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND AuthResource.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND AuthResource.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.status != null and vo.status != ''           "> AND AuthResource.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND AuthResource.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>           
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND AuthResource.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>           
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND AuthResource.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND AuthResource.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND AuthResource.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>
+
+		</where>
+		<bind name="aliasDot" value="'AuthResource.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertAuthResource" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO AUTH_RESOURCE
+			( ID, NAME, CODE, STATUS, TYPE1, TYPE2, DESCRIPTION, UPDATE_TIME, CREATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{name,jdbcType=VARCHAR},
+           #{code,jdbcType=VARCHAR},
+           #{status,jdbcType=VARCHAR},
+           #{type1,jdbcType=VARCHAR},
+           #{type2,jdbcType=VARCHAR},
+           #{description,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateAuthResource" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource">
+		UPDATE AUTH_RESOURCE
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="name != null       "> NAME = #{name,jdbcType=VARCHAR},</if>
+           <if test="code != null       "> CODE = #{code,jdbcType=VARCHAR},</if>
+           <if test="status != null     "> STATUS = #{status,jdbcType=VARCHAR},</if>
+           <if test="type1 != null      "> TYPE1 = #{type1,jdbcType=VARCHAR},</if>
+           <if test="type2 != null      "> TYPE2 = #{type2,jdbcType=VARCHAR},</if>
+           DESCRIPTION = #{description,jdbcType=VARCHAR},                              
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteAuthResource" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource">
+		DELETE FROM AUTH_RESOURCE
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+	<select id="getAuthResourceByName" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource" resultMap="AuthResource">
+		SELECT * 
+		FROM AUTH_RESOURCE
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthResourceMapByName" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource" resultType="hashmap">
+		SELECT 
+           AuthResource.ID           AS  id                      ,
+           AuthResource.NAME         AS  name                    ,
+           AuthResource.CODE         AS  code                    ,
+           AuthResource.STATUS       AS  status                  ,
+           AuthResource.TYPE1        AS  type1                   ,
+           AuthResource.TYPE2        AS  type2                   ,
+           AuthResource.DESCRIPTION  AS  description             ,
+           AuthResource.UPDATE_TIME  AS  updateTime              ,
+           AuthResource.CREATE_TIME  AS  createTime              
+
+		FROM AUTH_RESOURCE AuthResource
+
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthResourceByCode" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource" resultMap="AuthResource">
+		SELECT * 
+		FROM AUTH_RESOURCE
+		<where>
+			CODE = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthResourceMapByCode" parameterType="com.foreveross.qdp.domain.system.auth.AuthResource" resultType="hashmap">
+		SELECT 
+           AuthResource.ID           AS  id                      ,
+           AuthResource.NAME         AS  name                    ,
+           AuthResource.CODE         AS  code                    ,
+           AuthResource.STATUS       AS  status                  ,
+           AuthResource.TYPE1        AS  type1                   ,
+           AuthResource.TYPE2        AS  type2                   ,
+           AuthResource.DESCRIPTION  AS  description             ,
+           AuthResource.UPDATE_TIME  AS  updateTime              ,
+           AuthResource.CREATE_TIME  AS  createTime              
+
+		FROM AUTH_RESOURCE AuthResource
+
+		<where>
+			CODE = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="countAuthResourceByName" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM AUTH_RESOURCE
+		<where>
+           NAME = #{vo.name,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+	<select id="countAuthResourceByCode" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM AUTH_RESOURCE
+		<where>
+           CODE = #{vo.code,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+</mapper>

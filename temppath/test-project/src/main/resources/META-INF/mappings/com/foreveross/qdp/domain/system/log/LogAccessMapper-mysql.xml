@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LogAccess">
+	<resultMap id="LogAccess" type="com.foreveross.qdp.domain.system.log.LogAccess">
+        <id     property="id"         column="ID"/>                       
+        <result property="type"       column="TYPE"/>                     
+        <result property="user"       column="USER"/>                     
+        <result property="source"     column="SOURCE"/>                   
+        <result property="target"     column="TARGET"/>                   
+        <result property="createTime" column="CREATE_TIME"/>              
+        <result property="updateTime" column="UPDATE_TIME"/>              
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'TYPE'        : 'TYPE'       ,
+           'USER'        : 'USER'       ,
+           'SOURCE'      : 'SOURCE'     ,
+           'TARGET'      : 'TARGET'     ,
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getLogAccessById" parameterType="com.foreveross.qdp.domain.system.log.LogAccess" resultMap="LogAccess">
+		SELECT * 
+		FROM LOG_ACCESS
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getLogAccessMapById" parameterType="com.foreveross.qdp.domain.system.log.LogAccess" resultType="hashmap">
+		SELECT 
+           LogAccess.ID           AS  id                   ,
+           LogAccess.TYPE         AS  type                 ,
+           LogAccess.USER         AS  user                 ,
+           LogAccess.SOURCE       AS  source               ,
+           LogAccess.TARGET       AS  target               ,
+           LogAccess.CREATE_TIME  AS  createTime           ,
+           LogAccess.UPDATE_TIME  AS  updateTime           
+
+		FROM LOG_ACCESS LogAccess
+
+		<where>
+				AND logAccess.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindLogAccess" resultMap="LogAccess">
+		SELECT *
+		FROM LOG_ACCESS
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                 "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                            
+           <if test="vo!=null and vo.type != null and vo.type != ''             "> AND TYPE LIKE CONCAT('%',#{vo.type,jdbcType=VARCHAR},'%') </if>     
+           <if test="vo!=null and vo.user != null and vo.user != ''             "> AND USER LIKE CONCAT('%',#{vo.user,jdbcType=VARCHAR},'%') </if>     
+           <if test="vo!=null and vo.source != null and vo.source != ''         "> AND SOURCE LIKE CONCAT('%',#{vo.source,jdbcType=VARCHAR},'%') </if> 
+           <if test="vo!=null and vo.target != null and vo.target != ''         "> AND TARGET LIKE CONCAT('%',#{vo.target,jdbcType=VARCHAR},'%') </if> 
+           <if test="vo!=null and vo.createTime != null and vo.createTime != '' "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>           
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != '' "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>           
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindLogAccessMap" resultType="hashmap">
+		SELECT 
+           LogAccess.ID           AS  id                   ,
+           LogAccess.TYPE         AS  type                 ,
+           LogAccess.USER         AS  user                 ,
+           LogAccess.SOURCE       AS  source               ,
+           LogAccess.TARGET       AS  target               ,
+           LogAccess.CREATE_TIME  AS  createTime           ,
+           LogAccess.UPDATE_TIME  AS  updateTime           
+
+		FROM LOG_ACCESS LogAccess
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                 "> AND LogAccess.ID = #{vo.id,jdbcType=VARCHAR} </if>                  
+           <if test="vo!=null and vo.type != null and vo.type != ''             "> AND LogAccess.TYPE LIKE CONCAT('%',#{vo.type,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.user != null and vo.user != ''             "> AND LogAccess.USER LIKE CONCAT('%',#{vo.user,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.source != null and vo.source != ''         "> AND LogAccess.SOURCE LIKE CONCAT('%',#{vo.source,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.target != null and vo.target != ''         "> AND LogAccess.TARGET LIKE CONCAT('%',#{vo.target,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.createTime != null and vo.createTime != '' "> AND LogAccess.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if> 
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != '' "> AND LogAccess.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if> 
+
+		</where>
+		<bind name="aliasDot" value="'LogAccess.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertLogAccess" parameterType="com.foreveross.qdp.domain.system.log.LogAccess"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO LOG_ACCESS
+			( ID, TYPE, USER, SOURCE, TARGET, CREATE_TIME, UPDATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{type,jdbcType=VARCHAR},
+           #{user,jdbcType=VARCHAR},
+           #{source,jdbcType=VARCHAR},
+           #{target,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateLogAccess" parameterType="com.foreveross.qdp.domain.system.log.LogAccess">
+		UPDATE LOG_ACCESS
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="type != null       "> TYPE = #{type,jdbcType=VARCHAR},</if>
+           <if test="user != null       "> USER = #{user,jdbcType=VARCHAR},</if>
+           <if test="source != null     "> SOURCE = #{source,jdbcType=VARCHAR},</if>
+           <if test="target != null     "> TARGET = #{target,jdbcType=VARCHAR},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteLogAccess" parameterType="com.foreveross.qdp.domain.system.log.LogAccess">
+		DELETE FROM LOG_ACCESS
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+</mapper>

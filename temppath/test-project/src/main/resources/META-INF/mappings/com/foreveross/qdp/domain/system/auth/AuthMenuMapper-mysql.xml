@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AuthMenu">
+	<resultMap id="AuthMenu" type="com.foreveross.qdp.domain.system.auth.AuthMenu">
+        <id     property="id"          column="ID"/>                        
+        <result property="name"        column="NAME"/>                      
+        <result property="resourceId"  column="RESOURCE_ID"/>               
+        <result property="type1"       column="TYPE1"/>                     
+        <result property="type2"       column="TYPE2"/>                     
+        <result property="parentId"    column="PARENT_ID"/>                 
+        <result property="rootId"      column="ROOT_ID"/>                   
+        <result property="menuIndex"   column="MENU_INDEX"/>                
+        <result property="maxLevel"    column="MAX_LEVEL"/>                 
+        <result property="ico"         column="ICO"/>                       
+        <result property="description" column="DESCRIPTION"/>               
+        <result property="updateTime"  column="UPDATE_TIME"/>               
+        <result property="createTime"  column="CREATE_TIME"/>               
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'NAME'        : 'NAME'       ,
+           'RESOURCEID'  : 'RESOURCE_ID',
+           'RESOURCE_ID' : 'RESOURCE_ID',
+           'TYPE1'       : 'TYPE1'      ,
+           'TYPE2'       : 'TYPE2'      ,
+           'PARENTID'    : 'PARENT_ID'  ,
+           'PARENT_ID'   : 'PARENT_ID'  ,
+           'ROOTID'      : 'ROOT_ID'    ,
+           'ROOT_ID'     : 'ROOT_ID'    ,
+           'MENUINDEX'   : 'MENU_INDEX' ,
+           'MENU_INDEX'  : 'MENU_INDEX' ,
+           'MAXLEVEL'    : 'MAX_LEVEL'  ,
+           'MAX_LEVEL'   : 'MAX_LEVEL'  ,
+           'ICO'         : 'ICO'        ,
+           'DESCRIPTION' : 'DESCRIPTION',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME',
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getAuthMenuById" parameterType="com.foreveross.qdp.domain.system.auth.AuthMenu" resultMap="AuthMenu">
+		SELECT * 
+		FROM AUTH_MENU
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthMenuMapById" parameterType="com.foreveross.qdp.domain.system.auth.AuthMenu" resultType="hashmap">
+		SELECT 
+           AuthMenu.ID                  AS  id                         ,
+           AuthMenu.NAME                AS  name                       ,
+           AuthMenu.RESOURCE_ID         AS  resourceId                 ,
+           AuthMenu.TYPE1               AS  type1                      ,
+           AuthMenu.TYPE2               AS  type2                      ,
+           AuthMenu.PARENT_ID           AS  parentId                   ,
+           AuthMenu.ROOT_ID             AS  rootId                     ,
+           AuthMenu.MENU_INDEX          AS  menuIndex                  ,
+           AuthMenu.MAX_LEVEL           AS  maxLevel                   ,
+           AuthMenu.ICO                 AS  ico                        ,
+           AuthMenu.DESCRIPTION         AS  description                ,
+           AuthMenu.UPDATE_TIME         AS  updateTime                 ,
+           AuthMenu.CREATE_TIME         AS  createTime                 ,
+           resourceIdAuthResource.NAME  AS  resourceIdName             ,
+           parentIdAuthMenu.NAME        AS  parentIdName               ,
+           rootIdAuthMenu.NAME          AS  rootIdName                 
+
+		FROM AUTH_MENU AuthMenu
+		LEFT JOIN AUTH_RESOURCE resourceIdAuthResource ON AuthMenu.RESOURCE_ID = resourceIdAuthResource.ID                                             
+		LEFT JOIN AUTH_MENU parentIdAuthMenu           ON AuthMenu.PARENT_ID   = parentIdAuthMenu.ID                                                   
+		LEFT JOIN AUTH_MENU rootIdAuthMenu             ON AuthMenu.ROOT_ID     = rootIdAuthMenu.ID                                                     
+
+		<where>
+				AND authMenu.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindAuthMenu" resultMap="AuthMenu">
+		SELECT *
+		FROM AUTH_MENU
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                              
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>       
+           <if test="vo!=null and vo.resourceId != null and vo.resourceId != ''   "> AND RESOURCE_ID = #{vo.resourceId,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                        
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                        
+           <if test="vo!=null and vo.parentId != null and vo.parentId != ''       "> AND PARENT_ID = #{vo.parentId,jdbcType=VARCHAR} </if>                 
+           <if test="vo!=null and vo.rootId != null and vo.rootId != ''           "> AND ROOT_ID = #{vo.rootId,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.menuIndex != null and vo.menuIndex != ''     "> AND MENU_INDEX = #{vo.menuIndex,jdbcType=INTEGER} </if>               
+           <if test="vo!=null and vo.maxLevel != null and vo.maxLevel != ''       "> AND MAX_LEVEL = #{vo.maxLevel,jdbcType=INTEGER} </if>                 
+           <if test="vo!=null and vo.ico != null and vo.ico != ''                 "> AND ICO LIKE CONCAT('%',#{vo.ico,jdbcType=VARCHAR},'%') </if>         
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>            
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>             
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindAuthMenuMap" resultType="hashmap">
+		SELECT 
+           AuthMenu.ID                  AS  id                         ,
+           AuthMenu.NAME                AS  name                       ,
+           AuthMenu.RESOURCE_ID         AS  resourceId                 ,
+           AuthMenu.TYPE1               AS  type1                      ,
+           AuthMenu.TYPE2               AS  type2                      ,
+           AuthMenu.PARENT_ID           AS  parentId                   ,
+           AuthMenu.ROOT_ID             AS  rootId                     ,
+           AuthMenu.MENU_INDEX          AS  menuIndex                  ,
+           AuthMenu.MAX_LEVEL           AS  maxLevel                   ,
+           AuthMenu.ICO                 AS  ico                        ,
+           AuthMenu.DESCRIPTION         AS  description                ,
+           AuthMenu.UPDATE_TIME         AS  updateTime                 ,
+           AuthMenu.CREATE_TIME         AS  createTime                 ,
+           resourceIdAuthResource.NAME  AS  resourceIdName             ,
+           resourceIdAuthResource.CODE  AS  resourceIdCode             ,
+           parentIdAuthMenu.NAME        AS  parentIdName               ,
+           rootIdAuthMenu.NAME          AS  rootIdName                 
+
+		FROM AUTH_MENU AuthMenu
+		LEFT JOIN AUTH_RESOURCE resourceIdAuthResource ON AuthMenu.RESOURCE_ID = resourceIdAuthResource.ID                                             
+		LEFT JOIN AUTH_MENU parentIdAuthMenu           ON AuthMenu.PARENT_ID   = parentIdAuthMenu.ID                                                   
+		LEFT JOIN AUTH_MENU rootIdAuthMenu             ON AuthMenu.ROOT_ID     = rootIdAuthMenu.ID                                                     
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND AuthMenu.ID = #{vo.id,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND AuthMenu.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.resourceId != null and vo.resourceId != ''   "> AND AuthMenu.RESOURCE_ID = #{vo.resourceId,jdbcType=VARCHAR} </if>    
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND AuthMenu.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND AuthMenu.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.parentId != null and vo.parentId != ''       "> AND AuthMenu.PARENT_ID = #{vo.parentId,jdbcType=VARCHAR} </if>        
+           <if test="vo!=null and vo.rootId != null and vo.rootId != ''           "> AND AuthMenu.ROOT_ID = #{vo.rootId,jdbcType=VARCHAR} </if>            
+           <if test="vo!=null and vo.menuIndex != null and vo.menuIndex != ''     "> AND AuthMenu.MENU_INDEX = #{vo.menuIndex,jdbcType=INTEGER} </if>      
+           <if test="vo!=null and vo.maxLevel != null and vo.maxLevel != ''       "> AND AuthMenu.MAX_LEVEL = #{vo.maxLevel,jdbcType=INTEGER} </if>        
+           <if test="vo!=null and vo.ico != null and vo.ico != ''                 "> AND AuthMenu.ICO LIKE CONCAT('%',#{vo.ico,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND AuthMenu.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>   
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND AuthMenu.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>    
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND AuthMenu.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>    
+
+		</where>
+		<bind name="aliasDot" value="'AuthMenu.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertAuthMenu" parameterType="com.foreveross.qdp.domain.system.auth.AuthMenu"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO AUTH_MENU
+			( ID, NAME, RESOURCE_ID, TYPE1, TYPE2, PARENT_ID, ROOT_ID, MENU_INDEX, MAX_LEVEL, ICO, DESCRIPTION, UPDATE_TIME, CREATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{name,jdbcType=VARCHAR},
+           #{resourceId,jdbcType=VARCHAR},
+           #{type1,jdbcType=VARCHAR},
+           #{type2,jdbcType=VARCHAR},
+           #{parentId,jdbcType=VARCHAR},
+           #{rootId,jdbcType=VARCHAR},
+           #{menuIndex,jdbcType=INTEGER},
+           #{maxLevel,jdbcType=INTEGER},
+           #{ico,jdbcType=VARCHAR},
+           #{description,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateAuthMenu" parameterType="com.foreveross.qdp.domain.system.auth.AuthMenu">
+		UPDATE AUTH_MENU
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="name != null       "> NAME = #{name,jdbcType=VARCHAR},</if>
+           <if test="resourceId != null "> RESOURCE_ID = #{resourceId,jdbcType=VARCHAR},</if>
+           <if test="type1 != null      "> TYPE1 = #{type1,jdbcType=VARCHAR},</if>
+           <if test="type2 != null      "> TYPE2 = #{type2,jdbcType=VARCHAR},</if>
+           PARENT_ID = #{parentId,jdbcType=VARCHAR},                              
+           ROOT_ID = #{rootId,jdbcType=VARCHAR},                              
+           MENU_INDEX = #{menuIndex,jdbcType=INTEGER},                              
+           MAX_LEVEL = #{maxLevel,jdbcType=INTEGER},                              
+           ICO = #{ico,jdbcType=VARCHAR},                              
+           DESCRIPTION = #{description,jdbcType=VARCHAR},                              
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteAuthMenu" parameterType="com.foreveross.qdp.domain.system.auth.AuthMenu">
+		DELETE FROM AUTH_MENU
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+	<select id="getAuthMenuByName" parameterType="com.foreveross.qdp.domain.system.auth.AuthMenu" resultMap="AuthMenu">
+		SELECT * 
+		FROM AUTH_MENU
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthMenuMapByName" parameterType="com.foreveross.qdp.domain.system.auth.AuthMenu" resultType="hashmap">
+		SELECT 
+           AuthMenu.ID                  AS  id                         ,
+           AuthMenu.NAME                AS  name                       ,
+           AuthMenu.RESOURCE_ID         AS  resourceId                 ,
+           AuthMenu.TYPE1               AS  type1                      ,
+           AuthMenu.TYPE2               AS  type2                      ,
+           AuthMenu.PARENT_ID           AS  parentId                   ,
+           AuthMenu.ROOT_ID             AS  rootId                     ,
+           AuthMenu.MENU_INDEX          AS  menuIndex                  ,
+           AuthMenu.MAX_LEVEL           AS  maxLevel                   ,
+           AuthMenu.ICO                 AS  ico                        ,
+           AuthMenu.DESCRIPTION         AS  description                ,
+           AuthMenu.UPDATE_TIME         AS  updateTime                 ,
+           AuthMenu.CREATE_TIME         AS  createTime                 ,
+           resourceIdAuthResource.NAME  AS  resourceIdName             ,
+           parentIdAuthMenu.NAME        AS  parentIdName               ,
+           rootIdAuthMenu.NAME          AS  rootIdName                 
+
+		FROM AUTH_MENU AuthMenu
+		LEFT JOIN AUTH_RESOURCE resourceIdAuthResource ON AuthMenu.RESOURCE_ID = resourceIdAuthResource.ID                                             
+		LEFT JOIN AUTH_MENU parentIdAuthMenu           ON AuthMenu.PARENT_ID   = parentIdAuthMenu.ID                                                   
+		LEFT JOIN AUTH_MENU rootIdAuthMenu             ON AuthMenu.ROOT_ID     = rootIdAuthMenu.ID                                                     
+
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="countAuthMenuByName" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM AUTH_MENU
+		<where>
+           NAME = #{vo.name,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+</mapper>

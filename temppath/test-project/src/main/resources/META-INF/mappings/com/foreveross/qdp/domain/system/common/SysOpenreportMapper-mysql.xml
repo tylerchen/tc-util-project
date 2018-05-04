@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysOpenreport">
+	<resultMap id="SysOpenreport" type="com.foreveross.qdp.domain.system.common.SysOpenreport">
+        <id     property="id"          column="ID"/>                        
+        <result property="name"        column="NAME"/>                      
+        <result property="confType"    column="CONF_TYPE"/>                 
+        <result property="xmlContent"  column="XML_CONTENT"/>               
+        <result property="type1"       column="TYPE1"/>                     
+        <result property="type2"       column="TYPE2"/>                     
+        <result property="description" column="DESCRIPTION"/>               
+        <result property="updateTime"  column="UPDATE_TIME"/>               
+        <result property="createTime"  column="CREATE_TIME"/>               
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'NAME'        : 'NAME'       ,
+           'CONFTYPE'    : 'CONF_TYPE'  ,
+           'CONF_TYPE'   : 'CONF_TYPE'  ,
+           'XMLCONTENT'  : 'XML_CONTENT',
+           'XML_CONTENT' : 'XML_CONTENT',
+           'TYPE1'       : 'TYPE1'      ,
+           'TYPE2'       : 'TYPE2'      ,
+           'DESCRIPTION' : 'DESCRIPTION',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME',
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getSysOpenreportById" parameterType="com.foreveross.qdp.domain.system.common.SysOpenreport" resultMap="SysOpenreport">
+		SELECT * 
+		FROM SYS_OPENREPORT
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysOpenreportMapById" parameterType="com.foreveross.qdp.domain.system.common.SysOpenreport" resultType="hashmap">
+		SELECT 
+           SysOpenreport.ID           AS  id                       ,
+           SysOpenreport.NAME         AS  name                     ,
+           SysOpenreport.CONF_TYPE    AS  confType                 ,
+           SysOpenreport.XML_CONTENT  AS  xmlContent               ,
+           SysOpenreport.TYPE1        AS  type1                    ,
+           SysOpenreport.TYPE2        AS  type2                    ,
+           SysOpenreport.DESCRIPTION  AS  description              ,
+           SysOpenreport.UPDATE_TIME  AS  updateTime               ,
+           SysOpenreport.CREATE_TIME  AS  createTime               
+
+		FROM SYS_OPENREPORT SysOpenreport
+
+		<where>
+				AND sysOpenreport.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindSysOpenreport" resultMap="SysOpenreport">
+		SELECT *
+		FROM SYS_OPENREPORT
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                              
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>       
+           <if test="vo!=null and vo.confType != null and vo.confType != ''       "> AND CONF_TYPE = #{vo.confType,jdbcType=VARCHAR} </if>                 
+           <if test="vo!=null and vo.xmlContent != null and vo.xmlContent != ''   "> AND XML_CONTENT = #{vo.xmlContent,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                        
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                        
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>            
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>             
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindSysOpenreportMap" resultType="hashmap">
+		SELECT 
+           SysOpenreport.ID           AS  id                       ,
+           SysOpenreport.NAME         AS  name                     ,
+           SysOpenreport.CONF_TYPE    AS  confType                 ,
+           SysOpenreport.XML_CONTENT  AS  xmlContent               ,
+           SysOpenreport.TYPE1        AS  type1                    ,
+           SysOpenreport.TYPE2        AS  type2                    ,
+           SysOpenreport.DESCRIPTION  AS  description              ,
+           SysOpenreport.UPDATE_TIME  AS  updateTime               ,
+           SysOpenreport.CREATE_TIME  AS  createTime               
+
+		FROM SYS_OPENREPORT SysOpenreport
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND SysOpenreport.ID = #{vo.id,jdbcType=VARCHAR} </if>                
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND SysOpenreport.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.confType != null and vo.confType != ''       "> AND SysOpenreport.CONF_TYPE = #{vo.confType,jdbcType=VARCHAR} </if>   
+           <if test="vo!=null and vo.xmlContent != null and vo.xmlContent != ''   "> AND SysOpenreport.XML_CONTENT = #{vo.xmlContent,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND SysOpenreport.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>          
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND SysOpenreport.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>          
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND SysOpenreport.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND SysOpenreport.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND SysOpenreport.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>
+
+		</where>
+		<bind name="aliasDot" value="'SysOpenreport.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertSysOpenreport" parameterType="com.foreveross.qdp.domain.system.common.SysOpenreport"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO SYS_OPENREPORT
+			( ID, NAME, CONF_TYPE, XML_CONTENT, TYPE1, TYPE2, DESCRIPTION, UPDATE_TIME, CREATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{name,jdbcType=VARCHAR},
+           #{confType,jdbcType=VARCHAR},
+           #{xmlContent,jdbcType=VARCHAR},
+           #{type1,jdbcType=VARCHAR},
+           #{type2,jdbcType=VARCHAR},
+           #{description,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateSysOpenreport" parameterType="com.foreveross.qdp.domain.system.common.SysOpenreport">
+		UPDATE SYS_OPENREPORT
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="name != null       "> NAME = #{name,jdbcType=VARCHAR},</if>
+           <if test="confType != null   "> CONF_TYPE = #{confType,jdbcType=VARCHAR},</if>
+           XML_CONTENT = #{xmlContent,jdbcType=VARCHAR},                              
+           <if test="type1 != null      "> TYPE1 = #{type1,jdbcType=VARCHAR},</if>
+           <if test="type2 != null      "> TYPE2 = #{type2,jdbcType=VARCHAR},</if>
+           DESCRIPTION = #{description,jdbcType=VARCHAR},                              
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteSysOpenreport" parameterType="com.foreveross.qdp.domain.system.common.SysOpenreport">
+		DELETE FROM SYS_OPENREPORT
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+	<select id="getSysOpenreportByName" parameterType="com.foreveross.qdp.domain.system.common.SysOpenreport" resultMap="SysOpenreport">
+		SELECT * 
+		FROM SYS_OPENREPORT
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysOpenreportMapByName" parameterType="com.foreveross.qdp.domain.system.common.SysOpenreport" resultType="hashmap">
+		SELECT 
+           SysOpenreport.ID           AS  id                       ,
+           SysOpenreport.NAME         AS  name                     ,
+           SysOpenreport.CONF_TYPE    AS  confType                 ,
+           SysOpenreport.XML_CONTENT  AS  xmlContent               ,
+           SysOpenreport.TYPE1        AS  type1                    ,
+           SysOpenreport.TYPE2        AS  type2                    ,
+           SysOpenreport.DESCRIPTION  AS  description              ,
+           SysOpenreport.UPDATE_TIME  AS  updateTime               ,
+           SysOpenreport.CREATE_TIME  AS  createTime               
+
+		FROM SYS_OPENREPORT SysOpenreport
+
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="countSysOpenreportByName" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM SYS_OPENREPORT
+		<where>
+           NAME = #{vo.name,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+</mapper>

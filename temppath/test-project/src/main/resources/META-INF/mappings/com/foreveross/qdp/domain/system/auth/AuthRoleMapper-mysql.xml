@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AuthRole">
+	<resultMap id="AuthRole" type="com.foreveross.qdp.domain.system.auth.AuthRole">
+        <id     property="id"          column="ID"/>                        
+        <result property="name"        column="NAME"/>                      
+        <result property="code"        column="CODE"/>                      
+        <result property="type1"       column="TYPE1"/>                     
+        <result property="type2"       column="TYPE2"/>                     
+        <result property="status"      column="STATUS"/>                    
+        <result property="description" column="DESCRIPTION"/>               
+        <result property="updateTime"  column="UPDATE_TIME"/>               
+        <result property="createTime"  column="CREATE_TIME"/>               
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'NAME'        : 'NAME'       ,
+           'CODE'        : 'CODE'       ,
+           'TYPE1'       : 'TYPE1'      ,
+           'TYPE2'       : 'TYPE2'      ,
+           'STATUS'      : 'STATUS'     ,
+           'DESCRIPTION' : 'DESCRIPTION',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME',
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getAuthRoleById" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole" resultMap="AuthRole">
+		SELECT * 
+		FROM AUTH_ROLE
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthRoleMapById" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole" resultType="hashmap">
+		SELECT 
+           AuthRole.ID           AS  id                  ,
+           AuthRole.NAME         AS  name                ,
+           AuthRole.CODE         AS  code                ,
+           AuthRole.TYPE1        AS  type1               ,
+           AuthRole.TYPE2        AS  type2               ,
+           AuthRole.STATUS       AS  status              ,
+           AuthRole.DESCRIPTION  AS  description         ,
+           AuthRole.UPDATE_TIME  AS  updateTime          ,
+           AuthRole.CREATE_TIME  AS  createTime          
+
+		FROM AUTH_ROLE AuthRole
+
+		<where>
+				AND authRole.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindAuthRole" resultMap="AuthRole">
+		SELECT *
+		FROM AUTH_ROLE
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                              
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>       
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>       
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                        
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                        
+           <if test="vo!=null and vo.status != null and vo.status != ''           "> AND STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>   
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>            
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>             
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindAuthRoleMap" resultType="hashmap">
+		SELECT 
+           AuthRole.ID           AS  id                  ,
+           AuthRole.NAME         AS  name                ,
+           AuthRole.CODE         AS  code                ,
+           AuthRole.TYPE1        AS  type1               ,
+           AuthRole.TYPE2        AS  type2               ,
+           AuthRole.STATUS       AS  status              ,
+           AuthRole.DESCRIPTION  AS  description         ,
+           AuthRole.UPDATE_TIME  AS  updateTime          ,
+           AuthRole.CREATE_TIME  AS  createTime          
+
+		FROM AUTH_ROLE AuthRole
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.status != null and vo.status != ''           "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>   
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>    
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>    
+
+		</where>
+		<bind name="aliasDot" value="'AuthRole.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertAuthRole" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO AUTH_ROLE
+			( ID, NAME, CODE, TYPE1, TYPE2, STATUS, DESCRIPTION, UPDATE_TIME, CREATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{name,jdbcType=VARCHAR},
+           #{code,jdbcType=VARCHAR},
+           #{type1,jdbcType=VARCHAR},
+           #{type2,jdbcType=VARCHAR},
+           #{status,jdbcType=VARCHAR},
+           #{description,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateAuthRole" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole">
+		UPDATE AUTH_ROLE
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="name != null       "> NAME = #{name,jdbcType=VARCHAR},</if>
+           <if test="code != null       "> CODE = #{code,jdbcType=VARCHAR},</if>
+           <if test="type1 != null      "> TYPE1 = #{type1,jdbcType=VARCHAR},</if>
+           <if test="type2 != null      "> TYPE2 = #{type2,jdbcType=VARCHAR},</if>
+           <if test="status != null     "> STATUS = #{status,jdbcType=VARCHAR},</if>
+           DESCRIPTION = #{description,jdbcType=VARCHAR},                              
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteAuthRole" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole">
+		DELETE FROM AUTH_ROLE
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+	<select id="getAuthRoleByName" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole" resultMap="AuthRole">
+		SELECT * 
+		FROM AUTH_ROLE
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthRoleMapByName" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole" resultType="hashmap">
+		SELECT 
+           AuthRole.ID           AS  id                  ,
+           AuthRole.NAME         AS  name                ,
+           AuthRole.CODE         AS  code                ,
+           AuthRole.TYPE1        AS  type1               ,
+           AuthRole.TYPE2        AS  type2               ,
+           AuthRole.STATUS       AS  status              ,
+           AuthRole.DESCRIPTION  AS  description         ,
+           AuthRole.UPDATE_TIME  AS  updateTime          ,
+           AuthRole.CREATE_TIME  AS  createTime          
+
+		FROM AUTH_ROLE AuthRole
+
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthRoleByCode" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole" resultMap="AuthRole">
+		SELECT * 
+		FROM AUTH_ROLE
+		<where>
+			CODE = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthRoleMapByCode" parameterType="com.foreveross.qdp.domain.system.auth.AuthRole" resultType="hashmap">
+		SELECT 
+           AuthRole.ID           AS  id                  ,
+           AuthRole.NAME         AS  name                ,
+           AuthRole.CODE         AS  code                ,
+           AuthRole.TYPE1        AS  type1               ,
+           AuthRole.TYPE2        AS  type2               ,
+           AuthRole.STATUS       AS  status              ,
+           AuthRole.DESCRIPTION  AS  description         ,
+           AuthRole.UPDATE_TIME  AS  updateTime          ,
+           AuthRole.CREATE_TIME  AS  createTime          
+
+		FROM AUTH_ROLE AuthRole
+
+		<where>
+			CODE = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+
+	
+	<select id="pageFindAuthRoleByAuthResource" resultMap="AuthRole">
+		SELECT DISTINCT AuthRole.* 
+		FROM AUTH_ROLE AuthRole
+		INNER JOIN AUTH_ROLE_RESOURCE AuthRoleResource  ON  AuthRole.ID     = AuthRoleResource.ROLE_ID                                           
+		INNER JOIN AUTH_RESOURCE AuthResource           ON  AuthResource.ID = AuthRoleResource.RESOURCE_ID                                       
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                                                 "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                                                   
+           <if test="vo!=null and vo.name != null and vo.name != ''                                             "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>                            
+           <if test="vo!=null and vo.code != null and vo.code != ''                                             "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>                            
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''                                           "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                                             
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''                                           "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                                             
+           <if test="vo!=null and vo.status != null and vo.status != ''                                         "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>                        
+           <if test="vo!=null and vo.description != null and vo.description != ''                               "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>                                 
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''                                 "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>                                  
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''                                 "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>                                  
+           <if test="AuthResource!=null and AuthResource.id != null and AuthResource.id != ''                   "> AND AuthResource.ID = #{AuthResource.id,jdbcType=VARCHAR} </if>                                     
+           <if test="AuthResource!=null and AuthResource.name != null and AuthResource.name != ''               "> AND AuthResource.NAME LIKE CONCAT('%',#{AuthResource.name,jdbcType=VARCHAR},'%') </if>              
+           <if test="AuthResource!=null and AuthResource.code != null and AuthResource.code != ''               "> AND AuthResource.CODE LIKE CONCAT('%',#{AuthResource.code,jdbcType=VARCHAR},'%') </if>              
+           <if test="AuthResource!=null and AuthResource.status != null and AuthResource.status != ''           "> AND AuthResource.STATUS LIKE CONCAT('%',#{AuthResource.status,jdbcType=VARCHAR},'%') </if>          
+           <if test="AuthResource!=null and AuthResource.type1 != null and AuthResource.type1 != ''             "> AND AuthResource.TYPE1 = #{AuthResource.type1,jdbcType=VARCHAR} </if>                               
+           <if test="AuthResource!=null and AuthResource.type2 != null and AuthResource.type2 != ''             "> AND AuthResource.TYPE2 = #{AuthResource.type2,jdbcType=VARCHAR} </if>                               
+           <if test="AuthResource!=null and AuthResource.description != null and AuthResource.description != '' "> AND AuthResource.DESCRIPTION = #{AuthResource.description,jdbcType=VARCHAR} </if>                   
+           <if test="AuthResource!=null and AuthResource.updateTime != null and AuthResource.updateTime != ''   "> AND AuthResource.UPDATE_TIME = #{AuthResource.updateTime,jdbcType=VARCHAR} </if>                    
+           <if test="AuthResource!=null and AuthResource.createTime != null and AuthResource.createTime != ''   "> AND AuthResource.CREATE_TIME = #{AuthResource.createTime,jdbcType=VARCHAR} </if>                    
+
+		</where>
+		<bind name="aliasDot" value="'AuthRole.'"/><include refid="orderBy"/>
+	</select>
+	 
+	<select id="pageFindAuthResourceByAuthRoleResourceMap" resultType="hashmap">
+		SELECT 
+           AuthResource.ID           AS  id                      ,
+           AuthResource.NAME         AS  name                    ,
+           AuthResource.CODE         AS  code                    ,
+           AuthResource.STATUS       AS  status                  ,
+           AuthResource.TYPE1        AS  type1                   ,
+           AuthResource.TYPE2        AS  type2                   ,
+           AuthResource.DESCRIPTION  AS  description             ,
+           AuthResource.UPDATE_TIME  AS  updateTime              ,
+           AuthResource.CREATE_TIME  AS  createTime              
+
+		FROM AUTH_ROLE AuthRole
+		INNER JOIN AUTH_ROLE_RESOURCE AuthRoleResource  ON  AuthRole.ID     = AuthRoleResource.ROLE_ID                                           
+		INNER JOIN AUTH_RESOURCE AuthResource           ON  AuthResource.ID = AuthRoleResource.RESOURCE_ID                                       
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.status != null and vo.status != ''           "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>   
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>    
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>    
+
+		</where>
+	</select>
+	
+	<select id="pageFindAuthResourceByAuthResourceMap" resultType="hashmap">
+		SELECT 
+           AuthResource.ID           AS  id                      ,
+           AuthResource.NAME         AS  name                    ,
+           AuthResource.CODE         AS  code                    ,
+           AuthResource.STATUS       AS  status                  ,
+           AuthResource.TYPE1        AS  type1                   ,
+           AuthResource.TYPE2        AS  type2                   ,
+           AuthResource.DESCRIPTION  AS  description             ,
+           AuthResource.UPDATE_TIME  AS  updateTime              ,
+           AuthResource.CREATE_TIME  AS  createTime              
+
+		FROM AUTH_ROLE AuthRole
+		INNER JOIN AUTH_ROLE_RESOURCE AuthRoleResource  ON  AuthRole.ID     = AuthRoleResource.ROLE_ID                                           
+		INNER JOIN AUTH_RESOURCE AuthResource           ON  AuthResource.ID = AuthRoleResource.RESOURCE_ID                                       
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                                                 "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                                                   
+           <if test="vo!=null and vo.name != null and vo.name != ''                                             "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>                            
+           <if test="vo!=null and vo.code != null and vo.code != ''                                             "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>                            
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''                                           "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                                             
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''                                           "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                                             
+           <if test="vo!=null and vo.status != null and vo.status != ''                                         "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>                        
+           <if test="vo!=null and vo.description != null and vo.description != ''                               "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>                                 
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''                                 "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>                                  
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''                                 "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>                                  
+           <if test="AuthResource!=null and AuthResource.id != null and AuthResource.id != ''                   "> AND AuthResource.ID = #{AuthResource.id,jdbcType=VARCHAR} </if>                                     
+           <if test="AuthResource!=null and AuthResource.name != null and AuthResource.name != ''               "> AND AuthResource.NAME LIKE CONCAT('%',#{AuthResource.name,jdbcType=VARCHAR},'%') </if>              
+           <if test="AuthResource!=null and AuthResource.code != null and AuthResource.code != ''               "> AND AuthResource.CODE LIKE CONCAT('%',#{AuthResource.code,jdbcType=VARCHAR},'%') </if>              
+           <if test="AuthResource!=null and AuthResource.status != null and AuthResource.status != ''           "> AND AuthResource.STATUS LIKE CONCAT('%',#{AuthResource.status,jdbcType=VARCHAR},'%') </if>          
+           <if test="AuthResource!=null and AuthResource.type1 != null and AuthResource.type1 != ''             "> AND AuthResource.TYPE1 = #{AuthResource.type1,jdbcType=VARCHAR} </if>                               
+           <if test="AuthResource!=null and AuthResource.type2 != null and AuthResource.type2 != ''             "> AND AuthResource.TYPE2 = #{AuthResource.type2,jdbcType=VARCHAR} </if>                               
+           <if test="AuthResource!=null and AuthResource.description != null and AuthResource.description != '' "> AND AuthResource.DESCRIPTION = #{AuthResource.description,jdbcType=VARCHAR} </if>                   
+           <if test="AuthResource!=null and AuthResource.updateTime != null and AuthResource.updateTime != ''   "> AND AuthResource.UPDATE_TIME = #{AuthResource.updateTime,jdbcType=VARCHAR} </if>                    
+           <if test="AuthResource!=null and AuthResource.createTime != null and AuthResource.createTime != ''   "> AND AuthResource.CREATE_TIME = #{AuthResource.createTime,jdbcType=VARCHAR} </if>                    
+
+		</where>
+	</select>
+	
+	<select id="pageFindAuthRoleResourceMap" resultType="hashmap">
+		SELECT 
+           AuthRoleResource.ID           AS  id                          ,
+           AuthRoleResource.ROLE_ID      AS  roleId                      ,
+           AuthRoleResource.RESOURCE_ID  AS  resourceId                  ,
+           AuthRoleResource.CREATE_TIME  AS  createTime                  ,
+           AuthRoleResource.UPDATE_TIME  AS  updateTime                  
+
+		FROM AUTH_ROLE AuthRole
+		INNER JOIN AUTH_ROLE_RESOURCE AuthRoleResource  ON  AuthRole.ID = AuthRoleResource.ROLE_ID                                       
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.status != null and vo.status != ''           "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>   
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>    
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>    
+
+		</where>
+	</select>
+
+	
+	<select id="pageFindAuthRoleByAuthMenu" resultMap="AuthRole">
+		SELECT DISTINCT AuthRole.* 
+		FROM AUTH_ROLE AuthRole
+		INNER JOIN AUTH_AUTHER_MENU AuthAutherMenu  ON  AuthRole.ID = AuthAutherMenu.AUTHER_ID                                   
+		INNER JOIN AUTH_MENU AuthMenu               ON  AuthMenu.ID = AuthAutherMenu.MENU_ID                                     
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                                     "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                                       
+           <if test="vo!=null and vo.name != null and vo.name != ''                                 "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>                
+           <if test="vo!=null and vo.code != null and vo.code != ''                                 "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>                
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''                               "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                                 
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''                               "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                                 
+           <if test="vo!=null and vo.status != null and vo.status != ''                             "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>            
+           <if test="vo!=null and vo.description != null and vo.description != ''                   "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''                     "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>                      
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''                     "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>                      
+           <if test="AuthMenu!=null and AuthMenu.id != null and AuthMenu.id != ''                   "> AND AuthMenu.ID = #{AuthMenu.id,jdbcType=VARCHAR} </if>                                 
+           <if test="AuthMenu!=null and AuthMenu.name != null and AuthMenu.name != ''               "> AND AuthMenu.NAME LIKE CONCAT('%',#{AuthMenu.name,jdbcType=VARCHAR},'%') </if>          
+           <if test="AuthMenu!=null and AuthMenu.resourceId != null and AuthMenu.resourceId != ''   "> AND AuthMenu.RESOURCE_ID = #{AuthMenu.resourceId,jdbcType=VARCHAR} </if>                
+           <if test="AuthMenu!=null and AuthMenu.type1 != null and AuthMenu.type1 != ''             "> AND AuthMenu.TYPE1 = #{AuthMenu.type1,jdbcType=VARCHAR} </if>                           
+           <if test="AuthMenu!=null and AuthMenu.type2 != null and AuthMenu.type2 != ''             "> AND AuthMenu.TYPE2 = #{AuthMenu.type2,jdbcType=VARCHAR} </if>                           
+           <if test="AuthMenu!=null and AuthMenu.parentId != null and AuthMenu.parentId != ''       "> AND AuthMenu.PARENT_ID = #{AuthMenu.parentId,jdbcType=VARCHAR} </if>                    
+           <if test="AuthMenu!=null and AuthMenu.rootId != null and AuthMenu.rootId != ''           "> AND AuthMenu.ROOT_ID = #{AuthMenu.rootId,jdbcType=VARCHAR} </if>                        
+           <if test="AuthMenu!=null and AuthMenu.menuIndex != null and AuthMenu.menuIndex != ''     "> AND AuthMenu.MENU_INDEX = #{AuthMenu.menuIndex,jdbcType=INTEGER} </if>                  
+           <if test="AuthMenu!=null and AuthMenu.maxLevel != null and AuthMenu.maxLevel != ''       "> AND AuthMenu.MAX_LEVEL = #{AuthMenu.maxLevel,jdbcType=INTEGER} </if>                    
+           <if test="AuthMenu!=null and AuthMenu.ico != null and AuthMenu.ico != ''                 "> AND AuthMenu.ICO LIKE CONCAT('%',#{AuthMenu.ico,jdbcType=VARCHAR},'%') </if>            
+           <if test="AuthMenu!=null and AuthMenu.description != null and AuthMenu.description != '' "> AND AuthMenu.DESCRIPTION = #{AuthMenu.description,jdbcType=VARCHAR} </if>               
+           <if test="AuthMenu!=null and AuthMenu.updateTime != null and AuthMenu.updateTime != ''   "> AND AuthMenu.UPDATE_TIME = #{AuthMenu.updateTime,jdbcType=VARCHAR} </if>                
+           <if test="AuthMenu!=null and AuthMenu.createTime != null and AuthMenu.createTime != ''   "> AND AuthMenu.CREATE_TIME = #{AuthMenu.createTime,jdbcType=VARCHAR} </if>                
+
+		</where>
+		<bind name="aliasDot" value="'AuthRole.'"/><include refid="orderBy"/>
+	</select>
+	 
+	<select id="pageFindAuthMenuByAuthAutherMenuMap" resultType="hashmap">
+		SELECT 
+           AuthMenu.ID           AS  id                  ,
+           AuthMenu.NAME         AS  name                ,
+           AuthMenu.RESOURCE_ID  AS  resourceId          ,
+           AuthMenu.TYPE1        AS  type1               ,
+           AuthMenu.TYPE2        AS  type2               ,
+           AuthMenu.PARENT_ID    AS  parentId            ,
+           AuthMenu.ROOT_ID      AS  rootId              ,
+           AuthMenu.MENU_INDEX   AS  menuIndex           ,
+           AuthMenu.MAX_LEVEL    AS  maxLevel            ,
+           AuthMenu.ICO          AS  ico                 ,
+           AuthMenu.DESCRIPTION  AS  description         ,
+           AuthMenu.UPDATE_TIME  AS  updateTime          ,
+           AuthMenu.CREATE_TIME  AS  createTime          
+
+		FROM AUTH_ROLE AuthRole
+		INNER JOIN AUTH_AUTHER_MENU AuthAutherMenu  ON  AuthRole.ID = AuthAutherMenu.AUTHER_ID                                   
+		INNER JOIN AUTH_MENU AuthMenu               ON  AuthMenu.ID = AuthAutherMenu.MENU_ID                                     
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.status != null and vo.status != ''           "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>   
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>    
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>    
+
+		</where>
+	</select>
+	
+	<select id="pageFindAuthMenuByAuthMenuMap" resultType="hashmap">
+		SELECT 
+           AuthMenu.ID           AS  id                  ,
+           AuthMenu.NAME         AS  name                ,
+           AuthMenu.RESOURCE_ID  AS  resourceId          ,
+           AuthMenu.TYPE1        AS  type1               ,
+           AuthMenu.TYPE2        AS  type2               ,
+           AuthMenu.PARENT_ID    AS  parentId            ,
+           AuthMenu.ROOT_ID      AS  rootId              ,
+           AuthMenu.MENU_INDEX   AS  menuIndex           ,
+           AuthMenu.MAX_LEVEL    AS  maxLevel            ,
+           AuthMenu.ICO          AS  ico                 ,
+           AuthMenu.DESCRIPTION  AS  description         ,
+           AuthMenu.UPDATE_TIME  AS  updateTime          ,
+           AuthMenu.CREATE_TIME  AS  createTime          
+
+		FROM AUTH_ROLE AuthRole
+		INNER JOIN AUTH_AUTHER_MENU AuthAutherMenu  ON  AuthRole.ID = AuthAutherMenu.AUTHER_ID                                   
+		INNER JOIN AUTH_MENU AuthMenu               ON  AuthMenu.ID = AuthAutherMenu.MENU_ID                                     
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                                     "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                                       
+           <if test="vo!=null and vo.name != null and vo.name != ''                                 "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>                
+           <if test="vo!=null and vo.code != null and vo.code != ''                                 "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>                
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''                               "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                                 
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''                               "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                                 
+           <if test="vo!=null and vo.status != null and vo.status != ''                             "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>            
+           <if test="vo!=null and vo.description != null and vo.description != ''                   "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''                     "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>                      
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''                     "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>                      
+           <if test="AuthMenu!=null and AuthMenu.id != null and AuthMenu.id != ''                   "> AND AuthMenu.ID = #{AuthMenu.id,jdbcType=VARCHAR} </if>                                 
+           <if test="AuthMenu!=null and AuthMenu.name != null and AuthMenu.name != ''               "> AND AuthMenu.NAME LIKE CONCAT('%',#{AuthMenu.name,jdbcType=VARCHAR},'%') </if>          
+           <if test="AuthMenu!=null and AuthMenu.resourceId != null and AuthMenu.resourceId != ''   "> AND AuthMenu.RESOURCE_ID = #{AuthMenu.resourceId,jdbcType=VARCHAR} </if>                
+           <if test="AuthMenu!=null and AuthMenu.type1 != null and AuthMenu.type1 != ''             "> AND AuthMenu.TYPE1 = #{AuthMenu.type1,jdbcType=VARCHAR} </if>                           
+           <if test="AuthMenu!=null and AuthMenu.type2 != null and AuthMenu.type2 != ''             "> AND AuthMenu.TYPE2 = #{AuthMenu.type2,jdbcType=VARCHAR} </if>                           
+           <if test="AuthMenu!=null and AuthMenu.parentId != null and AuthMenu.parentId != ''       "> AND AuthMenu.PARENT_ID = #{AuthMenu.parentId,jdbcType=VARCHAR} </if>                    
+           <if test="AuthMenu!=null and AuthMenu.rootId != null and AuthMenu.rootId != ''           "> AND AuthMenu.ROOT_ID = #{AuthMenu.rootId,jdbcType=VARCHAR} </if>                        
+           <if test="AuthMenu!=null and AuthMenu.menuIndex != null and AuthMenu.menuIndex != ''     "> AND AuthMenu.MENU_INDEX = #{AuthMenu.menuIndex,jdbcType=INTEGER} </if>                  
+           <if test="AuthMenu!=null and AuthMenu.maxLevel != null and AuthMenu.maxLevel != ''       "> AND AuthMenu.MAX_LEVEL = #{AuthMenu.maxLevel,jdbcType=INTEGER} </if>                    
+           <if test="AuthMenu!=null and AuthMenu.ico != null and AuthMenu.ico != ''                 "> AND AuthMenu.ICO LIKE CONCAT('%',#{AuthMenu.ico,jdbcType=VARCHAR},'%') </if>            
+           <if test="AuthMenu!=null and AuthMenu.description != null and AuthMenu.description != '' "> AND AuthMenu.DESCRIPTION = #{AuthMenu.description,jdbcType=VARCHAR} </if>               
+           <if test="AuthMenu!=null and AuthMenu.updateTime != null and AuthMenu.updateTime != ''   "> AND AuthMenu.UPDATE_TIME = #{AuthMenu.updateTime,jdbcType=VARCHAR} </if>                
+           <if test="AuthMenu!=null and AuthMenu.createTime != null and AuthMenu.createTime != ''   "> AND AuthMenu.CREATE_TIME = #{AuthMenu.createTime,jdbcType=VARCHAR} </if>                
+
+		</where>
+	</select>
+	
+	<select id="pageFindAuthAutherMenuMap" resultType="hashmap">
+		SELECT 
+           AuthAutherMenu.ID           AS  id                        ,
+           AuthAutherMenu.AUTHER_ID    AS  autherId                  ,
+           AuthAutherMenu.MENU_ID      AS  menuId                    ,
+           AuthAutherMenu.TYPE         AS  type                      ,
+           AuthAutherMenu.SORT         AS  sort                      ,
+           AuthAutherMenu.CREATE_TIME  AS  createTime                ,
+           AuthAutherMenu.UPDATE_TIME  AS  updateTime                
+
+		FROM AUTH_ROLE AuthRole
+		INNER JOIN AUTH_AUTHER_MENU AuthAutherMenu  ON  AuthRole.ID = AuthAutherMenu.AUTHER_ID                                   
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND AuthRole.ID = #{vo.id,jdbcType=VARCHAR} </if>                     
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND AuthRole.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND AuthRole.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND AuthRole.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND AuthRole.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.status != null and vo.status != ''           "> AND AuthRole.STATUS LIKE CONCAT('%',#{vo.status,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND AuthRole.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>   
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND AuthRole.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>    
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND AuthRole.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>    
+
+		</where>
+	</select>
+	<select id="countAuthRoleByName" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM AUTH_ROLE
+		<where>
+           NAME = #{vo.name,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+	<select id="countAuthRoleByCode" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM AUTH_ROLE
+		<where>
+           CODE = #{vo.code,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+</mapper>

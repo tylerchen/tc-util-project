@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LogOperation">
+	<resultMap id="LogOperation" type="com.foreveross.qdp.domain.system.log.LogOperation">
+        <id     property="id"         column="ID"/>                       
+        <result property="type"       column="TYPE"/>                     
+        <result property="operator"   column="OPERATOR"/>                 
+        <result property="target"     column="TARGET"/>                   
+        <result property="startTime"  column="START_TIME"/>               
+        <result property="endTime"    column="END_TIME"/>                 
+        <result property="costTime"   column="COST_TIME"/>                
+        <result property="result"     column="RESULT"/>                   
+        <result property="createTime" column="CREATE_TIME"/>              
+        <result property="updateTime" column="UPDATE_TIME"/>              
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'TYPE'        : 'TYPE'       ,
+           'OPERATOR'    : 'OPERATOR'   ,
+           'TARGET'      : 'TARGET'     ,
+           'STARTTIME'   : 'START_TIME' ,
+           'START_TIME'  : 'START_TIME' ,
+           'ENDTIME'     : 'END_TIME'   ,
+           'END_TIME'    : 'END_TIME'   ,
+           'COSTTIME'    : 'COST_TIME'  ,
+           'COST_TIME'   : 'COST_TIME'  ,
+           'RESULT'      : 'RESULT'     ,
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getLogOperationById" parameterType="com.foreveross.qdp.domain.system.log.LogOperation" resultMap="LogOperation">
+		SELECT * 
+		FROM LOG_OPERATION
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getLogOperationMapById" parameterType="com.foreveross.qdp.domain.system.log.LogOperation" resultType="hashmap">
+		SELECT 
+           LogOperation.ID           AS  id                      ,
+           LogOperation.TYPE         AS  type                    ,
+           LogOperation.OPERATOR     AS  operator                ,
+           LogOperation.TARGET       AS  target                  ,
+           LogOperation.START_TIME   AS  startTime               ,
+           LogOperation.END_TIME     AS  endTime                 ,
+           LogOperation.COST_TIME    AS  costTime                ,
+           LogOperation.RESULT       AS  result                  ,
+           LogOperation.CREATE_TIME  AS  createTime              ,
+           LogOperation.UPDATE_TIME  AS  updateTime              
+
+		FROM LOG_OPERATION LogOperation
+
+		<where>
+				AND logOperation.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindLogOperation" resultMap="LogOperation">
+		SELECT *
+		FROM LOG_OPERATION
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                 "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                            
+           <if test="vo!=null and vo.type != null and vo.type != ''             "> AND TYPE LIKE CONCAT('%',#{vo.type,jdbcType=VARCHAR},'%') </if>     
+           <if test="vo!=null and vo.operator != null and vo.operator != ''     "> AND OPERATOR LIKE CONCAT('%',#{vo.operator,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.target != null and vo.target != ''         "> AND TARGET LIKE CONCAT('%',#{vo.target,jdbcType=VARCHAR},'%') </if> 
+           <if test="vo!=null and vo.startTime != null and vo.startTime != ''   "> AND START_TIME = #{vo.startTime,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.endTime != null and vo.endTime != ''       "> AND END_TIME = #{vo.endTime,jdbcType=VARCHAR} </if>                 
+           <if test="vo!=null and vo.costTime != null and vo.costTime != ''     "> AND COST_TIME = #{vo.costTime,jdbcType=INTEGER} </if>               
+           <if test="vo!=null and vo.result != null and vo.result != ''         "> AND RESULT = #{vo.result,jdbcType=VARCHAR} </if>                    
+           <if test="vo!=null and vo.createTime != null and vo.createTime != '' "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>           
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != '' "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>           
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindLogOperationMap" resultType="hashmap">
+		SELECT 
+           LogOperation.ID           AS  id                      ,
+           LogOperation.TYPE         AS  type                    ,
+           LogOperation.OPERATOR     AS  operator                ,
+           LogOperation.TARGET       AS  target                  ,
+           LogOperation.START_TIME   AS  startTime               ,
+           LogOperation.END_TIME     AS  endTime                 ,
+           LogOperation.COST_TIME    AS  costTime                ,
+           LogOperation.RESULT       AS  result                  ,
+           LogOperation.CREATE_TIME  AS  createTime              ,
+           LogOperation.UPDATE_TIME  AS  updateTime              
+
+		FROM LOG_OPERATION LogOperation
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                 "> AND LogOperation.ID = #{vo.id,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.type != null and vo.type != ''             "> AND LogOperation.TYPE LIKE CONCAT('%',#{vo.type,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.operator != null and vo.operator != ''     "> AND LogOperation.OPERATOR LIKE CONCAT('%',#{vo.operator,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.target != null and vo.target != ''         "> AND LogOperation.TARGET LIKE CONCAT('%',#{vo.target,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.startTime != null and vo.startTime != ''   "> AND LogOperation.START_TIME = #{vo.startTime,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.endTime != null and vo.endTime != ''       "> AND LogOperation.END_TIME = #{vo.endTime,jdbcType=VARCHAR} </if>    
+           <if test="vo!=null and vo.costTime != null and vo.costTime != ''     "> AND LogOperation.COST_TIME = #{vo.costTime,jdbcType=INTEGER} </if>  
+           <if test="vo!=null and vo.result != null and vo.result != ''         "> AND LogOperation.RESULT = #{vo.result,jdbcType=VARCHAR} </if>       
+           <if test="vo!=null and vo.createTime != null and vo.createTime != '' "> AND LogOperation.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != '' "> AND LogOperation.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>
+
+		</where>
+		<bind name="aliasDot" value="'LogOperation.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertLogOperation" parameterType="com.foreveross.qdp.domain.system.log.LogOperation"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO LOG_OPERATION
+			( ID, TYPE, OPERATOR, TARGET, START_TIME, END_TIME, COST_TIME, RESULT, CREATE_TIME, UPDATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{type,jdbcType=VARCHAR},
+           #{operator,jdbcType=VARCHAR},
+           #{target,jdbcType=VARCHAR},
+           #{startTime,jdbcType=VARCHAR},
+           #{endTime,jdbcType=VARCHAR},
+           #{costTime,jdbcType=INTEGER},
+           #{result,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateLogOperation" parameterType="com.foreveross.qdp.domain.system.log.LogOperation">
+		UPDATE LOG_OPERATION
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="type != null       "> TYPE = #{type,jdbcType=VARCHAR},</if>
+           <if test="operator != null   "> OPERATOR = #{operator,jdbcType=VARCHAR},</if>
+           <if test="target != null     "> TARGET = #{target,jdbcType=VARCHAR},</if>
+           <if test="startTime != null  "> START_TIME = #{startTime,jdbcType=VARCHAR},</if>
+           <if test="endTime != null    "> END_TIME = #{endTime,jdbcType=VARCHAR},</if>
+           <if test="costTime != null   "> COST_TIME = #{costTime,jdbcType=INTEGER},</if>
+           <if test="result != null     "> RESULT = #{result,jdbcType=VARCHAR},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteLogOperation" parameterType="com.foreveross.qdp.domain.system.log.LogOperation">
+		DELETE FROM LOG_OPERATION
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+</mapper>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AuthOrganizationUser">
+	<resultMap id="AuthOrganizationUser" type="com.foreveross.qdp.domain.system.auth.AuthOrganizationUser">
+        <id     property="id"             column="ID"/>                           
+        <result property="userId"         column="USER_ID"/>                      
+        <result property="organizationId" column="ORGANIZATION_ID"/>              
+        <result property="updateTime"     column="UPDATE_TIME"/>                  
+        <result property="createTime"     column="CREATE_TIME"/>                  
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'              : 'ID'             ,
+           'USERID'          : 'USER_ID'        ,
+           'USER_ID'         : 'USER_ID'        ,
+           'ORGANIZATIONID'  : 'ORGANIZATION_ID',
+           'ORGANIZATION_ID' : 'ORGANIZATION_ID',
+           'UPDATETIME'      : 'UPDATE_TIME'    ,
+           'UPDATE_TIME'     : 'UPDATE_TIME'    ,
+           'CREATETIME'      : 'CREATE_TIME'    ,
+           'CREATE_TIME'     : 'CREATE_TIME'    
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getAuthOrganizationUserById" parameterType="com.foreveross.qdp.domain.system.auth.AuthOrganizationUser" resultMap="AuthOrganizationUser">
+		SELECT * 
+		FROM AUTH_ORGANIZATION_USER
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getAuthOrganizationUserMapById" parameterType="com.foreveross.qdp.domain.system.auth.AuthOrganizationUser" resultType="hashmap">
+		SELECT 
+           AuthOrganizationUser.ID               AS  id                                  ,
+           AuthOrganizationUser.USER_ID          AS  userId                              ,
+           AuthOrganizationUser.ORGANIZATION_ID  AS  organizationId                      ,
+           AuthOrganizationUser.UPDATE_TIME      AS  updateTime                          ,
+           AuthOrganizationUser.CREATE_TIME      AS  createTime                          ,
+           userIdAuthUser.NAME                   AS  userIdName                          ,
+           organizationIdAuthOrganization.NAME   AS  organizationIdName                  
+
+		FROM AUTH_ORGANIZATION_USER AuthOrganizationUser
+		LEFT JOIN AUTH_USER userIdAuthUser                         ON AuthOrganizationUser.USER_ID         = userIdAuthUser.ID                                                                                 
+		LEFT JOIN AUTH_ORGANIZATION organizationIdAuthOrganization ON AuthOrganizationUser.ORGANIZATION_ID = organizationIdAuthOrganization.ID                                                                 
+
+		<where>
+				AND authOrganizationUser.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindAuthOrganizationUser" resultMap="AuthOrganizationUser">
+		SELECT *
+		FROM AUTH_ORGANIZATION_USER
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                         "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                                    
+           <if test="vo!=null and vo.userId != null and vo.userId != ''                 "> AND USER_ID LIKE CONCAT('%',#{vo.userId,jdbcType=VARCHAR},'%') </if>        
+           <if test="vo!=null and vo.organizationId != null and vo.organizationId != '' "> AND ORGANIZATION_ID LIKE CONCAT('%',#{vo.organizationId,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''         "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>                   
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''         "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>                   
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindAuthOrganizationUserMap" resultType="hashmap">
+		SELECT 
+           AuthOrganizationUser.ID               AS  id                                  ,
+           AuthOrganizationUser.USER_ID          AS  userId                              ,
+           AuthOrganizationUser.ORGANIZATION_ID  AS  organizationId                      ,
+           AuthOrganizationUser.UPDATE_TIME      AS  updateTime                          ,
+           AuthOrganizationUser.CREATE_TIME      AS  createTime                          ,
+           userIdAuthUser.NAME                   AS  userIdName                          ,
+           organizationIdAuthOrganization.NAME   AS  organizationIdName                  
+
+		FROM AUTH_ORGANIZATION_USER AuthOrganizationUser
+		LEFT JOIN AUTH_USER userIdAuthUser                         ON AuthOrganizationUser.USER_ID         = userIdAuthUser.ID                                                                                 
+		LEFT JOIN AUTH_ORGANIZATION organizationIdAuthOrganization ON AuthOrganizationUser.ORGANIZATION_ID = organizationIdAuthOrganization.ID                                                                 
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                         "> AND AuthOrganizationUser.ID = #{vo.id,jdbcType=VARCHAR} </if>               
+           <if test="vo!=null and vo.userId != null and vo.userId != ''                 "> AND AuthOrganizationUser.USER_ID LIKE CONCAT('%',#{vo.userId,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.organizationId != null and vo.organizationId != '' "> AND AuthOrganizationUser.ORGANIZATION_ID LIKE CONCAT('%',#{vo.organizationId,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''         "> AND AuthOrganizationUser.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''         "> AND AuthOrganizationUser.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>
+
+		</where>
+		<bind name="aliasDot" value="'AuthOrganizationUser.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertAuthOrganizationUser" parameterType="com.foreveross.qdp.domain.system.auth.AuthOrganizationUser"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO AUTH_ORGANIZATION_USER
+			( ID, USER_ID, ORGANIZATION_ID, UPDATE_TIME, CREATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{userId,jdbcType=VARCHAR},
+           #{organizationId,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateAuthOrganizationUser" parameterType="com.foreveross.qdp.domain.system.auth.AuthOrganizationUser">
+		UPDATE AUTH_ORGANIZATION_USER
+		<set>
+           <if test="id != null             "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="userId != null         "> USER_ID = #{userId,jdbcType=VARCHAR},</if>
+           <if test="organizationId != null "> ORGANIZATION_ID = #{organizationId,jdbcType=VARCHAR},</if>
+           <if test="updateTime != null     "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+           <if test="createTime != null     "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteAuthOrganizationUser" parameterType="com.foreveross.qdp.domain.system.auth.AuthOrganizationUser">
+		DELETE FROM AUTH_ORGANIZATION_USER
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+</mapper>

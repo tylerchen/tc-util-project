@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysI18n">
+	<resultMap id="SysI18n" type="com.foreveross.qdp.domain.system.common.SysI18n">
+        <id     property="id"             column="ID"/>                           
+        <result property="messageKey"     column="MESSAGE_KEY"/>                  
+        <result property="messageContent" column="MESSAGE_CONTENT"/>              
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'              : 'ID'             ,
+           'MESSAGEKEY'      : 'MESSAGE_KEY'    ,
+           'MESSAGE_KEY'     : 'MESSAGE_KEY'    ,
+           'MESSAGECONTENT'  : 'MESSAGE_CONTENT',
+           'MESSAGE_CONTENT' : 'MESSAGE_CONTENT'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getSysI18nById" parameterType="com.foreveross.qdp.domain.system.common.SysI18n" resultMap="SysI18n">
+		SELECT * 
+		FROM SYS_I18N
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysI18nMapById" parameterType="com.foreveross.qdp.domain.system.common.SysI18n" resultType="hashmap">
+		SELECT 
+           SysI18n.ID               AS  id                     ,
+           SysI18n.MESSAGE_KEY      AS  messageKey             ,
+           SysI18n.MESSAGE_CONTENT  AS  messageContent         
+
+		FROM SYS_I18N SysI18n
+
+		<where>
+				AND sysI18n.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindSysI18n" resultMap="SysI18n">
+		SELECT *
+		FROM SYS_I18N
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                         "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                                    
+           <if test="vo!=null and vo.messageKey != null and vo.messageKey != ''         "> AND MESSAGE_KEY LIKE CONCAT('%',#{vo.messageKey,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.messageContent != null and vo.messageContent != '' "> AND MESSAGE_CONTENT = #{vo.messageContent,jdbcType=VARCHAR} </if>           
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindSysI18nMap" resultType="hashmap">
+		SELECT 
+           SysI18n.ID               AS  id                     ,
+           SysI18n.MESSAGE_KEY      AS  messageKey             ,
+           SysI18n.MESSAGE_CONTENT  AS  messageContent         
+
+		FROM SYS_I18N SysI18n
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                         "> AND SysI18n.ID = #{vo.id,jdbcType=VARCHAR} </if>                            
+           <if test="vo!=null and vo.messageKey != null and vo.messageKey != ''         "> AND SysI18n.MESSAGE_KEY LIKE CONCAT('%',#{vo.messageKey,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.messageContent != null and vo.messageContent != '' "> AND SysI18n.MESSAGE_CONTENT = #{vo.messageContent,jdbcType=VARCHAR} </if>   
+
+		</where>
+		<bind name="aliasDot" value="'SysI18n.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertSysI18n" parameterType="com.foreveross.qdp.domain.system.common.SysI18n"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO SYS_I18N
+			( ID, MESSAGE_KEY, MESSAGE_CONTENT )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{messageKey,jdbcType=VARCHAR},
+           #{messageContent,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateSysI18n" parameterType="com.foreveross.qdp.domain.system.common.SysI18n">
+		UPDATE SYS_I18N
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="messageKey != null "> MESSAGE_KEY = #{messageKey,jdbcType=VARCHAR},</if>
+           MESSAGE_CONTENT = #{messageContent,jdbcType=VARCHAR},                              
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteSysI18n" parameterType="com.foreveross.qdp.domain.system.common.SysI18n">
+		DELETE FROM SYS_I18N
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+	<select id="getSysI18nByMessageKey" parameterType="com.foreveross.qdp.domain.system.common.SysI18n" resultMap="SysI18n">
+		SELECT * 
+		FROM SYS_I18N
+		<where>
+			MESSAGE_KEY = #{messageKey,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysI18nMapByMessageKey" parameterType="com.foreveross.qdp.domain.system.common.SysI18n" resultType="hashmap">
+		SELECT 
+           SysI18n.ID               AS  id                     ,
+           SysI18n.MESSAGE_KEY      AS  messageKey             ,
+           SysI18n.MESSAGE_CONTENT  AS  messageContent         
+
+		FROM SYS_I18N SysI18n
+
+		<where>
+			MESSAGE_KEY = #{messageKey,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="countSysI18nByMessageKey" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM SYS_I18N
+		<where>
+           MESSAGE_KEY = #{vo.messageKey,jdbcType=VARCHAR}                                                           
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysDictionary">
+	<resultMap id="SysDictionary" type="com.foreveross.qdp.domain.system.common.SysDictionary">
+        <id     property="id"         column="ID"/>                       
+        <result property="type1"      column="TYPE1"/>                    
+        <result property="type2"      column="TYPE2"/>                    
+        <result property="name1"      column="NAME1"/>                    
+        <result property="name2"      column="NAME2"/>                    
+        <result property="code"       column="CODE"/>                     
+        <result property="value"      column="VALUE"/>                    
+        <result property="sort"       column="SORT"/>                     
+        <result property="desciption" column="DESCIPTION"/>               
+        <result property="status"     column="STATUS"/>                   
+        <result property="updateTime" column="UPDATE_TIME"/>              
+        <result property="createTime" column="CREATE_TIME"/>              
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'TYPE1'       : 'TYPE1'      ,
+           'TYPE2'       : 'TYPE2'      ,
+           'NAME1'       : 'NAME1'      ,
+           'NAME2'       : 'NAME2'      ,
+           'CODE'        : 'CODE'       ,
+           'VALUE'       : 'VALUE'      ,
+           'SORT'        : 'SORT'       ,
+           'DESCIPTION'  : 'DESCIPTION' ,
+           'STATUS'      : 'STATUS'     ,
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME',
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getSysDictionaryById" parameterType="com.foreveross.qdp.domain.system.common.SysDictionary" resultMap="SysDictionary">
+		SELECT * 
+		FROM SYS_DICTIONARY
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysDictionaryMapById" parameterType="com.foreveross.qdp.domain.system.common.SysDictionary" resultType="hashmap">
+		SELECT 
+           SysDictionary.ID           AS  id                       ,
+           SysDictionary.TYPE1        AS  type1                    ,
+           SysDictionary.TYPE2        AS  type2                    ,
+           SysDictionary.NAME1        AS  name1                    ,
+           SysDictionary.NAME2        AS  name2                    ,
+           SysDictionary.CODE         AS  code                     ,
+           SysDictionary.VALUE        AS  value                    ,
+           SysDictionary.SORT         AS  sort                     ,
+           SysDictionary.DESCIPTION   AS  desciption               ,
+           SysDictionary.STATUS       AS  status                   ,
+           SysDictionary.UPDATE_TIME  AS  updateTime               ,
+           SysDictionary.CREATE_TIME  AS  createTime               
+
+		FROM SYS_DICTIONARY SysDictionary
+
+		<where>
+				AND sysDictionary.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindSysDictionary" resultMap="SysDictionary">
+		SELECT *
+		FROM SYS_DICTIONARY
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                 "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                            
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''           "> AND TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>                      
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''           "> AND TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>                      
+           <if test="vo!=null and vo.name1 != null and vo.name1 != ''           "> AND NAME1 LIKE CONCAT('%',#{vo.name1,jdbcType=VARCHAR},'%') </if>   
+           <if test="vo!=null and vo.name2 != null and vo.name2 != ''           "> AND NAME2 = #{vo.name2,jdbcType=VARCHAR} </if>                      
+           <if test="vo!=null and vo.code != null and vo.code != ''             "> AND CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>     
+           <if test="vo!=null and vo.value != null and vo.value != ''           "> AND VALUE = #{vo.value,jdbcType=VARCHAR} </if>                      
+           <if test="vo!=null and vo.sort != null and vo.sort != ''             "> AND SORT = #{vo.sort,jdbcType=INTEGER} </if>                        
+           <if test="vo!=null and vo.desciption != null and vo.desciption != '' "> AND DESCIPTION = #{vo.desciption,jdbcType=VARCHAR} </if>            
+           <if test="vo!=null and vo.status != null and vo.status != ''         "> AND STATUS = #{vo.status,jdbcType=VARCHAR} </if>                    
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != '' "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>           
+           <if test="vo!=null and vo.createTime != null and vo.createTime != '' "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>           
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindSysDictionaryMap" resultType="hashmap">
+		SELECT 
+           SysDictionary.ID           AS  id                       ,
+           SysDictionary.TYPE1        AS  type1                    ,
+           SysDictionary.TYPE2        AS  type2                    ,
+           SysDictionary.NAME1        AS  name1                    ,
+           SysDictionary.NAME2        AS  name2                    ,
+           SysDictionary.CODE         AS  code                     ,
+           SysDictionary.VALUE        AS  value                    ,
+           SysDictionary.SORT         AS  sort                     ,
+           SysDictionary.DESCIPTION   AS  desciption               ,
+           SysDictionary.STATUS       AS  status                   ,
+           SysDictionary.UPDATE_TIME  AS  updateTime               ,
+           SysDictionary.CREATE_TIME  AS  createTime               
+
+		FROM SYS_DICTIONARY SysDictionary
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                 "> AND SysDictionary.ID = #{vo.id,jdbcType=VARCHAR} </if>              
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''           "> AND SysDictionary.TYPE1 = #{vo.type1,jdbcType=VARCHAR} </if>        
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''           "> AND SysDictionary.TYPE2 = #{vo.type2,jdbcType=VARCHAR} </if>        
+           <if test="vo!=null and vo.name1 != null and vo.name1 != ''           "> AND SysDictionary.NAME1 LIKE CONCAT('%',#{vo.name1,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.name2 != null and vo.name2 != ''           "> AND SysDictionary.NAME2 = #{vo.name2,jdbcType=VARCHAR} </if>        
+           <if test="vo!=null and vo.code != null and vo.code != ''             "> AND SysDictionary.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.value != null and vo.value != ''           "> AND SysDictionary.VALUE = #{vo.value,jdbcType=VARCHAR} </if>        
+           <if test="vo!=null and vo.sort != null and vo.sort != ''             "> AND SysDictionary.SORT = #{vo.sort,jdbcType=INTEGER} </if>          
+           <if test="vo!=null and vo.desciption != null and vo.desciption != '' "> AND SysDictionary.DESCIPTION = #{vo.desciption,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.status != null and vo.status != ''         "> AND SysDictionary.STATUS = #{vo.status,jdbcType=VARCHAR} </if>      
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != '' "> AND SysDictionary.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>
+           <if test="vo!=null and vo.createTime != null and vo.createTime != '' "> AND SysDictionary.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>
+
+		</where>
+		<bind name="aliasDot" value="'SysDictionary.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertSysDictionary" parameterType="com.foreveross.qdp.domain.system.common.SysDictionary"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO SYS_DICTIONARY
+			( ID, TYPE1, TYPE2, NAME1, NAME2, CODE, VALUE, SORT, DESCIPTION, STATUS, UPDATE_TIME, CREATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{type1,jdbcType=VARCHAR},
+           #{type2,jdbcType=VARCHAR},
+           #{name1,jdbcType=VARCHAR},
+           #{name2,jdbcType=VARCHAR},
+           #{code,jdbcType=VARCHAR},
+           #{value,jdbcType=VARCHAR},
+           #{sort,jdbcType=INTEGER},
+           #{desciption,jdbcType=VARCHAR},
+           #{status,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateSysDictionary" parameterType="com.foreveross.qdp.domain.system.common.SysDictionary">
+		UPDATE SYS_DICTIONARY
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="type1 != null      "> TYPE1 = #{type1,jdbcType=VARCHAR},</if>
+           <if test="type2 != null      "> TYPE2 = #{type2,jdbcType=VARCHAR},</if>
+           <if test="name1 != null      "> NAME1 = #{name1,jdbcType=VARCHAR},</if>
+           <if test="name2 != null      "> NAME2 = #{name2,jdbcType=VARCHAR},</if>
+           <if test="code != null       "> CODE = #{code,jdbcType=VARCHAR},</if>
+           VALUE = #{value,jdbcType=VARCHAR},                              
+           <if test="sort != null       "> SORT = #{sort,jdbcType=INTEGER},</if>
+           DESCIPTION = #{desciption,jdbcType=VARCHAR},                              
+           <if test="status != null     "> STATUS = #{status,jdbcType=VARCHAR},</if>
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteSysDictionary" parameterType="com.foreveross.qdp.domain.system.common.SysDictionary">
+		DELETE FROM SYS_DICTIONARY
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+</mapper>

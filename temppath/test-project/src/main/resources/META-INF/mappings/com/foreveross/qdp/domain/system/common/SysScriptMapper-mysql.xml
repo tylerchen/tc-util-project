@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysScript">
+	<resultMap id="SysScript" type="com.foreveross.qdp.domain.system.common.SysScript">
+        <id     property="id"          column="ID"/>                        
+        <result property="name"        column="NAME"/>                      
+        <result property="code"        column="CODE"/>                      
+        <result property="content"     column="CONTENT"/>                   
+        <result property="parameter"   column="PARAMETER"/>                 
+        <result property="type1"       column="TYPE_1"/>                    
+        <result property="type2"       column="TYPE_2"/>                    
+        <result property="description" column="DESCRIPTION"/>               
+        <result property="createTime"  column="CREATE_TIME"/>               
+        <result property="updateTime"  column="UPDATE_TIME"/>               
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'NAME'        : 'NAME'       ,
+           'CODE'        : 'CODE'       ,
+           'CONTENT'     : 'CONTENT'    ,
+           'PARAMETER'   : 'PARAMETER'  ,
+           'TYPE1'       : 'TYPE_1'     ,
+           'TYPE_1'      : 'TYPE_1'     ,
+           'TYPE2'       : 'TYPE_2'     ,
+           'TYPE_2'      : 'TYPE_2'     ,
+           'DESCRIPTION' : 'DESCRIPTION',
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getSysScriptById" parameterType="com.foreveross.qdp.domain.system.common.SysScript" resultMap="SysScript">
+		SELECT * 
+		FROM SYS_SCRIPT
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysScriptMapById" parameterType="com.foreveross.qdp.domain.system.common.SysScript" resultType="hashmap">
+		SELECT 
+           SysScript.ID           AS  id                   ,
+           SysScript.NAME         AS  name                 ,
+           SysScript.CODE         AS  code                 ,
+           SysScript.CONTENT      AS  content              ,
+           SysScript.PARAMETER    AS  parameter            ,
+           SysScript.TYPE_1       AS  type1                ,
+           SysScript.TYPE_2       AS  type2                ,
+           SysScript.DESCRIPTION  AS  description          ,
+           SysScript.CREATE_TIME  AS  createTime           ,
+           SysScript.UPDATE_TIME  AS  updateTime           
+
+		FROM SYS_SCRIPT SysScript
+
+		<where>
+				AND sysScript.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindSysScript" resultMap="SysScript">
+		SELECT *
+		FROM SYS_SCRIPT
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                              
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>       
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>       
+           <if test="vo!=null and vo.content != null and vo.content != ''         "> AND CONTENT = #{vo.content,jdbcType=VARCHAR} </if>                    
+           <if test="vo!=null and vo.parameter != null and vo.parameter != ''     "> AND PARAMETER = #{vo.parameter,jdbcType=VARCHAR} </if>                
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND TYPE_1 = #{vo.type1,jdbcType=VARCHAR} </if>                       
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND TYPE_2 = #{vo.type2,jdbcType=VARCHAR} </if>                       
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>            
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>             
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindSysScriptMap" resultType="hashmap">
+		SELECT 
+           SysScript.ID           AS  id                   ,
+           SysScript.NAME         AS  name                 ,
+           SysScript.CODE         AS  code                 ,
+           SysScript.CONTENT      AS  content              ,
+           SysScript.PARAMETER    AS  parameter            ,
+           SysScript.TYPE_1       AS  type1                ,
+           SysScript.TYPE_2       AS  type2                ,
+           SysScript.DESCRIPTION  AS  description          ,
+           SysScript.CREATE_TIME  AS  createTime           ,
+           SysScript.UPDATE_TIME  AS  updateTime           
+
+		FROM SYS_SCRIPT SysScript
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND SysScript.ID = #{vo.id,jdbcType=VARCHAR} </if>                    
+           <if test="vo!=null and vo.name != null and vo.name != ''               "> AND SysScript.NAME LIKE CONCAT('%',#{vo.name,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.code != null and vo.code != ''               "> AND SysScript.CODE LIKE CONCAT('%',#{vo.code,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.content != null and vo.content != ''         "> AND SysScript.CONTENT = #{vo.content,jdbcType=VARCHAR} </if>          
+           <if test="vo!=null and vo.parameter != null and vo.parameter != ''     "> AND SysScript.PARAMETER = #{vo.parameter,jdbcType=VARCHAR} </if>      
+           <if test="vo!=null and vo.type1 != null and vo.type1 != ''             "> AND SysScript.TYPE_1 = #{vo.type1,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.type2 != null and vo.type2 != ''             "> AND SysScript.TYPE_2 = #{vo.type2,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND SysScript.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>  
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND SysScript.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>   
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND SysScript.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>   
+
+		</where>
+		<bind name="aliasDot" value="'SysScript.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertSysScript" parameterType="com.foreveross.qdp.domain.system.common.SysScript"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO SYS_SCRIPT
+			( ID, NAME, CODE, CONTENT, PARAMETER, TYPE_1, TYPE_2, DESCRIPTION, CREATE_TIME, UPDATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{name,jdbcType=VARCHAR},
+           #{code,jdbcType=VARCHAR},
+           #{content,jdbcType=VARCHAR},
+           #{parameter,jdbcType=VARCHAR},
+           #{type1,jdbcType=VARCHAR},
+           #{type2,jdbcType=VARCHAR},
+           #{description,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateSysScript" parameterType="com.foreveross.qdp.domain.system.common.SysScript">
+		UPDATE SYS_SCRIPT
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="name != null       "> NAME = #{name,jdbcType=VARCHAR},</if>
+           <if test="code != null       "> CODE = #{code,jdbcType=VARCHAR},</if>
+           <if test="content != null    "> CONTENT = #{content,jdbcType=VARCHAR},</if>
+           PARAMETER = #{parameter,jdbcType=VARCHAR},                              
+           <if test="type1 != null      "> TYPE_1 = #{type1,jdbcType=VARCHAR},</if>
+           <if test="type2 != null      "> TYPE_2 = #{type2,jdbcType=VARCHAR},</if>
+           DESCRIPTION = #{description,jdbcType=VARCHAR},                              
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteSysScript" parameterType="com.foreveross.qdp.domain.system.common.SysScript">
+		DELETE FROM SYS_SCRIPT
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+	<select id="getSysScriptByName" parameterType="com.foreveross.qdp.domain.system.common.SysScript" resultMap="SysScript">
+		SELECT * 
+		FROM SYS_SCRIPT
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysScriptMapByName" parameterType="com.foreveross.qdp.domain.system.common.SysScript" resultType="hashmap">
+		SELECT 
+           SysScript.ID           AS  id                   ,
+           SysScript.NAME         AS  name                 ,
+           SysScript.CODE         AS  code                 ,
+           SysScript.CONTENT      AS  content              ,
+           SysScript.PARAMETER    AS  parameter            ,
+           SysScript.TYPE_1       AS  type1                ,
+           SysScript.TYPE_2       AS  type2                ,
+           SysScript.DESCRIPTION  AS  description          ,
+           SysScript.CREATE_TIME  AS  createTime           ,
+           SysScript.UPDATE_TIME  AS  updateTime           
+
+		FROM SYS_SCRIPT SysScript
+
+		<where>
+			NAME = #{name,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysScriptByCode" parameterType="com.foreveross.qdp.domain.system.common.SysScript" resultMap="SysScript">
+		SELECT * 
+		FROM SYS_SCRIPT
+		<where>
+			CODE = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysScriptMapByCode" parameterType="com.foreveross.qdp.domain.system.common.SysScript" resultType="hashmap">
+		SELECT 
+           SysScript.ID           AS  id                   ,
+           SysScript.NAME         AS  name                 ,
+           SysScript.CODE         AS  code                 ,
+           SysScript.CONTENT      AS  content              ,
+           SysScript.PARAMETER    AS  parameter            ,
+           SysScript.TYPE_1       AS  type1                ,
+           SysScript.TYPE_2       AS  type2                ,
+           SysScript.DESCRIPTION  AS  description          ,
+           SysScript.CREATE_TIME  AS  createTime           ,
+           SysScript.UPDATE_TIME  AS  updateTime           
+
+		FROM SYS_SCRIPT SysScript
+
+		<where>
+			CODE = #{code,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="countSysScriptByName" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM SYS_SCRIPT
+		<where>
+           NAME = #{vo.name,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+	<select id="countSysScriptByCode" resultType="java.lang.Long">
+		SELECT count(*)
+		FROM SYS_SCRIPT
+		<where>
+           CODE = #{vo.code,jdbcType=VARCHAR}                                                                        
+           <if test="vo!=null and vo.id != null and vo.id != '' "> AND ID &lt;&gt; #{vo.id,jdbcType=VARCHAR}</if>      
+
+		</where>
+	</select>
+</mapper>

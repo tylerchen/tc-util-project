@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SysExTable">
+	<resultMap id="SysExTable" type="com.foreveross.qdp.domain.system.common.SysExTable">
+        <id     property="id"          column="ID"/>                        
+        <result property="refTable"    column="REF_TABLE"/>                 
+        <result property="colName"     column="COL_NAME"/>                  
+        <result property="colType"     column="COL_TYPE"/>                  
+        <result property="description" column="DESCRIPTION"/>               
+        <result property="updateTime"  column="UPDATE_TIME"/>               
+        <result property="createTime"  column="CREATE_TIME"/>               
+
+	</resultMap>
+	<sql id="orderBy">
+		<if test="page !=null and page.orderBy!=null">
+			<bind name="fieldColMap" value="#{
+           'ID'          : 'ID'         ,
+           'REFTABLE'    : 'REF_TABLE'  ,
+           'REF_TABLE'   : 'REF_TABLE'  ,
+           'COLNAME'     : 'COL_NAME'   ,
+           'COL_NAME'    : 'COL_NAME'   ,
+           'COLTYPE'     : 'COL_TYPE'   ,
+           'COL_TYPE'    : 'COL_TYPE'   ,
+           'DESCRIPTION' : 'DESCRIPTION',
+           'UPDATETIME'  : 'UPDATE_TIME',
+           'UPDATE_TIME' : 'UPDATE_TIME',
+           'CREATETIME'  : 'CREATE_TIME',
+           'CREATE_TIME' : 'CREATE_TIME'
+
+			}"/>
+			<bind name="orderMap" value="#{'ASC':'ASC', 'DESC':'DESC'}"/>
+			<trim prefix="order by " suffixOverrides=",">
+				<foreach item="item" index="index" collection="page.orderBy" separator=",">
+					<if test="item != null and item.name !=null and (fieldColMap[item.name.toUpperCase()] != null or orderMap[item.order.toUpperCase()]!=null)">${aliasDot}${fieldColMap[item.name.toUpperCase()]} ${orderMap[item.order.toUpperCase()]}</if>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	<select id="getSysExTableById" parameterType="com.foreveross.qdp.domain.system.common.SysExTable" resultMap="SysExTable">
+		SELECT * 
+		FROM SYS_EX_TABLE
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="getSysExTableMapById" parameterType="com.foreveross.qdp.domain.system.common.SysExTable" resultType="hashmap">
+		SELECT 
+           SysExTable.ID           AS  id                    ,
+           SysExTable.REF_TABLE    AS  refTable              ,
+           SysExTable.COL_NAME     AS  colName               ,
+           SysExTable.COL_TYPE     AS  colType               ,
+           SysExTable.DESCRIPTION  AS  description           ,
+           SysExTable.UPDATE_TIME  AS  updateTime            ,
+           SysExTable.CREATE_TIME  AS  createTime            
+
+		FROM SYS_EX_TABLE SysExTable
+
+		<where>
+				AND sysExTable.ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="pageFindSysExTable" resultMap="SysExTable">
+		SELECT *
+		FROM SYS_EX_TABLE
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND ID = #{vo.id,jdbcType=VARCHAR} </if>                              
+           <if test="vo!=null and vo.refTable != null and vo.refTable != ''       "> AND REF_TABLE LIKE CONCAT('%',#{vo.refTable,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.colName != null and vo.colName != ''         "> AND COL_NAME LIKE CONCAT('%',#{vo.colName,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.colType != null and vo.colType != ''         "> AND COL_TYPE LIKE CONCAT('%',#{vo.colType,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if>            
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>             
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>             
+
+		</where>
+		<bind name="aliasDot" value="''"/><include refid="orderBy"/>
+	</select>
+	<select id="pageFindSysExTableMap" resultType="hashmap">
+		SELECT 
+           SysExTable.ID           AS  id                    ,
+           SysExTable.REF_TABLE    AS  refTable              ,
+           SysExTable.COL_NAME     AS  colName               ,
+           SysExTable.COL_TYPE     AS  colType               ,
+           SysExTable.DESCRIPTION  AS  description           ,
+           SysExTable.UPDATE_TIME  AS  updateTime            ,
+           SysExTable.CREATE_TIME  AS  createTime            
+
+		FROM SYS_EX_TABLE SysExTable
+
+		<where>
+           <if test="vo!=null and vo.id != null and vo.id != ''                   "> AND SysExTable.ID = #{vo.id,jdbcType=VARCHAR} </if>                   
+           <if test="vo!=null and vo.refTable != null and vo.refTable != ''       "> AND SysExTable.REF_TABLE LIKE CONCAT('%',#{vo.refTable,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.colName != null and vo.colName != ''         "> AND SysExTable.COL_NAME LIKE CONCAT('%',#{vo.colName,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.colType != null and vo.colType != ''         "> AND SysExTable.COL_TYPE LIKE CONCAT('%',#{vo.colType,jdbcType=VARCHAR},'%') </if>
+           <if test="vo!=null and vo.description != null and vo.description != '' "> AND SysExTable.DESCRIPTION = #{vo.description,jdbcType=VARCHAR} </if> 
+           <if test="vo!=null and vo.updateTime != null and vo.updateTime != ''   "> AND SysExTable.UPDATE_TIME = #{vo.updateTime,jdbcType=VARCHAR} </if>  
+           <if test="vo!=null and vo.createTime != null and vo.createTime != ''   "> AND SysExTable.CREATE_TIME = #{vo.createTime,jdbcType=VARCHAR} </if>  
+
+		</where>
+		<bind name="aliasDot" value="'SysExTable.'"/><include refid="orderBy"/>
+	</select>
+	<insert id="insertSysExTable" parameterType="com.foreveross.qdp.domain.system.common.SysExTable"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO SYS_EX_TABLE
+			( ID, REF_TABLE, COL_NAME, COL_TYPE, DESCRIPTION, UPDATE_TIME, CREATE_TIME )
+		VALUES
+			(
+           #{id,jdbcType=VARCHAR},
+           #{refTable,jdbcType=VARCHAR},
+           #{colName,jdbcType=VARCHAR},
+           #{colType,jdbcType=VARCHAR},
+           #{description,jdbcType=VARCHAR},
+           #{updateTime,jdbcType=VARCHAR},
+           #{createTime,jdbcType=VARCHAR}
+
+			)
+	</insert>
+	<update id="updateSysExTable" parameterType="com.foreveross.qdp.domain.system.common.SysExTable">
+		UPDATE SYS_EX_TABLE
+		<set>
+           <if test="id != null         "> ID = #{id,jdbcType=VARCHAR},</if>
+           <if test="refTable != null   "> REF_TABLE = #{refTable,jdbcType=VARCHAR},</if>
+           <if test="colName != null    "> COL_NAME = #{colName,jdbcType=VARCHAR},</if>
+           <if test="colType != null    "> COL_TYPE = #{colType,jdbcType=VARCHAR},</if>
+           DESCRIPTION = #{description,jdbcType=VARCHAR},                              
+           <if test="updateTime != null "> UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},</if>
+           <if test="createTime != null "> CREATE_TIME = #{createTime,jdbcType=VARCHAR},</if>
+
+		</set>
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</update>
+	<delete id="deleteSysExTable" parameterType="com.foreveross.qdp.domain.system.common.SysExTable">
+		DELETE FROM SYS_EX_TABLE
+		<where>
+				AND ID = #{id,jdbcType=VARCHAR}
+		</where>
+	</delete>
+</mapper>
