@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * AuthOrganizationUser
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -94,7 +94,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * @param authOrganizationUser
 	 * @return AuthOrganizationUser
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthOrganizationUser get(AuthOrganizationUser authOrganizationUser) {
 		return Dao.queryOne("AuthOrganizationUser.getAuthOrganizationUserById", authOrganizationUser);
@@ -108,7 +108,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * @param id
 	 * @return AuthOrganizationUser
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthOrganizationUser get(String id) {
 		AuthOrganizationUser authOrganizationUser = new AuthOrganizationUser();
@@ -123,7 +123,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * </pre>
 	 * @param authOrganizationUser
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(AuthOrganizationUser authOrganizationUser) {
 		authOrganizationUser.remove();
@@ -136,7 +136,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * </pre>
 	 * @param authOrganizationUser
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		AuthOrganizationUser authOrganizationUser = new AuthOrganizationUser();
@@ -151,7 +151,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * </pre>
 	 * @param authOrganizationUser
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -169,7 +169,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * Usage : AuthOrganizationUser.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthOrganizationUser add() {
 		ValidateHelper validate = validate("add");
@@ -186,7 +186,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * Usage : AuthOrganizationUser.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthOrganizationUser update() {
 		ValidateHelper validate = validate("edit");
@@ -203,7 +203,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * Usage : AuthOrganizationUser.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthOrganizationUser addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -219,7 +219,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * Usage : AuthOrganizationUser.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -239,7 +239,7 @@ public class AuthOrganizationUser implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();

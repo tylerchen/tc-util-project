@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -26,7 +26,7 @@ import com.foreveross.qdp.domain.system.auth.AuthMenu;
 /**
  * AuthMenu
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -43,7 +43,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#getAuthMenu(AuthMenuVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthMenuVO getAuthMenu(AuthMenuVO vo) {
@@ -61,7 +61,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#getAuthMenuById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthMenuVO getAuthMenuById(String id){
@@ -79,7 +79,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#pageFindAuthMenu(AuthMenuVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindAuthMenu(AuthMenuVO vo, Page page) {
@@ -100,7 +100,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#pageFindAuthMenuMap(AuthMenuVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindAuthMenuMap(AuthMenuVO vo, Page page) {
@@ -120,7 +120,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#addAuthMenu(AuthMenuVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthMenuVO addAuthMenu(AuthMenuVO vo) {
@@ -139,7 +139,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#updateAuthMenu(AuthMenuVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthMenuVO updateAuthMenu(AuthMenuVO vo) {
@@ -157,7 +157,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#removeAuthMenu(AuthMenuVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthMenu(AuthMenuVO vo) {
@@ -173,7 +173,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#removeAuthMenuById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthMenuById(String id) {
@@ -192,7 +192,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#removeAuthMenuByIds(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthMenuByIds(String[] ids) {
@@ -207,7 +207,7 @@ public class AuthMenuApplicationImpl implements AuthMenuApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthMenuApplication#getByName(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthMenuVO getByName(String name) {
 		AuthMenu authMenu = AuthMenu.getByName(name);

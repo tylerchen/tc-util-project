@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -14,7 +14,7 @@ import com.foreveross.qdp.infra.vo.system.log.LogOperationVO;
 /**
  * LogOperation Application.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -27,7 +27,7 @@ public interface LogOperationApplication {
 	 * @param vo
 	 * @return LogOperationVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	LogOperationVO getLogOperation(LogOperationVO vo);
@@ -39,7 +39,7 @@ public interface LogOperationApplication {
 	 * @param vo
 	 * @return LogOperationVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	LogOperationVO getLogOperationById(String id);
@@ -52,7 +52,7 @@ public interface LogOperationApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindLogOperation(LogOperationVO vo, Page page);
@@ -65,7 +65,7 @@ public interface LogOperationApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindLogOperationMap(LogOperationVO vo, Page page);
@@ -77,7 +77,7 @@ public interface LogOperationApplication {
 	 * @param vo
 	 * @return LogOperationVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	LogOperationVO addLogOperation(LogOperationVO vo);
@@ -89,7 +89,7 @@ public interface LogOperationApplication {
 	 * @param vo
 	 * @return LogOperationVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	LogOperationVO updateLogOperation(LogOperationVO vo);
@@ -100,7 +100,7 @@ public interface LogOperationApplication {
 	 * </pre>
 	 * @param vo conditions.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeLogOperation(LogOperationVO vo);
@@ -111,7 +111,7 @@ public interface LogOperationApplication {
 	 * </pre>
 	 * @param id.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeLogOperationById(String id);
@@ -122,7 +122,7 @@ public interface LogOperationApplication {
 	 * </pre>
 	 * @param ids.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeLogOperationByIds(String[] ids);

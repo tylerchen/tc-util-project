@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -20,7 +20,7 @@ import com.foreveross.qdp.infra.vo.system.common.SysI18nVO;
 /**
  * Test for SysI18n.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */

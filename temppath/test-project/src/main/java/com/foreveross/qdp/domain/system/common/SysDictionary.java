@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * SysDictionary
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -157,7 +157,7 @@ public class SysDictionary implements Serializable {
 	 * @param sysDictionary
 	 * @return SysDictionary
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysDictionary get(SysDictionary sysDictionary) {
 		return Dao.queryOne("SysDictionary.getSysDictionaryById", sysDictionary);
@@ -171,7 +171,7 @@ public class SysDictionary implements Serializable {
 	 * @param id
 	 * @return SysDictionary
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysDictionary get(String id) {
 		SysDictionary sysDictionary = new SysDictionary();
@@ -186,7 +186,7 @@ public class SysDictionary implements Serializable {
 	 * </pre>
 	 * @param sysDictionary
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(SysDictionary sysDictionary) {
 		sysDictionary.remove();
@@ -199,7 +199,7 @@ public class SysDictionary implements Serializable {
 	 * </pre>
 	 * @param sysDictionary
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		SysDictionary sysDictionary = new SysDictionary();
@@ -214,7 +214,7 @@ public class SysDictionary implements Serializable {
 	 * </pre>
 	 * @param sysDictionary
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -232,7 +232,7 @@ public class SysDictionary implements Serializable {
 	 * Usage : SysDictionary.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysDictionary add() {
 		ValidateHelper validate = validate("add");
@@ -249,7 +249,7 @@ public class SysDictionary implements Serializable {
 	 * Usage : SysDictionary.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysDictionary update() {
 		ValidateHelper validate = validate("edit");
@@ -266,7 +266,7 @@ public class SysDictionary implements Serializable {
 	 * Usage : SysDictionary.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysDictionary addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -282,7 +282,7 @@ public class SysDictionary implements Serializable {
 	 * Usage : SysDictionary.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -302,7 +302,7 @@ public class SysDictionary implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();

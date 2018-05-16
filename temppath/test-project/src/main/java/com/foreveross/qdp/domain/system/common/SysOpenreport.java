@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * SysOpenreport
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -130,7 +130,7 @@ public class SysOpenreport implements Serializable {
 	 * @param sysOpenreport
 	 * @return SysOpenreport
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysOpenreport get(SysOpenreport sysOpenreport) {
 		return Dao.queryOne("SysOpenreport.getSysOpenreportById", sysOpenreport);
@@ -144,7 +144,7 @@ public class SysOpenreport implements Serializable {
 	 * @param id
 	 * @return SysOpenreport
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysOpenreport get(String id) {
 		SysOpenreport sysOpenreport = new SysOpenreport();
@@ -159,7 +159,7 @@ public class SysOpenreport implements Serializable {
 	 * </pre>
 	 * @param sysOpenreport
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(SysOpenreport sysOpenreport) {
 		sysOpenreport.remove();
@@ -172,7 +172,7 @@ public class SysOpenreport implements Serializable {
 	 * </pre>
 	 * @param sysOpenreport
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		SysOpenreport sysOpenreport = new SysOpenreport();
@@ -187,7 +187,7 @@ public class SysOpenreport implements Serializable {
 	 * </pre>
 	 * @param sysOpenreport
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -206,7 +206,7 @@ public class SysOpenreport implements Serializable {
 	 * </pre>
 	 * @param sysOpenreport
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasName(SysOpenreport sysOpenreport) {
 		return Dao.querySize("SysOpenreport.hasName", sysOpenreport) > 0;
@@ -218,7 +218,7 @@ public class SysOpenreport implements Serializable {
 	 * Usage : SysOpenreport.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysOpenreport add() {
 		ValidateHelper validate = validate("add");
@@ -235,7 +235,7 @@ public class SysOpenreport implements Serializable {
 	 * Usage : SysOpenreport.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysOpenreport update() {
 		ValidateHelper validate = validate("edit");
@@ -252,7 +252,7 @@ public class SysOpenreport implements Serializable {
 	 * Usage : SysOpenreport.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysOpenreport addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -268,7 +268,7 @@ public class SysOpenreport implements Serializable {
 	 * Usage : SysOpenreport.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -285,7 +285,7 @@ public class SysOpenreport implements Serializable {
 	 * Usage : SysOpenreport.getByName(name)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysOpenreport getByName(String name) {
 		SysOpenreport domain = new SysOpenreport();
@@ -302,7 +302,7 @@ public class SysOpenreport implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();

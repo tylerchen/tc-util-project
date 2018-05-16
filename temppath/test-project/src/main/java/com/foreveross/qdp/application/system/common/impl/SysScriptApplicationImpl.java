@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -26,7 +26,7 @@ import com.foreveross.qdp.domain.system.common.SysScript;
 /**
  * SysScript
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -43,7 +43,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#getSysScript(SysScriptVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysScriptVO getSysScript(SysScriptVO vo) {
@@ -61,7 +61,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#getSysScriptById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysScriptVO getSysScriptById(String id){
@@ -79,7 +79,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#pageFindSysScript(SysScriptVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindSysScript(SysScriptVO vo, Page page) {
@@ -98,7 +98,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#pageFindSysScriptMap(SysScriptVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindSysScriptMap(SysScriptVO vo, Page page) {
@@ -116,7 +116,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#addSysScript(SysScriptVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysScriptVO addSysScript(SysScriptVO vo) {
@@ -135,7 +135,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#updateSysScript(SysScriptVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysScriptVO updateSysScript(SysScriptVO vo) {
@@ -153,7 +153,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#removeSysScript(SysScriptVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysScript(SysScriptVO vo) {
@@ -169,7 +169,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#removeSysScriptById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysScriptById(String id) {
@@ -188,7 +188,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#removeSysScriptByIds(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysScriptByIds(String[] ids) {
@@ -203,7 +203,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#getByName(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysScriptVO getByName(String name) {
 		SysScript sysScript = SysScript.getByName(name);
@@ -217,7 +217,7 @@ public class SysScriptApplicationImpl implements SysScriptApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysScriptApplication#getByCode(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysScriptVO getByCode(String code) {
 		SysScript sysScript = SysScript.getByCode(code);

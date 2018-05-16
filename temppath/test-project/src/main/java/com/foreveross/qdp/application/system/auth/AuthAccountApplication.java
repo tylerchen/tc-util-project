@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -15,7 +15,7 @@ import com.foreveross.qdp.infra.vo.system.auth.EditPasswordVO;
 /**
  * AuthAccount Application.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -28,7 +28,7 @@ public interface AuthAccountApplication {
 	 * @param vo
 	 * @return AuthAccountVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	AuthAccountVO getAuthAccount(AuthAccountVO vo);
@@ -40,7 +40,7 @@ public interface AuthAccountApplication {
 	 * @param vo
 	 * @return AuthAccountVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	AuthAccountVO getAuthAccountById(String id);
@@ -53,7 +53,7 @@ public interface AuthAccountApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindAuthAccount(AuthAccountVO vo, Page page);
@@ -66,7 +66,7 @@ public interface AuthAccountApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindAuthAccountMap(AuthAccountVO vo, Page page);
@@ -78,7 +78,7 @@ public interface AuthAccountApplication {
 	 * @param vo
 	 * @return AuthAccountVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	AuthAccountVO addAuthAccount(AuthAccountVO vo);
@@ -90,7 +90,7 @@ public interface AuthAccountApplication {
 	 * @param vo
 	 * @return AuthAccountVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	AuthAccountVO updateAuthAccount(AuthAccountVO vo);
@@ -101,7 +101,7 @@ public interface AuthAccountApplication {
 	 * </pre>
 	 * @param vo conditions.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeAuthAccount(AuthAccountVO vo);
@@ -112,7 +112,7 @@ public interface AuthAccountApplication {
 	 * </pre>
 	 * @param id.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeAuthAccountById(String id);
@@ -123,7 +123,7 @@ public interface AuthAccountApplication {
 	 * </pre>
 	 * @param ids.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeAuthAccountByIds(String[] ids);
@@ -134,7 +134,7 @@ public interface AuthAccountApplication {
 	 * get AuthAccount by unique loginEmail
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	AuthAccountVO getByLoginEmail(String loginEmail);
 	
@@ -149,7 +149,7 @@ public interface AuthAccountApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindAssignAuthRole(AuthAccountVO vo, Page page);
@@ -160,7 +160,7 @@ public interface AuthAccountApplication {
 	 * </pre>
 	 * @param ids AuthRole id
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void assignAuthRole(AuthAccountVO vo);
@@ -171,7 +171,7 @@ public interface AuthAccountApplication {
 	 * </pre>
 	 * @param vo EditPasswordVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void editPassword(EditPasswordVO vo);

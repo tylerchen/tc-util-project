@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * AuthAutherMenu
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -112,7 +112,7 @@ public class AuthAutherMenu implements Serializable {
 	 * @param authAutherMenu
 	 * @return AuthAutherMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthAutherMenu get(AuthAutherMenu authAutherMenu) {
 		return Dao.queryOne("AuthAutherMenu.getAuthAutherMenuById", authAutherMenu);
@@ -126,7 +126,7 @@ public class AuthAutherMenu implements Serializable {
 	 * @param id
 	 * @return AuthAutherMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthAutherMenu get(String id) {
 		AuthAutherMenu authAutherMenu = new AuthAutherMenu();
@@ -141,7 +141,7 @@ public class AuthAutherMenu implements Serializable {
 	 * </pre>
 	 * @param authAutherMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(AuthAutherMenu authAutherMenu) {
 		authAutherMenu.remove();
@@ -154,7 +154,7 @@ public class AuthAutherMenu implements Serializable {
 	 * </pre>
 	 * @param authAutherMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		AuthAutherMenu authAutherMenu = new AuthAutherMenu();
@@ -169,7 +169,7 @@ public class AuthAutherMenu implements Serializable {
 	 * </pre>
 	 * @param authAutherMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -187,7 +187,7 @@ public class AuthAutherMenu implements Serializable {
 	 * Usage : AuthAutherMenu.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthAutherMenu add() {
 		ValidateHelper validate = validate("add");
@@ -204,7 +204,7 @@ public class AuthAutherMenu implements Serializable {
 	 * Usage : AuthAutherMenu.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthAutherMenu update() {
 		ValidateHelper validate = validate("edit");
@@ -221,7 +221,7 @@ public class AuthAutherMenu implements Serializable {
 	 * Usage : AuthAutherMenu.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthAutherMenu addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -237,7 +237,7 @@ public class AuthAutherMenu implements Serializable {
 	 * Usage : AuthAutherMenu.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -257,7 +257,7 @@ public class AuthAutherMenu implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();

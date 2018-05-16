@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * SysI18n
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -76,7 +76,7 @@ public class SysI18n implements Serializable {
 	 * @param sysI18n
 	 * @return SysI18n
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysI18n get(SysI18n sysI18n) {
 		return Dao.queryOne("SysI18n.getSysI18nById", sysI18n);
@@ -90,7 +90,7 @@ public class SysI18n implements Serializable {
 	 * @param id
 	 * @return SysI18n
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysI18n get(String id) {
 		SysI18n sysI18n = new SysI18n();
@@ -105,7 +105,7 @@ public class SysI18n implements Serializable {
 	 * </pre>
 	 * @param sysI18n
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(SysI18n sysI18n) {
 		sysI18n.remove();
@@ -118,7 +118,7 @@ public class SysI18n implements Serializable {
 	 * </pre>
 	 * @param sysI18n
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		SysI18n sysI18n = new SysI18n();
@@ -133,7 +133,7 @@ public class SysI18n implements Serializable {
 	 * </pre>
 	 * @param sysI18n
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -152,7 +152,7 @@ public class SysI18n implements Serializable {
 	 * </pre>
 	 * @param sysI18n
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasMessageKey(SysI18n sysI18n) {
 		return Dao.querySize("SysI18n.hasMessageKey", sysI18n) > 0;
@@ -164,7 +164,7 @@ public class SysI18n implements Serializable {
 	 * Usage : SysI18n.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysI18n add() {
 		ValidateHelper validate = validate("add");
@@ -181,7 +181,7 @@ public class SysI18n implements Serializable {
 	 * Usage : SysI18n.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysI18n update() {
 		ValidateHelper validate = validate("edit");
@@ -198,7 +198,7 @@ public class SysI18n implements Serializable {
 	 * Usage : SysI18n.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysI18n addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -214,7 +214,7 @@ public class SysI18n implements Serializable {
 	 * Usage : SysI18n.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -231,7 +231,7 @@ public class SysI18n implements Serializable {
 	 * Usage : SysI18n.getByMessageKey(messageKey)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysI18n getByMessageKey(String messageKey) {
 		SysI18n domain = new SysI18n();
@@ -248,7 +248,7 @@ public class SysI18n implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();

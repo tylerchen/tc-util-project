@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -31,7 +31,7 @@ import com.foreveross.qdp.domain.system.auth.AuthRole;
 /**
  * AuthAccount
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -48,7 +48,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#getAuthAccount(AuthAccountVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthAccountVO getAuthAccount(AuthAccountVO vo) {
@@ -66,7 +66,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#getAuthAccountById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthAccountVO getAuthAccountById(String id){
@@ -84,7 +84,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#pageFindAuthAccount(AuthAccountVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindAuthAccount(AuthAccountVO vo, Page page) {
@@ -103,7 +103,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#pageFindAuthAccountMap(AuthAccountVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindAuthAccountMap(AuthAccountVO vo, Page page) {
@@ -121,7 +121,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#addAuthAccount(AuthAccountVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthAccountVO addAuthAccount(AuthAccountVO vo) {
@@ -145,7 +145,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#updateAuthAccount(AuthAccountVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthAccountVO updateAuthAccount(AuthAccountVO vo) {
@@ -168,7 +168,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#removeAuthAccount(AuthAccountVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthAccount(AuthAccountVO vo) {
@@ -184,7 +184,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#removeAuthAccountById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthAccountById(String id) {
@@ -203,7 +203,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#removeAuthAccountByIds(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthAccountByIds(String[] ids) {
@@ -218,7 +218,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#getByLoginEmail(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthAccountVO getByLoginEmail(String loginEmail) {
 		AuthAccount authAccount = AuthAccount.getByLoginEmail(loginEmail);
@@ -238,7 +238,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#pageFindAssignAuthRole(AuthAccountVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindAssignAuthRole(AuthAccountVO vo, Page page) {
@@ -254,7 +254,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#assignAuthRole(AuthAccountVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void assignAuthRole(AuthAccountVO vo) {
@@ -270,7 +270,7 @@ public class AuthAccountApplicationImpl implements AuthAccountApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthAccountApplication#editPassword(EditPasswordVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void editPassword(EditPasswordVO vo) {

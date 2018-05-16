@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * AuthOrganization
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -148,7 +148,7 @@ public class AuthOrganization implements Serializable {
 	 * @param authOrganization
 	 * @return AuthOrganization
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthOrganization get(AuthOrganization authOrganization) {
 		return Dao.queryOne("AuthOrganization.getAuthOrganizationById", authOrganization);
@@ -162,7 +162,7 @@ public class AuthOrganization implements Serializable {
 	 * @param id
 	 * @return AuthOrganization
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthOrganization get(String id) {
 		AuthOrganization authOrganization = new AuthOrganization();
@@ -177,7 +177,7 @@ public class AuthOrganization implements Serializable {
 	 * </pre>
 	 * @param authOrganization
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(AuthOrganization authOrganization) {
 		authOrganization.remove();
@@ -190,7 +190,7 @@ public class AuthOrganization implements Serializable {
 	 * </pre>
 	 * @param authOrganization
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		AuthOrganization authOrganization = new AuthOrganization();
@@ -205,7 +205,7 @@ public class AuthOrganization implements Serializable {
 	 * </pre>
 	 * @param authOrganization
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -224,7 +224,7 @@ public class AuthOrganization implements Serializable {
 	 * </pre>
 	 * @param authOrganization
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasName(AuthOrganization authOrganization) {
 		return Dao.querySize("AuthOrganization.hasName", authOrganization) > 0;
@@ -237,7 +237,7 @@ public class AuthOrganization implements Serializable {
 	 * </pre>
 	 * @param authOrganization
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasCode(AuthOrganization authOrganization) {
 		return Dao.querySize("AuthOrganization.hasCode", authOrganization) > 0;
@@ -249,7 +249,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthOrganization add() {
 		ValidateHelper validate = validate("add");
@@ -270,7 +270,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthOrganization update() {
 		ValidateHelper validate = validate("edit");
@@ -287,7 +287,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthOrganization addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -303,7 +303,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -329,7 +329,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.getByName(name)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthOrganization getByName(String name) {
 		AuthOrganization domain = new AuthOrganization();
@@ -343,7 +343,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.getByCode(code)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthOrganization getByCode(String code) {
 		AuthOrganization domain = new AuthOrganization();
@@ -360,7 +360,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.findAuthAutherMenu()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthMenu> findAuthMenu() {
 		AuthOrganization condition = new AuthOrganization();
@@ -377,7 +377,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.findAuthAutherMenu()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthAutherMenu> findAuthAutherMenu() {
 		AuthOrganization condition = new AuthOrganization();
@@ -394,7 +394,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.removeAuthAutherMenu()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void removeAuthAutherMenu() {
 		List<AuthAutherMenu> list = findAuthAutherMenu();
@@ -409,7 +409,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.assignAuthMenu()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void assignAuthMenuByIds(String[] ids) {
 		ValidateHelper validate = validate("edit");
@@ -463,7 +463,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.findAuthOrganizationUser()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthUser> findAuthUser() {
 		AuthOrganization condition = new AuthOrganization();
@@ -480,7 +480,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.findAuthOrganizationUser()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthOrganizationUser> findAuthOrganizationUser() {
 		AuthOrganization condition = new AuthOrganization();
@@ -497,7 +497,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.removeAuthOrganizationUser()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void removeAuthOrganizationUser() {
 		List<AuthOrganizationUser> list = findAuthOrganizationUser();
@@ -512,7 +512,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.assignAuthUser()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void assignAuthUserByIds(String[] ids) {
 		ValidateHelper validate = validate("edit");
@@ -561,7 +561,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.findAuthAutherRole()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthRole> findAuthRole() {
 		AuthOrganization condition = new AuthOrganization();
@@ -578,7 +578,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.findAuthAutherRole()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthAutherRole> findAuthAutherRole() {
 		AuthOrganization condition = new AuthOrganization();
@@ -595,7 +595,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.removeAuthAutherRole()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void removeAuthAutherRole() {
 		List<AuthAutherRole> list = findAuthAutherRole();
@@ -610,7 +610,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.assignAuthRole()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void assignAuthRoleByIds(String[] ids) {
 		ValidateHelper validate = validate("edit");
@@ -658,7 +658,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.findByRootId()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static List<AuthOrganization> findByRootId(String rootId) {
 		if ( StringUtils.isBlank(String.valueOf(rootId)) ) {
@@ -678,7 +678,7 @@ public class AuthOrganization implements Serializable {
 	 * Usage : AuthOrganization.findByParentId()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static List<AuthOrganization> findByParentId(String parentId) {
 		if ( StringUtils.isBlank(String.valueOf(parentId)) ) {
@@ -701,7 +701,7 @@ public class AuthOrganization implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();
