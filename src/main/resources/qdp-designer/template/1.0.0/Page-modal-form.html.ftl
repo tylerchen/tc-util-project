@@ -3,7 +3,7 @@
 <#macro page date package class module table pk notNull index unique autoInc columns foreign func proModule>
 <template>
 	<!-- 修改密码 -->
-	<el-form class="qdp-edit-form" :model="editForm" :rules="editFormRules" label-width="80px" inline ref="editForm" @keydown.13.native.stop="onPost('editForm', 'submit')">
+	<el-form class="qdp-edit-form" :model="editForm" :rules="editFormRules" label-width="100px" inline ref="editForm" @keydown.13.native.stop="onPost('editForm', 'submit')">
 		<#list table.fields as field>
 			<@genForm field=field formType='edit'/>
 		</#list>

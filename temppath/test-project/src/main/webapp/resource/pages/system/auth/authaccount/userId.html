@@ -2,7 +2,7 @@
 	<div class="qdp-list-layout">
 		<!-- 搜索 -->
 		<el-row class="qdp-list-content" type="flex" justify="start" align="top">
-			<el-form class="qdp-search-form" :model="searchForm" label-width="80px" inline ref="searchForm" @keydown.13.native.stop="onPost('search-form', 'search')">
+			<el-form class="qdp-search-form" :model="searchForm" label-width="100px" inline ref="searchForm" @keydown.13.native.stop="onPost('search-form', 'search')">
 				<el-form-item label="用户名称" prop="name" :show-message="false">
 					<el-input v-model="searchForm.name" placeholder="" size="small"></el-input>
 				</el-form-item>

@@ -57,7 +57,7 @@
 					<el-form-item label="菜单名称" prop="name">
 						<el-input v-model="addForm.name" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="资源" prop="resourceIdName" ref="addForm-resourceIdName">
+					<el-form-item label="资源" prop="resourceIdName" ref="addForm-resourceIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('addForm','resourceId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -91,7 +91,7 @@
 					<el-form-item label="菜单层次" prop="maxLevel">
 						<el-input-number v-model="addForm.maxLevel" placeholder="" size="small"></el-input-number>
 					</el-form-item>
-					<el-form-item label="图标" prop="ico">
+					<el-form-item label="图标" prop="ico" class="qdp-input-icon">
 						<el-button icon="search" @click="openDialog('addForm','ico')" size="small" type="text"></el-button>
 						<el-tag v-if="addForm.ico">{{addForm.ico}}</el-tag>
 						<el-button size="small" type="text" v-if="addForm.ico"><i :class="addForm.ico"></i></el-button>
@@ -114,7 +114,7 @@
 					<el-form-item label="菜单名称" prop="name">
 						<el-input v-model="addChildForm.name" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="资源" prop="resourceIdName" ref="addChildForm-resourceIdName">
+					<el-form-item label="资源" prop="resourceIdName" ref="addChildForm-resourceIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('addChildForm','resourceId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -135,7 +135,7 @@
 					<el-form-item label="菜单排序" prop="menuIndex">
 						<el-input-number v-model="addChildForm.menuIndex" placeholder="" size="small"></el-input-number>
 					</el-form-item>
-					<el-form-item label="图标" prop="ico">
+					<el-form-item label="图标" prop="ico" class="qdp-input-icon">
 						<el-button icon="search" @click="openDialog('addChildForm','ico')" size="small" type="text"></el-button>
 						<el-tag v-if="addChildForm.ico">{{addChildForm.ico}}</el-tag>
 						<el-button size="small" type="text" v-if="addChildForm.ico"><i :class="addChildForm.ico"></i></el-button>
@@ -158,7 +158,7 @@
 					<el-form-item label="菜单名称" prop="name">
 						<el-input v-model="editForm.name" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="资源" prop="resourceIdName" ref="editForm-resourceIdName">
+					<el-form-item label="资源" prop="resourceIdName" ref="editForm-resourceIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('editForm','resourceId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -186,7 +186,7 @@
 					    	<el-option label="默认"  value="S"></el-option>
 					   	</el-select>
 					</el-form-item>
-					<el-form-item label="父菜单" prop="parentIdName" ref="editForm-parentIdName">
+					<el-form-item label="父菜单" prop="parentIdName" ref="editForm-parentIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('editForm','parentId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -204,7 +204,7 @@
 					<el-form-item label="父菜单" prop="parentId" v-show="false" ref="editForm-parentId">
 						<el-input v-model="editForm.parentId" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="根菜单" prop="rootIdName" ref="editForm-rootIdName">
+					<el-form-item label="根菜单" prop="rootIdName" ref="editForm-rootIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('editForm','rootId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -228,7 +228,7 @@
 					<el-form-item label="菜单层次" prop="maxLevel">
 						<el-input-number v-model="editForm.maxLevel" placeholder="" size="small"></el-input-number>
 					</el-form-item>
-					<el-form-item label="图标" prop="ico">
+					<el-form-item label="图标" prop="ico" class="qdp-input-icon">
 						<el-button icon="search" @click="openDialog('editForm','ico')" size="small" type="text"></el-button>
 						<el-tag v-if="editForm.ico">{{editForm.ico}}</el-tag>
 						<el-button size="small" type="text" v-if="editForm.ico"><i :class="editForm.ico"></i></el-button>

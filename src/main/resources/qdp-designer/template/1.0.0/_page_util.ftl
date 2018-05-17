@@ -32,7 +32,7 @@
 				<el-form-item label="${label}" prop="${jfield}" :show-message="false">
 					<el-checkbox-group v-model="searchForm.${jfield}">
 				    	<#list json.keySet() as key>
-				    	<el-checkbox label="${key}">${json.get(key)!key}</el-radio>
+				    	<el-checkbox label="${key}">${json.get(key)!key}</el-checkbox>
 				    	</#list>
 				    </el-checkbox-group>
 				</el-form-item>
@@ -145,7 +145,7 @@
 					<el-form-item label="${label}" prop="${jfield}">
 						<el-checkbox-group v-model="${formType}Form.${jfield}">
 					    	<#list json.keySet() as key>
-					    	<el-checkbox label="${key}">${json.get(key)!key}</el-radio>
+					    	<el-checkbox label="${key}">${json.get(key)!key}</el-checkbox>
 					    	</#list>
 					    </el-checkbox-group>
 					</el-form-item>
@@ -224,14 +224,14 @@
 						</#if>
 					</el-form-item>
 	<#elseif type == 'icon'>
-					<el-form-item label="${label}" prop="${jfield}">
+					<el-form-item label="${label}" prop="${jfield}" class="qdp-input-icon">
 						<el-button icon="search" @click="openDialog('${formType}Form','${jfield}')" size="small" type="text"></el-button>
 						<el-tag v-if="${formType}Form.${jfield}">{{${formType}Form.${jfield}}}</el-tag>
 						<el-button size="small" type="text" v-if="${formType}Form.${jfield}"><i :class="${formType}Form.${jfield}"></i></el-button>
 					</el-form-item>
 	<#elseif type == 'modal'>
 		<#if field.refTable?has_content && field.refField?has_content && field.refLabelField?has_content>
-					<el-form-item label="${label}" prop="${jfield}Name" ref="${formType}Form-${jfield}Name">
+					<el-form-item label="${label}" prop="${jfield}Name" ref="${formType}Form-${jfield}Name" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('${formType}Form','${jfield}')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">

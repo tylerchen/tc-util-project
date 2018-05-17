@@ -82,7 +82,7 @@
 					<el-form-item label="描述" prop="description">
 						<el-input v-model="addForm.description" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="菜单" prop="menuIdName" ref="addForm-menuIdName">
+					<el-form-item label="菜单" prop="menuIdName" ref="addForm-menuIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('addForm','menuId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -100,7 +100,7 @@
 					<el-form-item label="菜单" prop="menuId" v-show="false" ref="addForm-menuId">
 						<el-input v-model="addForm.menuId" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="用户" prop="userIdName" ref="addForm-userIdName">
+					<el-form-item label="用户" prop="userIdName" ref="addForm-userIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('addForm','userId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -118,7 +118,7 @@
 					<el-form-item label="用户" prop="userId" v-show="false" ref="addForm-userId">
 						<el-input v-model="addForm.userId" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="角色" prop="roleIdName" ref="addForm-roleIdName">
+					<el-form-item label="角色" prop="roleIdName" ref="addForm-roleIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('addForm','roleId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -163,7 +163,7 @@
 					<el-form-item label="描述" prop="description">
 						<el-input v-model="addChildForm.description" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="菜单" prop="menuIdName" ref="addChildForm-menuIdName">
+					<el-form-item label="菜单" prop="menuIdName" ref="addChildForm-menuIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('addChildForm','menuId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -181,7 +181,7 @@
 					<el-form-item label="菜单" prop="menuId" v-show="false" ref="addChildForm-menuId">
 						<el-input v-model="addChildForm.menuId" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="用户" prop="userIdName" ref="addChildForm-userIdName">
+					<el-form-item label="用户" prop="userIdName" ref="addChildForm-userIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('addChildForm','userId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -199,7 +199,7 @@
 					<el-form-item label="用户" prop="userId" v-show="false" ref="addChildForm-userId">
 						<el-input v-model="addChildForm.userId" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="角色" prop="roleIdName" ref="addChildForm-roleIdName">
+					<el-form-item label="角色" prop="roleIdName" ref="addChildForm-roleIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('addChildForm','roleId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -254,7 +254,7 @@
 					<el-form-item label="描述" prop="description">
 						<el-input v-model="editForm.description" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="菜单" prop="menuIdName" ref="editForm-menuIdName">
+					<el-form-item label="菜单" prop="menuIdName" ref="editForm-menuIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('editForm','menuId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -272,7 +272,7 @@
 					<el-form-item label="菜单" prop="menuId" v-show="false" ref="editForm-menuId">
 						<el-input v-model="editForm.menuId" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="用户" prop="userIdName" ref="editForm-userIdName">
+					<el-form-item label="用户" prop="userIdName" ref="editForm-userIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('editForm','userId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
@@ -290,7 +290,7 @@
 					<el-form-item label="用户" prop="userId" v-show="false" ref="editForm-userId">
 						<el-input v-model="editForm.userId" placeholder="" size="small"></el-input>
 					</el-form-item>
-					<el-form-item label="角色" prop="roleIdName" ref="editForm-roleIdName">
+					<el-form-item label="角色" prop="roleIdName" ref="editForm-roleIdName" class="qdp-input-model">
 						<el-button icon="search" @click="openDialog('editForm','roleId')" size="small" type="text"></el-button>
 						<div class="el-input el-input--small"><!--列表显示所有的选择-->
 							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">

@@ -6,7 +6,7 @@
 		<!-- 搜索 --><#local ableFields=[]/><#list table.fields as field><#if field.searchable><#local ableFields=ableFields+[field]/></#if></#list>
 		<#if ableFields?has_content>
 		<el-row class="qdp-list-content" type="flex" justify="start" align="top">
-			<el-form class="qdp-search-form" :model="searchForm" label-width="80px" inline ref="searchForm" @keydown.13.native.stop="onPost('searchForm', 'search')">
+			<el-form class="qdp-search-form" :model="searchForm" label-width="100px" inline ref="searchForm" @keydown.13.native.stop="onPost('searchForm', 'search')">
 				<#list ableFields as field>
 					<#if field?index lt 3><@searchForm field=field/></#if>
 				</#list>
@@ -32,7 +32,7 @@
 		<!-- 列表 --><#local ableFields=[]/><#list table.fields as field><#if field.listable><#local ableFields=ableFields+[field]/></#if></#list>
 		<#if ableFields?has_content>
 		<el-row class="qdp-list-content qdp-grid" type="flex" justify="center" align="top">
-			<el-table :data="grid.data.rows" style="width: 100%;" border highlight-current-row ref="grid" :height="400" :max-height="400"
+			<el-table :data="grid.data.rows" style="width: 100%;" border highlight-current-row ref="grid" :height="400" :max-height="400" stripe
 				@selection-change="onPost('grid-table', 'selection-change', arguments[0])"
 				@row-click="onPost('grid-table', 'row-click', arguments[0], arguments[1], arguments[2])"
 				@sort-change="onPost('grid-table', 'sort-change', arguments[0])">
@@ -69,7 +69,7 @@
 		<!-- 添加 --><#local ableFields=[]/><#list table.fields as field><#if field.addable><#local ableFields=ableFields+[field]/></#if></#list>
 		<el-dialog title="添加" :visible.sync="addFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
 			<el-row type="flex" justify="center" align="top">
-				<el-form class="qdp-add-form" :model="addForm" :rules="addFormRules" label-width="80px" inline ref="addForm" @keydown.13.native.stop="onPost('addForm', 'submit')">
+				<el-form class="qdp-add-form" :model="addForm" :rules="addFormRules" label-width="100px" inline ref="addForm" @keydown.13.native.stop="onPost('addForm', 'submit')">
 					<#list ableFields as field>
 						<#if ['ID','UPDATE_TIME','CREATE_TIME']?seq_index_of(field.field) lt 0><@genForm field=field formType='add'/></#if>
 					</#list>
@@ -84,7 +84,7 @@
 		<!-- 修改 --><#local ableFields=[]/><#list table.fields as field><#if field.editable><#local ableFields=ableFields+[field]/></#if></#list>
 		<el-dialog title="修改" :visible.sync="editFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
 			<el-row type="flex" justify="center" align="top">
-				<el-form class="qdp-edit-form" :model="editForm" :rules="editFormRules" label-width="80px" inline ref="editForm" @keydown.13.native.stop="onPost('editForm', 'submit')">
+				<el-form class="qdp-edit-form" :model="editForm" :rules="editFormRules" label-width="100px" inline ref="editForm" @keydown.13.native.stop="onPost('editForm', 'submit')">
 					<#list ableFields as field>
 						<#if ['ID','UPDATE_TIME','CREATE_TIME']?seq_index_of(field.field) lt 0><@genForm field=field formType='edit'/></#if>
 					</#list>
