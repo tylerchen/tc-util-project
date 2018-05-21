@@ -224,27 +224,31 @@
 						</#if>
 					</el-form-item>
 	<#elseif type == 'icon'>
-					<el-form-item label="${label}" prop="${jfield}" class="qdp-input-icon">
-						<el-button icon="search" @click="openDialog('${formType}Form','${jfield}')" size="small" type="text"></el-button>
-						<el-tag v-if="${formType}Form.${jfield}">{{${formType}Form.${jfield}}}</el-tag>
-						<el-button size="small" type="text" v-if="${formType}Form.${jfield}"><i :class="${formType}Form.${jfield}"></i></el-button>
+					<el-form-item label="${label}" prop="${jfield}">
+                        <div class="qdp-input-icon">
+							<el-button icon="el-icon-search" @click="openDialog('${formType}Form','${jfield}')" size="small" type="text"></el-button>
+							<el-tag v-if="${formType}Form.${jfield}">{{${formType}Form.${jfield}}}</el-tag>
+							<el-button size="small" type="text" v-if="${formType}Form.${jfield}"><i :class="${formType}Form.${jfield}"></i></el-button>
+						</div>
 					</el-form-item>
 	<#elseif type == 'modal'>
 		<#if field.refTable?has_content && field.refField?has_content && field.refLabelField?has_content>
-					<el-form-item label="${label}" prop="${jfield}Name" ref="${formType}Form-${jfield}Name" class="qdp-input-model">
-						<el-button icon="search" @click="openDialog('${formType}Form','${jfield}')" size="small" type="text"></el-button>
-						<div class="el-input el-input--small"><!--列表显示所有的选择-->
-							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
-							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
-							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
-								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(${formType}Form, '${jfield}Name')" v-if="value" :key="value">
-								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(${formType}Form, '${jfield}', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
-								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
-								        </tr>
-							    	</table>
-							    </div>
+					<el-form-item label="${label}" prop="${jfield}Name" ref="${formType}Form-${jfield}Name">
+						<div class="qdp-input-model">
+						<el-button icon="el-icon-search" @click="openDialog('${formType}Form','${jfield}')" size="small" type="text"></el-button>
+							<div class="el-input el-input--small"><!--列表显示所有的选择-->
+								<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+									<div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+										<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+											<tr class="el-transfer-panel__item el-table__row" v-for="value in split(${formType}Form, '${jfield}Name')" v-if="value" :key="value">
+												<td><el-button size="small" type="text" title="删除"   @click="removeSelect(${formType}Form, '${jfield}', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+												<td style="padding-left: 10px;"><span>{{value}}</span></td>
+											</tr>
+										</table>
+									</div>
+								</div>
 							</div>
-						</div>
+                        </div>
 					</el-form-item>
 					<el-form-item label="${label}" prop="${jfield}" v-show="false" ref="${formType}Form-${jfield}">
 						<el-input v-model="${formType}Form.${jfield}" placeholder="" size="small"></el-input>
