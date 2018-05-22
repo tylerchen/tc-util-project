@@ -32,7 +32,7 @@
 		<!-- 列表 --><#local ableFields=[]/><#list table.fields as field><#if field.listable><#local ableFields=ableFields+[field]/></#if></#list>
 		<#if ableFields?has_content>
 		<el-row class="qdp-list-content qdp-grid" type="flex" justify="center" align="top">
-			<el-table :data="grid.data.rows" style="width: 100%;" border highlight-current-row ref="grid" :height="400" :max-height="400" stripe
+			<el-table :data="grid.data.rows" style="width: 100%;" border highlight-current-row ref="grid" height="auto" stripe
 				@selection-change="onPost('grid-table', 'selection-change', arguments[0])"
 				@row-click="onPost('grid-table', 'row-click', arguments[0], arguments[1], arguments[2])"
 				@sort-change="onPost('grid-table', 'sort-change', arguments[0])">
