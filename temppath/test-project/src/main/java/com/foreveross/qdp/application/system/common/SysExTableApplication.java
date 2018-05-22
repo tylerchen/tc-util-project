@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -14,7 +14,7 @@ import com.foreveross.qdp.infra.vo.system.common.SysExTableVO;
 /**
  * SysExTable Application.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -27,7 +27,7 @@ public interface SysExTableApplication {
 	 * @param vo
 	 * @return SysExTableVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	SysExTableVO getSysExTable(SysExTableVO vo);
@@ -39,7 +39,7 @@ public interface SysExTableApplication {
 	 * @param vo
 	 * @return SysExTableVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	SysExTableVO getSysExTableById(String id);
@@ -52,7 +52,7 @@ public interface SysExTableApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindSysExTable(SysExTableVO vo, Page page);
@@ -65,7 +65,7 @@ public interface SysExTableApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindSysExTableMap(SysExTableVO vo, Page page);
@@ -77,7 +77,7 @@ public interface SysExTableApplication {
 	 * @param vo
 	 * @return SysExTableVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	SysExTableVO addSysExTable(SysExTableVO vo);
@@ -89,7 +89,7 @@ public interface SysExTableApplication {
 	 * @param vo
 	 * @return SysExTableVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	SysExTableVO updateSysExTable(SysExTableVO vo);
@@ -100,7 +100,7 @@ public interface SysExTableApplication {
 	 * </pre>
 	 * @param vo conditions.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeSysExTable(SysExTableVO vo);
@@ -111,7 +111,7 @@ public interface SysExTableApplication {
 	 * </pre>
 	 * @param id.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeSysExTableById(String id);
@@ -122,7 +122,7 @@ public interface SysExTableApplication {
 	 * </pre>
 	 * @param ids.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeSysExTableByIds(String[] ids);

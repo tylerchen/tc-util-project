@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -26,7 +26,7 @@ import com.foreveross.qdp.domain.system.auth.AuthUser;
 /**
  * AuthUser
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -43,7 +43,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#getAuthUser(AuthUserVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthUserVO getAuthUser(AuthUserVO vo) {
@@ -61,7 +61,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#getAuthUserById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthUserVO getAuthUserById(String id){
@@ -79,7 +79,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#pageFindAuthUser(AuthUserVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindAuthUser(AuthUserVO vo, Page page) {
@@ -98,7 +98,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#pageFindAuthUserMap(AuthUserVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindAuthUserMap(AuthUserVO vo, Page page) {
@@ -116,7 +116,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#addAuthUser(AuthUserVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthUserVO addAuthUser(AuthUserVO vo) {
@@ -135,7 +135,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#updateAuthUser(AuthUserVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public AuthUserVO updateAuthUser(AuthUserVO vo) {
@@ -153,7 +153,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#removeAuthUser(AuthUserVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthUser(AuthUserVO vo) {
@@ -169,7 +169,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#removeAuthUserById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthUserById(String id) {
@@ -188,7 +188,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#removeAuthUserByIds(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeAuthUserByIds(String[] ids) {
@@ -203,7 +203,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#getByName(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthUserVO getByName(String name) {
 		AuthUser authUser = AuthUser.getByName(name);
@@ -217,7 +217,7 @@ public class AuthUserApplicationImpl implements AuthUserApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.auth.AuthUserApplication#getByEmail(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthUserVO getByEmail(String email) {
 		AuthUser authUser = AuthUser.getByEmail(email);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * SysQuery
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -139,7 +139,7 @@ public class SysQuery implements Serializable {
 	 * @param sysQuery
 	 * @return SysQuery
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysQuery get(SysQuery sysQuery) {
 		return Dao.queryOne("SysQuery.getSysQueryById", sysQuery);
@@ -153,7 +153,7 @@ public class SysQuery implements Serializable {
 	 * @param id
 	 * @return SysQuery
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysQuery get(String id) {
 		SysQuery sysQuery = new SysQuery();
@@ -168,7 +168,7 @@ public class SysQuery implements Serializable {
 	 * </pre>
 	 * @param sysQuery
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(SysQuery sysQuery) {
 		sysQuery.remove();
@@ -181,7 +181,7 @@ public class SysQuery implements Serializable {
 	 * </pre>
 	 * @param sysQuery
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		SysQuery sysQuery = new SysQuery();
@@ -196,7 +196,7 @@ public class SysQuery implements Serializable {
 	 * </pre>
 	 * @param sysQuery
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -215,7 +215,7 @@ public class SysQuery implements Serializable {
 	 * </pre>
 	 * @param sysQuery
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasName(SysQuery sysQuery) {
 		return Dao.querySize("SysQuery.hasName", sysQuery) > 0;
@@ -228,7 +228,7 @@ public class SysQuery implements Serializable {
 	 * </pre>
 	 * @param sysQuery
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasCode(SysQuery sysQuery) {
 		return Dao.querySize("SysQuery.hasCode", sysQuery) > 0;
@@ -240,7 +240,7 @@ public class SysQuery implements Serializable {
 	 * Usage : SysQuery.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysQuery add() {
 		ValidateHelper validate = validate("add");
@@ -257,7 +257,7 @@ public class SysQuery implements Serializable {
 	 * Usage : SysQuery.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysQuery update() {
 		ValidateHelper validate = validate("edit");
@@ -274,7 +274,7 @@ public class SysQuery implements Serializable {
 	 * Usage : SysQuery.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysQuery addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -290,7 +290,7 @@ public class SysQuery implements Serializable {
 	 * Usage : SysQuery.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -307,7 +307,7 @@ public class SysQuery implements Serializable {
 	 * Usage : SysQuery.getByName(name)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysQuery getByName(String name) {
 		SysQuery domain = new SysQuery();
@@ -321,7 +321,7 @@ public class SysQuery implements Serializable {
 	 * Usage : SysQuery.getByCode(code)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static SysQuery getByCode(String code) {
 		SysQuery domain = new SysQuery();
@@ -338,7 +338,7 @@ public class SysQuery implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();

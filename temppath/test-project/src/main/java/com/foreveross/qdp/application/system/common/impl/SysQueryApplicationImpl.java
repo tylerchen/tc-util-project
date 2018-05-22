@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -26,7 +26,7 @@ import com.foreveross.qdp.domain.system.common.SysQuery;
 /**
  * SysQuery
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -43,7 +43,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#getSysQuery(SysQueryVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysQueryVO getSysQuery(SysQueryVO vo) {
@@ -61,7 +61,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#getSysQueryById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysQueryVO getSysQueryById(String id){
@@ -79,7 +79,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#pageFindSysQuery(SysQueryVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindSysQuery(SysQueryVO vo, Page page) {
@@ -98,7 +98,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#pageFindSysQueryMap(SysQueryVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindSysQueryMap(SysQueryVO vo, Page page) {
@@ -116,7 +116,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#addSysQuery(SysQueryVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysQueryVO addSysQuery(SysQueryVO vo) {
@@ -135,7 +135,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#updateSysQuery(SysQueryVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysQueryVO updateSysQuery(SysQueryVO vo) {
@@ -153,7 +153,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#removeSysQuery(SysQueryVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysQuery(SysQueryVO vo) {
@@ -169,7 +169,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#removeSysQueryById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysQueryById(String id) {
@@ -188,7 +188,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#removeSysQueryByIds(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysQueryByIds(String[] ids) {
@@ -203,7 +203,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#getByName(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysQueryVO getByName(String name) {
 		SysQuery sysQuery = SysQuery.getByName(name);
@@ -217,7 +217,7 @@ public class SysQueryApplicationImpl implements SysQueryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysQueryApplication#getByCode(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public SysQueryVO getByCode(String code) {
 		SysQuery sysQuery = SysQuery.getByCode(code);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -14,7 +14,7 @@ import com.foreveross.qdp.infra.vo.system.common.SysExDataVO;
 /**
  * SysExData Application.
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -27,7 +27,7 @@ public interface SysExDataApplication {
 	 * @param vo
 	 * @return SysExDataVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	SysExDataVO getSysExData(SysExDataVO vo);
@@ -39,7 +39,7 @@ public interface SysExDataApplication {
 	 * @param vo
 	 * @return SysExDataVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	SysExDataVO getSysExDataById(String id);
@@ -52,7 +52,7 @@ public interface SysExDataApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindSysExData(SysExDataVO vo, Page page);
@@ -65,7 +65,7 @@ public interface SysExDataApplication {
 	 * @param page page setting
 	 * @return Page
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	Page pageFindSysExDataMap(SysExDataVO vo, Page page);
@@ -77,7 +77,7 @@ public interface SysExDataApplication {
 	 * @param vo
 	 * @return SysExDataVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	SysExDataVO addSysExData(SysExDataVO vo);
@@ -89,7 +89,7 @@ public interface SysExDataApplication {
 	 * @param vo
 	 * @return SysExDataVO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	SysExDataVO updateSysExData(SysExDataVO vo);
@@ -100,7 +100,7 @@ public interface SysExDataApplication {
 	 * </pre>
 	 * @param vo conditions.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeSysExData(SysExDataVO vo);
@@ -111,7 +111,7 @@ public interface SysExDataApplication {
 	 * </pre>
 	 * @param id.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeSysExDataById(String id);
@@ -122,7 +122,7 @@ public interface SysExDataApplication {
 	 * </pre>
 	 * @param ids.
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	void removeSysExDataByIds(String[] ids);

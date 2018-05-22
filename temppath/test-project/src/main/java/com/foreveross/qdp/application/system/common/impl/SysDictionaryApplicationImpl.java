@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -26,7 +26,7 @@ import com.foreveross.qdp.domain.system.common.SysDictionary;
 /**
  * SysDictionary
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -43,7 +43,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#getSysDictionary(SysDictionaryVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysDictionaryVO getSysDictionary(SysDictionaryVO vo) {
@@ -61,7 +61,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#getSysDictionaryById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysDictionaryVO getSysDictionaryById(String id){
@@ -79,7 +79,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#pageFindSysDictionary(SysDictionaryVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindSysDictionary(SysDictionaryVO vo, Page page) {
@@ -98,7 +98,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#pageFindSysDictionaryMap(SysDictionaryVO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public Page pageFindSysDictionaryMap(SysDictionaryVO vo, Page page) {
@@ -116,7 +116,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#addSysDictionary(SysDictionaryVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysDictionaryVO addSysDictionary(SysDictionaryVO vo) {
@@ -135,7 +135,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#updateSysDictionary(SysDictionaryVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public SysDictionaryVO updateSysDictionary(SysDictionaryVO vo) {
@@ -153,7 +153,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#removeSysDictionary(SysDictionaryVO)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysDictionary(SysDictionaryVO vo) {
@@ -169,7 +169,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#removeSysDictionaryById(String)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysDictionaryById(String id) {
@@ -188,7 +188,7 @@ public class SysDictionaryApplicationImpl implements SysDictionaryApplication {
 	 * (non-Javadoc)
 	 * @see com.foreveross.qdp.application.system.common.SysDictionaryApplication#removeSysDictionaryByIds(String[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 * auto generate by qdp v3.0.
 	 */
 	public void removeSysDictionaryByIds(String[] ids) {

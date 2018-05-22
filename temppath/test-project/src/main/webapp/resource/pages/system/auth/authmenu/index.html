@@ -58,19 +58,21 @@
 						<el-input v-model="addForm.name" placeholder="" size="small"></el-input>
 					</el-form-item>
 					<el-form-item label="资源" prop="resourceIdName" ref="addForm-resourceIdName">
-						<el-button icon="search" @click="openDialog('addForm','resourceId')" size="small" type="text"></el-button>
-						<div class="el-input el-input--small"><!--列表显示所有的选择-->
-							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
-							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
-							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
-								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(addForm, 'resourceIdName')" v-if="value" :key="value">
-								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addForm, 'resourceId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
-								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
-								        </tr>
-							    	</table>
-							    </div>
+						<div class="qdp-input-model">
+						<el-button icon="el-icon-search" @click="openDialog('addForm','resourceId')" size="small" type="text"></el-button>
+							<div class="el-input el-input--small"><!--列表显示所有的选择-->
+								<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+									<div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+										<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+											<tr class="el-transfer-panel__item el-table__row" v-for="value in split(addForm, 'resourceIdName')" v-if="value" :key="value">
+												<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addForm, 'resourceId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+												<td style="padding-left: 10px;"><span>{{value}}</span></td>
+											</tr>
+										</table>
+									</div>
+								</div>
 							</div>
-						</div>
+                        </div>
 					</el-form-item>
 					<el-form-item label="资源" prop="resourceId" v-show="false" ref="addForm-resourceId">
 						<el-input v-model="addForm.resourceId" placeholder="" size="small"></el-input>
@@ -92,9 +94,11 @@
 						<el-input-number v-model="addForm.maxLevel" placeholder="" size="small"></el-input-number>
 					</el-form-item>
 					<el-form-item label="图标" prop="ico">
-						<el-button icon="search" @click="openDialog('addForm','ico')" size="small" type="text"></el-button>
-						<el-tag v-if="addForm.ico">{{addForm.ico}}</el-tag>
-						<el-button size="small" type="text" v-if="addForm.ico"><i :class="addForm.ico"></i></el-button>
+                        <div class="qdp-input-icon">
+							<el-button icon="el-icon-search" @click="openDialog('addForm','ico')" size="small" type="text"></el-button>
+							<el-tag v-if="addForm.ico">{{addForm.ico}}</el-tag>
+							<el-button size="small" type="text" v-if="addForm.ico"><i :class="addForm.ico"></i></el-button>
+						</div>
 					</el-form-item>
 					<el-form-item label="描述" prop="description">
 						<el-input v-model="addForm.description" placeholder="" size="small"></el-input>
@@ -115,19 +119,21 @@
 						<el-input v-model="addChildForm.name" placeholder="" size="small"></el-input>
 					</el-form-item>
 					<el-form-item label="资源" prop="resourceIdName" ref="addChildForm-resourceIdName">
-						<el-button icon="search" @click="openDialog('addChildForm','resourceId')" size="small" type="text"></el-button>
-						<div class="el-input el-input--small"><!--列表显示所有的选择-->
-							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
-							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
-							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
-								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(addChildForm, 'resourceIdName')" v-if="value" :key="value">
-								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addChildForm, 'resourceId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
-								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
-								        </tr>
-							    	</table>
-							    </div>
+						<div class="qdp-input-model">
+						<el-button icon="el-icon-search" @click="openDialog('addChildForm','resourceId')" size="small" type="text"></el-button>
+							<div class="el-input el-input--small"><!--列表显示所有的选择-->
+								<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+									<div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+										<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+											<tr class="el-transfer-panel__item el-table__row" v-for="value in split(addChildForm, 'resourceIdName')" v-if="value" :key="value">
+												<td><el-button size="small" type="text" title="删除"   @click="removeSelect(addChildForm, 'resourceId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+												<td style="padding-left: 10px;"><span>{{value}}</span></td>
+											</tr>
+										</table>
+									</div>
+								</div>
 							</div>
-						</div>
+                        </div>
 					</el-form-item>
 					<el-form-item label="资源" prop="resourceId" v-show="false" ref="addChildForm-resourceId">
 						<el-input v-model="addChildForm.resourceId" placeholder="" size="small"></el-input>
@@ -136,9 +142,11 @@
 						<el-input-number v-model="addChildForm.menuIndex" placeholder="" size="small"></el-input-number>
 					</el-form-item>
 					<el-form-item label="图标" prop="ico">
-						<el-button icon="search" @click="openDialog('addChildForm','ico')" size="small" type="text"></el-button>
-						<el-tag v-if="addChildForm.ico">{{addChildForm.ico}}</el-tag>
-						<el-button size="small" type="text" v-if="addChildForm.ico"><i :class="addChildForm.ico"></i></el-button>
+                        <div class="qdp-input-icon">
+							<el-button icon="el-icon-search" @click="openDialog('addChildForm','ico')" size="small" type="text"></el-button>
+							<el-tag v-if="addChildForm.ico">{{addChildForm.ico}}</el-tag>
+							<el-button size="small" type="text" v-if="addChildForm.ico"><i :class="addChildForm.ico"></i></el-button>
+						</div>
 					</el-form-item>
 					<el-form-item label="描述" prop="description">
 						<el-input v-model="addChildForm.description" placeholder="" size="small"></el-input>
@@ -159,19 +167,21 @@
 						<el-input v-model="editForm.name" placeholder="" size="small"></el-input>
 					</el-form-item>
 					<el-form-item label="资源" prop="resourceIdName" ref="editForm-resourceIdName">
-						<el-button icon="search" @click="openDialog('editForm','resourceId')" size="small" type="text"></el-button>
-						<div class="el-input el-input--small"><!--列表显示所有的选择-->
-							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
-							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
-							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
-								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'resourceIdName')" v-if="value" :key="value">
-								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'resourceId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
-								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
-								        </tr>
-							    	</table>
-							    </div>
+						<div class="qdp-input-model">
+						<el-button icon="el-icon-search" @click="openDialog('editForm','resourceId')" size="small" type="text"></el-button>
+							<div class="el-input el-input--small"><!--列表显示所有的选择-->
+								<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+									<div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+										<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+											<tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'resourceIdName')" v-if="value" :key="value">
+												<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'resourceId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+												<td style="padding-left: 10px;"><span>{{value}}</span></td>
+											</tr>
+										</table>
+									</div>
+								</div>
 							</div>
-						</div>
+                        </div>
 					</el-form-item>
 					<el-form-item label="资源" prop="resourceId" v-show="false" ref="editForm-resourceId">
 						<el-input v-model="editForm.resourceId" placeholder="" size="small"></el-input>
@@ -187,37 +197,41 @@
 					   	</el-select>
 					</el-form-item>
 					<el-form-item label="父菜单" prop="parentIdName" ref="editForm-parentIdName">
-						<el-button icon="search" @click="openDialog('editForm','parentId')" size="small" type="text"></el-button>
-						<div class="el-input el-input--small"><!--列表显示所有的选择-->
-							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
-							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
-							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
-								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'parentIdName')" v-if="value" :key="value">
-								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'parentId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
-								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
-								        </tr>
-							    	</table>
-							    </div>
+						<div class="qdp-input-model">
+						<el-button icon="el-icon-search" @click="openDialog('editForm','parentId')" size="small" type="text"></el-button>
+							<div class="el-input el-input--small"><!--列表显示所有的选择-->
+								<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+									<div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+										<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+											<tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'parentIdName')" v-if="value" :key="value">
+												<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'parentId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+												<td style="padding-left: 10px;"><span>{{value}}</span></td>
+											</tr>
+										</table>
+									</div>
+								</div>
 							</div>
-						</div>
+                        </div>
 					</el-form-item>
 					<el-form-item label="父菜单" prop="parentId" v-show="false" ref="editForm-parentId">
 						<el-input v-model="editForm.parentId" placeholder="" size="small"></el-input>
 					</el-form-item>
 					<el-form-item label="根菜单" prop="rootIdName" ref="editForm-rootIdName">
-						<el-button icon="search" @click="openDialog('editForm','rootId')" size="small" type="text"></el-button>
-						<div class="el-input el-input--small"><!--列表显示所有的选择-->
-							<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
-							    <div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
-							    	<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
-								        <tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'rootIdName')" v-if="value" :key="value">
-								        	<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'rootId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
-								        	<td style="padding-left: 10px;"><span>{{value}}</span></td>
-								        </tr>
-							    	</table>
-							    </div>
+						<div class="qdp-input-model">
+						<el-button icon="el-icon-search" @click="openDialog('editForm','rootId')" size="small" type="text"></el-button>
+							<div class="el-input el-input--small"><!--列表显示所有的选择-->
+								<div class="qdp-modal-list-body" style="border:1px solid #d1dbe5;">
+									<div class="qdp-modal-list" style="max-height: 100px; overflow: auto;">
+										<table cellspacing="0" cellpadding="0" border="0" class="el-table__body" style="width: 100%;">
+											<tr class="el-transfer-panel__item el-table__row" v-for="value in split(editForm, 'rootIdName')" v-if="value" :key="value">
+												<td><el-button size="small" type="text" title="删除"   @click="removeSelect(editForm, 'rootId', value)"><i class="el-icon-ion-trash-b"></i></el-button></td>
+												<td style="padding-left: 10px;"><span>{{value}}</span></td>
+											</tr>
+										</table>
+									</div>
+								</div>
 							</div>
-						</div>
+                        </div>
 					</el-form-item>
 					<el-form-item label="根菜单" prop="rootId" v-show="false" ref="editForm-rootId">
 						<el-input v-model="editForm.rootId" placeholder="" size="small"></el-input>
@@ -229,9 +243,11 @@
 						<el-input-number v-model="editForm.maxLevel" placeholder="" size="small"></el-input-number>
 					</el-form-item>
 					<el-form-item label="图标" prop="ico">
-						<el-button icon="search" @click="openDialog('editForm','ico')" size="small" type="text"></el-button>
-						<el-tag v-if="editForm.ico">{{editForm.ico}}</el-tag>
-						<el-button size="small" type="text" v-if="editForm.ico"><i :class="editForm.ico"></i></el-button>
+                        <div class="qdp-input-icon">
+							<el-button icon="el-icon-search" @click="openDialog('editForm','ico')" size="small" type="text"></el-button>
+							<el-tag v-if="editForm.ico">{{editForm.ico}}</el-tag>
+							<el-button size="small" type="text" v-if="editForm.ico"><i :class="editForm.ico"></i></el-button>
+						</div>
 					</el-form-item>
 					<el-form-item label="描述" prop="description">
 						<el-input v-model="editForm.description" placeholder="" size="small"></el-input>

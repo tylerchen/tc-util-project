@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * AuthRole
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -130,7 +130,7 @@ public class AuthRole implements Serializable {
 	 * @param authRole
 	 * @return AuthRole
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthRole get(AuthRole authRole) {
 		return Dao.queryOne("AuthRole.getAuthRoleById", authRole);
@@ -144,7 +144,7 @@ public class AuthRole implements Serializable {
 	 * @param id
 	 * @return AuthRole
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthRole get(String id) {
 		AuthRole authRole = new AuthRole();
@@ -159,7 +159,7 @@ public class AuthRole implements Serializable {
 	 * </pre>
 	 * @param authRole
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(AuthRole authRole) {
 		authRole.remove();
@@ -172,7 +172,7 @@ public class AuthRole implements Serializable {
 	 * </pre>
 	 * @param authRole
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		AuthRole authRole = new AuthRole();
@@ -187,7 +187,7 @@ public class AuthRole implements Serializable {
 	 * </pre>
 	 * @param authRole
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -206,7 +206,7 @@ public class AuthRole implements Serializable {
 	 * </pre>
 	 * @param authRole
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasName(AuthRole authRole) {
 		return Dao.querySize("AuthRole.hasName", authRole) > 0;
@@ -219,7 +219,7 @@ public class AuthRole implements Serializable {
 	 * </pre>
 	 * @param authRole
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasCode(AuthRole authRole) {
 		return Dao.querySize("AuthRole.hasCode", authRole) > 0;
@@ -231,7 +231,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthRole add() {
 		ValidateHelper validate = validate("add");
@@ -248,7 +248,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthRole update() {
 		ValidateHelper validate = validate("edit");
@@ -265,7 +265,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthRole addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -281,7 +281,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -304,7 +304,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.getByName(name)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthRole getByName(String name) {
 		AuthRole domain = new AuthRole();
@@ -318,7 +318,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.getByCode(code)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthRole getByCode(String code) {
 		AuthRole domain = new AuthRole();
@@ -335,7 +335,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.findAuthRoleResource()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthResource> findAuthResource() {
 		AuthRole condition = new AuthRole();
@@ -352,7 +352,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.findAuthRoleResource()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthRoleResource> findAuthRoleResource() {
 		AuthRole condition = new AuthRole();
@@ -369,7 +369,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.removeAuthRoleResource()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void removeAuthRoleResource() {
 		List<AuthRoleResource> list = findAuthRoleResource();
@@ -384,7 +384,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.assignAuthResource()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void assignAuthResourceByIds(String[] ids) {
 		ValidateHelper validate = validate("edit");
@@ -433,7 +433,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.findAuthAutherMenu()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthMenu> findAuthMenu() {
 		AuthRole condition = new AuthRole();
@@ -450,7 +450,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.findAuthAutherMenu()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public List<AuthAutherMenu> findAuthAutherMenu() {
 		AuthRole condition = new AuthRole();
@@ -467,7 +467,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.removeAuthAutherMenu()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void removeAuthAutherMenu() {
 		List<AuthAutherMenu> list = findAuthAutherMenu();
@@ -482,7 +482,7 @@ public class AuthRole implements Serializable {
 	 * Usage : AuthRole.assignAuthMenu()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void assignAuthMenuByIds(String[] ids) {
 		ValidateHelper validate = validate("edit");
@@ -536,7 +536,7 @@ public class AuthRole implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();

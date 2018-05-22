@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018-04-10 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
+ * Copyright (c) 2018-05-16 @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>.
  * All rights reserved.
  *
  * Contributors:
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * AuthMenu
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
- * @since 2018-04-10
+ * @since 2018-05-16
  * @version 1.0.0
  * auto generate by qdp v3.0.
  */
@@ -166,7 +166,7 @@ public class AuthMenu implements Serializable {
 	 * @param authMenu
 	 * @return AuthMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthMenu get(AuthMenu authMenu) {
 		return Dao.queryOne("AuthMenu.getAuthMenuById", authMenu);
@@ -180,7 +180,7 @@ public class AuthMenu implements Serializable {
 	 * @param id
 	 * @return AuthMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthMenu get(String id) {
 		AuthMenu authMenu = new AuthMenu();
@@ -195,7 +195,7 @@ public class AuthMenu implements Serializable {
 	 * </pre>
 	 * @param authMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(AuthMenu authMenu) {
 		authMenu.remove();
@@ -208,7 +208,7 @@ public class AuthMenu implements Serializable {
 	 * </pre>
 	 * @param authMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String id) {
 		AuthMenu authMenu = new AuthMenu();
@@ -223,7 +223,7 @@ public class AuthMenu implements Serializable {
 	 * </pre>
 	 * @param authMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static void remove(String[] ids) {
 		if (ids != null) {
@@ -242,7 +242,7 @@ public class AuthMenu implements Serializable {
 	 * </pre>
 	 * @param authMenu
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean hasName(AuthMenu authMenu) {
 		return Dao.querySize("AuthMenu.hasName", authMenu) > 0;
@@ -254,7 +254,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.add()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthMenu add() {
 		ValidateHelper validate = validate("add");
@@ -276,7 +276,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthMenu update() {
 		ValidateHelper validate = validate("edit");
@@ -294,7 +294,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.update()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthMenu addOrUpdate() {
 		if (StringUtils.isBlank(getId())) {
@@ -310,7 +310,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.remove()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public void remove() {
 		ValidateHelper validate = validate("delete");
@@ -327,7 +327,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.getByName(name)
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static AuthMenu getByName(String name) {
 		AuthMenu domain = new AuthMenu();
@@ -343,7 +343,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.findByRootId()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static List<AuthMenu> findByRootId(String rootId) {
 		if ( StringUtils.isBlank(String.valueOf(rootId)) ) {
@@ -363,7 +363,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.findByParentId()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static List<AuthMenu> findByParentId(String parentId) {
 		if ( StringUtils.isBlank(String.valueOf(parentId)) ) {
@@ -384,7 +384,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.checkMenuLevel()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static boolean checkMenuLevel(String parentId) {
 		if ( parentId == null || StringUtils.isBlank(String.valueOf(parentId)) ) {
@@ -412,7 +412,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.reOrder()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public static List<AuthMenu> reOrder(String parentId) {
 		List<AuthMenu> items = findByParentId(parentId);
@@ -430,7 +430,7 @@ public class AuthMenu implements Serializable {
 	 * Usage : AuthMenu.updateByMenuIdex()
 	 * </pre>
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	public AuthMenu updateByMenuIdex() {
 		Dao.save("AuthMenu.updateAuthMenu", this);
@@ -443,7 +443,7 @@ public class AuthMenu implements Serializable {
 	 * </pre>
 	 * @param type add/update/delete
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
-	 * @since 2018-04-10
+	 * @since 2018-05-16
 	 */
 	private ValidateHelper validate(String type) {
 		ValidateHelper validate = ValidateHelper.create();

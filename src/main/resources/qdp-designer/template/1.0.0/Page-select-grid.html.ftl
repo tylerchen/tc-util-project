@@ -7,7 +7,7 @@
 		<!-- 搜索 --><#local searchs=[]/><#list table.fields as field><#if field.searchable><#local searchs=searchs+[field]/></#if></#list>
 		<#if searchs?has_content>
 		<el-row class="qdp-list-content" type="flex" justify="start" align="top">
-			<el-form class="qdp-search-form" :model="searchForm" label-width="80px" inline ref="searchForm" @keydown.13.native.stop="onPost('search-form', 'search')">
+			<el-form class="qdp-search-form" :model="searchForm" label-width="100px" inline ref="searchForm" @keydown.13.native.stop="onPost('search-form', 'search')">
 				<#list searchs as field>
 					<#if field?index lt 2><@searchForm field=field/></#if>
 				</#list>
