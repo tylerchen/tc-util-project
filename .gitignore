@@ -20,3 +20,5 @@ target/*
 .settings/*
 .idea
 .idea/*
+.temppath
+.temppath/*
