@@ -4,7 +4,7 @@
 <#local table=getTable(table.tableName, project).table!table mainTable={}/>
 <#list func.children as item><#if item.type=='page' && item.name=='index'><#local mainTable=item/></#if></#list>
 <template>
-    <!-- template-1.0.0 -->
+    <!-- template-2.0.0 -->
 	<div class="qdp-list-layout">
 		<!-- 搜索 -->
 		<!-- 搜索-END -->

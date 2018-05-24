@@ -2,7 +2,7 @@
 <#include "/_page_util.ftl" />
 <#macro page date package class module table pk notNull index unique autoInc columns foreign func proModule project>
 <template>
-    <!-- template-1.0.0 -->
+    <!-- template-2.0.0 -->
 	<div class="qdp-list-layout">
 		<!-- 搜索 -->
 		<!-- 搜索-END -->

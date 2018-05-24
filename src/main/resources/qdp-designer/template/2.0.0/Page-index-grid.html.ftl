@@ -2,57 +2,77 @@
 <#include "/_page_util.ftl" />
 <#macro page date package class module table pk notNull index unique autoInc columns foreign func proModule project>
 <template>
-    <!-- template-1.0.0 -->
+    <!-- template-2.0.0 -->
 	<div class="qdp-list-layout">
-		<!-- 搜索 -->
+		<!-- 搜索 --><#local ableFields=[]/><#list table.fields as field><#if field.searchable><#local ableFields=ableFields+[field]/></#if></#list>
+		<#if ableFields?has_content>
+		<el-row class="qdp-list-content" type="flex" justify="start" align="top">
+			<el-form class="qdp-search-form" :model="searchForm" label-width="100px" inline ref="searchForm" @keydown.13.native.stop="onPost('searchForm', 'search')">
+				<#list ableFields as field>
+					<#if field?index lt 3><@searchForm field=field/></#if>
+				</#list>
+				<el-form-item>
+					<el-button size="small" type="info" @click="onPost('searchForm','reset')"><i class="el-icon-ion-backspace-outline"></i></el-button>
+					<el-button size="small" type="info" @click="onPost('searchForm','search')"><i class="el-icon-ion-search"></i></el-button>
+				</el-form-item>
+			</el-form>
+		</el-row>
+		</#if>
 		<!-- 搜索-END -->
 		<!-- 操作栏 -->
 		<#if table.actions?has_content>
 		<el-row class="qdp-list-content qdp-el-action" type="flex" justify="end" align="top">
 			<@formatCode align=['@click='] start='			' end='' split='\n' leftSpace=' ' rightSpace=''>
 			<#list table.actions?keys as key><#local action=table.actions[key]/>
-			<el-button size="small" type="text" title="${action.actionName}"    @click="onPost('action-bar','${action.eventName}')"><i class="${action.actionIcon}"></i></el-button>
+			<el-button size="small" type="text" title="${action.actionName}${action.shortCut?has_content?then('('+action.shortCut+')', '')}"    @click="onPost('action-bar','${action.eventName}')"><i class="${action.actionIcon}"></i></el-button>
 			</#list>
 			</@formatCode>
 		</el-row>
 		</#if>
 		<!-- 操作栏-END- -->
-		<!-- 列表 -->
+		<!-- 列表 --><#local ableFields=[]/><#list table.fields as field><#if field.listable><#local ableFields=ableFields+[field]/></#if></#list>
+		<#if ableFields?has_content>
+		<el-row class="qdp-list-content qdp-grid" type="flex" justify="center" align="top">
+			<el-table :data="grid.data.rows" style="width: 100%;" border highlight-current-row ref="grid" :height="400" :max-height="400" stripe
+				@selection-change="onPost('grid-table', 'selection-change', arguments[0])"
+				@row-click="onPost('grid-table', 'row-click', arguments[0], arguments[1], arguments[2])"
+				@sort-change="onPost('grid-table', 'sort-change', arguments[0])">
+				<el-table-column type="selection" width="35"></el-table-column>
+				<#list ableFields as field>
+					<#if ['radio','checkbox','switch','select']?seq_index_of(field.type.grid) gt -1>
+				<el-table-column :fixed="true" prop="${javaField(field.field)}" label="${javaFieldEnName(javaField(field.label!field.description!field.field))?capitalize}" width="100">
+					<template scope="scope"><el-tag>{{getOption(scope.row, scope.column)}}</el-tag></template>
+				</el-table-column>
+					<#elseif field.type.add == 'modal'>
+						<#if field.refTable?has_content && field.refField?has_content && field.refLabelField?has_content>
+				<el-table-column :fixed="true" prop="${javaField(field.field)}" label="${javaFieldEnName(javaField(field.description!field.field))?capitalize}">
+							<#if field.isNotTableColumn>
+					<template scope="scope"><el-tag v-for="value in split(scope.row, scope.column.property+'Name')" v-if="value" :key="value">{{value}}</el-tag></template>
+							<#else>
+					<template scope="scope"><el-tag>{{scope.row[scope.column.property+'Name']||""}}</el-tag></template>
+							</#if>
+				</el-table-column>
+						</#if>
+					<#else>
+				<el-table-column :fixed="true" prop="${javaField(field.field)}" label="${javaFieldEnName(javaField(field.description!field.field))?capitalize}" :sortable="${field.sortable?then('true','false')}"></el-table-column>
+					</#if>
+				</#list>
+			</el-table>
+		</el-row>
+		</#if>
 		<!-- 列表-END -->
 		<!-- 分页 -->
-		<!-- 分页-END -->
-		<!-- 树 -->
-		<el-row class="qdp-list-content qdp-tree-form" type="flex" justify="center" align="top">
-			<el-col :span="6">
-				<el-tree :highlight-current="true" :show-checkbox="false" node-key="id" :data="tree.data" :default-checked-keys="tree.checked" :default-expanded-keys="tree.expanded" :props="tree.props"
-					@node-click="onPost('treeForm', 'node-click', arguments[0], arguments[1])"
-					@check-change="onPost('treeForm', 'check-change', arguments[0], arguments[1], arguments[2])"
-					:render-content="renderContent" ref="treeForm">
-				</el-tree>
-			</el-col>
-			<el-col :span="18">
-				<el-row type="flex" justify="start" align="top" class="qdp-info-form" v-if="infoForm.id">
-					<table>
-						<tbody>
-							<#list table.fields as field><#local label = javaFieldEnName(javaField(field.description!field.field))?capitalize/>
-								<#if ['radio','checkbox','switch','select']?seq_index_of(field.type.grid) gt -1>
-							<tr><td class="qdp-infoform-title">${label}</td><td class="qdp-infoform-content"><div><el-tag>{{getOption(infoForm, '${javaField(field.field)}')}}</el-tag></div></td></tr>
-								<#else>
-							<tr><td class="qdp-infoform-title">${label}</td><td class="qdp-infoform-content"><div>{{infoForm.${javaField(field.field)}}}</div></td></tr>
-								</#if>
-							</#list>
-						</tbody>
-					</table>
-				</el-row>
-			</el-col>
+		<el-row class="qdp-list-content qdp-page" type="flex" justify="end" align="top">
+			<el-pagination :current-page="grid.data.currentPage" :total="grid.data.totalCount" :page-size="grid.data.pageSize" :page-sizes="[ 5, 10, 20, 50, 100 ]" layout="total, sizes, prev, pager, next, jumper" 
+				@size-change="onPost('grid-page', 'size-change', arguments[0])" @current-change="onPost('grid-page', 'current-change', arguments[0])"></el-pagination>
 		</el-row>
-		<!-- 树-END -->
+		<!-- 分页-END -->
 		<!-- 添加 --><#local ableFields=[]/><#list table.fields as field><#if field.addable><#local ableFields=ableFields+[field]/></#if></#list>
 		<el-dialog title="添加" :visible.sync="addFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
 			<el-row type="flex" justify="center" align="top">
 				<el-form class="qdp-add-form" :model="addForm" :rules="addFormRules" label-width="100px" inline ref="addForm" @keydown.13.native.stop="onPost('addForm', 'submit')">
 					<#list ableFields as field>
-						<#if ['ID','UPDATE_TIME','CREATE_TIME','PARENT_ID','ROOT_ID']?seq_index_of(field.field) lt 0><@genForm field=field formType='add'/></#if>
+						<#if ['ID','UPDATE_TIME','CREATE_TIME']?seq_index_of(field.field) lt 0><@genForm field=field formType='add'/></#if>
 					</#list>
 				</el-form>
 			</el-row>
@@ -62,21 +82,6 @@
 			</el-row>
 		</el-dialog>
 		<!-- 添加-END -->
-		<!-- 添加子节点 --><#local ableFields=[]/><#list table.fields as field><#if field.addable><#local ableFields=ableFields+[field]/></#if></#list>
-		<el-dialog title="添加子节点" :visible.sync="addChildFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
-			<el-row type="flex" justify="center" align="top">
-				<el-form class="qdp-add-form" :model="addChildForm" :rules="addChildFormRules" label-width="100px" inline ref="addChildForm" @keydown.13.native.stop="onPost('addChildForm', 'submit')">
-					<#list ableFields as field>
-						<#if ['ID','UPDATE_TIME','CREATE_TIME','TYPE1','TYPE2','PARENT_ID','ROOT_ID','MAX_LEVEL']?seq_index_of(field.field) lt 0><@genForm field=field formType='addChild'/></#if>
-					</#list>
-				</el-form>
-			</el-row>
-			<el-row type="flex" justify="center" align="top">
-				<el-button type="primary" @click="onPost('addChildForm','reset') " icon="ion-backspace-outline">重置</el-button>
-				<el-button type="primary" @click="onPost('addChildForm','submit')" icon="ion-checkmark">提交</el-button>
-			</el-row>
-		</el-dialog>
-		<!-- 添加子节点-END -->
 		<!-- 修改 --><#local ableFields=[]/><#list table.fields as field><#if field.editable><#local ableFields=ableFields+[field]/></#if></#list>
 		<el-dialog title="修改" :visible.sync="editFormVisible" :close-on-press-escape="false" :close-on-click-modal="false">
 			<el-row type="flex" justify="center" align="top">
@@ -97,7 +102,7 @@
 			<el-row type="flex" justify="center" align="top" class="qdp-info-form">
 				<table>
 					<tbody>
-						<#list ableFields as field><#local label = javaFieldEnName(javaField(field.label!field.description!field.field))?capitalize/>
+						<#list ableFields as field><#local label = javaFieldEnName(javaField(field.description!field.field))?capitalize/>
 							<#if ['radio','checkbox','switch','select']?seq_index_of(field.type.grid) gt -1>
 						<tr><td class="qdp-infoform-title">${label}</td><td class="qdp-infoform-content"><div><el-tag>{{getOption(infoForm, '${javaField(field.field)}')}}</el-tag></div></td></tr>
 							<#elseif field.type.add == 'modal'>
@@ -115,25 +120,12 @@
 			</el-row>
 		</el-dialog>
 		<!-- 详情-END -->
-		<!-- 图标选择 -->
-		<#list table.fields as field><#if field.type.all == 'icon'><#local javaFieldName=javaField(field.field)/>
-		<el-dialog class="qdp-form-dialog" title="IconPanel" :visible.sync="${javaFieldName}Visible" v-if="${javaFieldName}Visible">
-			<el-row type="flex" justify="center" align="top">
-				<Icon-panel v-if="currentFormName" :value.sync="this[currentFormName]" :multi="false" :field="'${javaFieldName}'" :id-field="'id'"></Icon-panel>
-			</el-row>
-			<el-row type="flex" justify="center" align="top" class="qdp-dialog-btns">
-				<el-button type="primary" @click="resetSelectionLabel(currentFormName, '${javaFieldName}'),${javaFieldName}Visible=false" icon="ion-backspace-outline">重置</el-button>
-				<el-button type="primary" @click="getSelectionLabel(currentFormName, '${javaFieldName}', 'name'),${javaFieldName}Visible=false" icon="ion-checkmark">选择</el-button>
-			</el-row>
-		</el-dialog>
-		<#break/></#if></#list>
-		<!-- 图标选择-END -->
 		<#list func.children as subtable><#if subtable.type=='page' && subtable.fileName!='index' && subtable.formType=='form'>
-		<!-- 弹出表单: ${subtable.label!subtable.name} -->
+		<!-- 弹出表单: ${subtable.label!subtable.name} --><#--如果是外置表单，则使用弹出窗-->
 		<el-dialog class="qdp-form-dialog" title="${subtable.label!subtable.name}" :visible.sync="${subtable.fileName}Visible" v-if="${subtable.fileName}Visible">
 			<el-row type="flex" justify="center" align="top">
 				<el-col :span="24">
-				<${subtable.fileName?lower_case?cap_first} v-if="currentFormName" :edit-form.sync="this[currentFormName]" :edit-form-rules="this[currentFormName+'Rules']" :enums="enums" ref="${subtable.fileName}Form"></${subtable.fileName?lower_case?cap_first}>
+					<${subtable.fileName?lower_case?cap_first} v-if="currentFormName" :edit-form.sync="this[currentFormName]" :edit-form-rules="this[currentFormName+'Rules']" :enums="enums" ref="${subtable.fileName}Form"></${subtable.fileName?lower_case?cap_first}>
 				</el-col>
 			</el-row>
 			<el-row type="flex" justify="center" align="top">
@@ -145,7 +137,7 @@
 		</#if></#list>
 		<#list func.children as subtable><#if subtable.type=='page' && subtable.fileName!='index' && subtable.formType!='form' && subtable.formType!='noShow'>
 		<#local multi=false/><#list table.fields as field><#if javaField(field.field)==subtable.fileName><#local multi=field.isNotTableColumn/></#if></#list>
-		<!-- 弹出选择：${subtable.label!subtable.name} -->
+		<!-- 弹出选择：${subtable.label!subtable.name} --><#--如果是其他页面，如选择页面，则弹出窗-->
 		<el-dialog class="qdp-form-dialog" title="${subtable.label!subtable.name}" :visible.sync="${subtable.fileName}Visible" v-if="${subtable.fileName}Visible">
 			<el-row type="flex" justify="center" align="top">
 				<el-col :span="24">
@@ -162,10 +154,10 @@
 	</div>
 </template>
 <script type="text/javascript">
-	<#local comPath=[''] comName=[''] coms=[] names=[]/> 
+	<#local comPath=[''] comName=[''] coms=[] names=[]/>
 	<#list table.fields as field><#if field.type.add=='icon' || field.type.edit=='icon'>
-		<#local names=names+[javaField(field.field)]/>
-		<#if !coms?has_content><#local comPath=comPath+["'vuel!pages/components/IconPanel.html'"] comName=comName+['IconPanel'] coms=coms+['IconPanel: IconPanel']/></#if>
+		<#local names=names+[javaField(table.fileName)]/>
+		<#if !coms?has_content><#local comPath=comPath+['vuel!pages/components/IconPanel.html'] comName=comName+['IconPanel'] coms=coms+['IconPanel: IconPanel']/></#if>
 	</#if></#list>
 	<#list func.children as subtable><#if subtable.type=='page' && subtable.fileName!='index' && subtable.formType!='noShow'>
 		<#local comPath =comPath+["'vuel!pages/"+packageToPath(module,func.packageName,class?lower_case,subtable.fileName)+".html'"] comName=comName+[javaField(subtable.fileName)?lower_case?cap_first] coms=coms+["${javaField(subtable.fileName)?lower_case?cap_first}: ${javaField(subtable.fileName)?lower_case?cap_first}"] names=names+[subtable.fileName]/>
@@ -208,6 +200,7 @@
 					},
 					currentFormName : '',//addForm, editForm
 					searchForm : {
+						${formFields(table, 'searchable')}
 					},
 					addFormUrl : '/ws/json/${class?uncap_first}Application/add${class}',
 					addFormVisible : false,
@@ -226,12 +219,6 @@
 						${formFields(table, 'infoable')}
 					},
 					deleteFormUrl : '/ws/json/${class?uncap_first}Application/remove${class}ById',
-					addChildFormUrl : '/ws/json/${class?uncap_first}Application/add${class}',
-					addChildFormVisible : false,
-					addChildForm : {
-						${formFields(table, 'addable')}
-					},
-					addChildFormRules : ${genFormRule(table, 'addable')},
 					<#list func.children as subtable><#if subtable.type=='page' && subtable.fileName!='index' && subtable.formType=='form'>
 					${subtable.fileName}FormUrl : '/ws/json/${class?uncap_first}Application/${subtable.fileName}',
 					${subtable.fileName}FormVisible : false,
@@ -241,15 +228,17 @@
 					${subtable.fileName}FormRules : ${genFormRule(subtable, 'editable')},
 					</#if></#list>
 					enums : ${genEnums(func,project)},
-					tree : {
+					grid : {
 						url : '/ws/json/${class?uncap_first}Application/pageFind${class}Map/arg0={{d.vo}}/arg1={{d.page}}',
-						query : qdpObj({}, 'vo', {}, 'page', qdpObj({}, 'pageSize', 1000, 'currentPage', 1, 'orderBy', [])), oneSelection : null,
-						multiSelection : [], checked:[], expanded:[], props:{label: 'name', children:'children'}, data : []
+						query : qdpObj({}, 'vo', {}, 'page', qdpObj({}, 'pageSize', 10, 'currentPage', 1, 'orderBy', [])), oneSelection : null,
+						multiSelection : [], data : {
+							currentPage : 1, totalCount : 0, pageSize : 5, rows : []
+						}
 					}
 				};
 			}, //
 			created : function() {
-				this.loadTree();
+				this.loadGrid();
 			}, //
 			mounted : function() {
 				//快捷键
@@ -263,14 +252,11 @@
 			},//
 			methods : {
 				cache : getters.cache,//
-				accountId : getters.accountId,//
-				qdpIcon: function(config, value) {
-	                return qdpIcon(config, value) || 'el-icon-ion-android-menu';
-	            },//
-				// 加载Tree
-				loadTree : function() {
-					var root = this, tree = root.tree;
-					var query = tree.query, url = tree.url, params = params || {}, prefix="${class?lower_case}";
+				accountId : getters.accountId, 
+				// 加载Grid
+				loadGrid : function() {
+					var root = this, grid = root.grid;
+					var query = grid.query, url = grid.url, params = params || {}, prefix="${class?lower_case}";
 					query.page && params.orderBy && (query.page.orderBy = params.orderBy);
 					query.page && qdpIsNumber(params.pageSize) && (query.page.pageSize = params.pageSize || 1) && (query.page.currentPage = 1);
 					query.page && qdpIsNumber(params.currentPage) && (query.page.currentPage = params.currentPage);
@@ -278,23 +264,10 @@
 					qdpMap(root.queryContext(), function(value, key){//把当前上下文参数传给VO
 						(query.vo||{})[key] = value;
 					});
-					url = qdpFormatUrl(ctx + url, query);//把参数替换到URL中去
-					LOG("FN: tree-load-data.url=" + url);
-					var callback = function(arr){
-						var treeData = [];
-						//如果设置分组，或检测到可以分组的进行自动按分组组装成树
-						if (tree.groupFields||(arr && arr.length>0 && !arr[0].parentId && !arr[0].rootId && arr[0].type1 && arr[0].type2)) {
-							treeData = qdpGroupByTree(tree.groupFields, arr, tree.labelField || "name", tree.idField || "id", tree.pidField || "parentId",
-									tree.isExpand !== false, tree.checked || [], tree.disabled || []);
-						} else {
-							treeData = qdpTree(arr, tree.labelField || "name", tree.idField || "id", tree.pidField || "parentId", tree.isExpand !== false,
-									tree.checked || [], tree.disabled || []);
-						}
-						Vue.set(tree, 'data', treeData);
-					};
+					url = qdpFormatUrl(ctx + url, query);
+					LOG("FN: Grid.grid-load-data.url=" + url);
 					root.$http.get(url).then(function(data) {
-						var all = qdpAjaxDataBody(data) || [], arr = qdpIsArray(all) ? all : (all.rows || []);//要考虑返回是一个Page对象的情况
-						callback(arr);
+						Vue.set(grid, 'data', qdpAjaxDataBody(data));
 					}, function(response) {
 						root.$notify({
 							title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
@@ -339,13 +312,12 @@
 						form[field+'Name']=names.join(','), form[field]=ids.join(',');
 					}
 				},
-				// 展现树节点
-				renderContent: function(h, node_data_store){
-					var root=this, node=node_data_store.node, data=node_data_store.data, store=node_data_store.start;
-					return h('span', {'class': 'el-tree-node__label'}, [
-								h('i', {'class': root.qdpIcon(root.tree, data)}),
-								qdpLabel(root.tree, data)
-							]);
+				// 重置选择数据的值
+				resetSelectionLabel : function(formName, field) {
+					var ref = this.$refs[formName + '-' + field], ref2 = this.$refs[formName + '-' + field + 'Name'];
+					ref && ref.resetField();
+					ref2 && ref2.resetField();
+					this[formName][field + 'Selections'] = [];
 				},
 				// 热键，默认就是Ctrl+其他键
 				onHotKey : function(event) {
@@ -413,15 +385,15 @@
 						if ('reset' == arg0) {
 							root.$refs.searchForm.resetFields();
 							qdpMap(root.searchForm, function(value, key) {
-								root.tree.query.vo[key] = value;
+								root.grid.query.vo[key] = value;
 							});
 						}
 						if ('search' == arg0) {
 							qdpMap(root.searchForm, function(value, key) {
-								root.tree.query.vo[key] = value;
+								root.grid.query.vo[key] = value;
 							});
 						}
-						root.loadTree();
+						root.loadGrid();
 					}
 					if ("action-bar" == eventType) {
 						LOG("action-bar:" + arg0);
@@ -431,67 +403,22 @@
 							return;
 						}
 						if ('refresh' == action) {
-							root.loadTree();
+							root.loadGrid();
 							return;
 						}
 						if ('add' == action) {
 							root.addFormVisible = true;
 							return;
 						}
-						if ('addChild' == action) {
-							var one = root.tree.oneSelection;
-							if (one == null) {
-								root.$message.info("请选择数据!");
-								return;
-							}
-							root.addChildForm = qdpCombine({
-								${exFormFields(table, 'addable')}
-							}, {});
-							qdpMap(['type1','type2','rootId'], function(value, key){
-								(one[value] != null) && (root.addChildForm[value] = one[value]);
-							});
-							(one.id != null) && (root.addChildForm.parentId = one.id);
-							//
-							qdpMap(root.addChildForm, function(value, field) {
-								var loadData = root[field + 'LoadData'];
-								if (!loadData) {
-									return;
-								}
-								var url = loadData.url, query = qdpCombine(root.queryContext(), loadData.query), prefix="${class?lower_case}";
-								qdpMap(root.queryContext(), function(value, key){//把当前上下文参数传给VO
-									if(key.indexOf(prefix) == 0){
-										var newKey = key.substring(prefix.length);
-										newKey = newKey.substring(0, 1).toLowerCase() + newKey.substring(1);
-										(query.vo||{})[newKey] = value;
-									}else{
-										(query.vo||{})[key] = value;
-									}
-								});
-								var processor = typeof (loadData.callback) == 'function' ? loadData.callback : noop;
-								url = qdpFormatUrl(ctx + url, query);
-								LOG("FN: edit-load-data.url=" + url);
-								root.$http.get(url).then(function(data) {
-									processor.call(root, qdpAjaxDataBody(data), null, 'editForm');
-								}, function(response) {
-									root.$notify({
-										title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
-									});
-									processor.call(root, null, null, 'addChildForm');
-								});
-							});
-							root.addChildFormVisible = true;
-							root.queryContext.${class?lower_case}Id = root.tree.oneSelection.id;
-							return;
-						}
 						if ('edit' == action) {
-							if (root.tree.oneSelection == null) {
+							if (root.grid.oneSelection == null) {
 								root.$message.info("请选择数据!");
 								return;
 							}
 							root.editForm = qdpCombine({
 								${exFormFields(table, 'editable')}
-							}, root.tree.oneSelection);
-							//
+							}, root.grid.oneSelection);
+							//加载当前关联数据
 							qdpMap(root.editForm, function(value, field) {
 								var loadData = root[field + 'LoadData'];
 								if (!loadData) {
@@ -520,7 +447,7 @@
 								});
 							});
 							root.editFormVisible = true;
-							root.queryContext.${class?lower_case}Id = root.tree.oneSelection.id;
+							root.queryContext.${class?lower_case}Id = root.grid.oneSelection.id;
 							return;
 						}
 						if ('delete' == action) {
@@ -528,39 +455,68 @@
 							return;
 						}
 						if ('info' == action) {
-							if (root.tree.oneSelection == null) {
+							if (root.grid.oneSelection == null) {
 								root.$message.info("请选择数据!");
 								return;
 							}
-							root.infoForm = qdpJsonCopy(root.tree.oneSelection);
+							root.infoForm = qdpJsonCopy(root.grid.oneSelection);
 							root.infoFormVisible = true;
 							return;
 						}
 						if (root[action + 'Visible'] != null) {
-							if (root.tree.oneSelection == null) {
+							if (root.grid.oneSelection == null) {
 								root.$message.info("请选择数据!");
 								return;
 							}
-							root[action + 'Form'] = qdpCombine(root[action + 'Form'], root.tree.oneSelection);
+							root[action + 'Form'] = qdpCombine(root[action + 'Form'], root.grid.oneSelection);
 							root.currentFormName = action + 'Form', root[action + 'Visible'] = true;
-							root.queryContext.${class?lower_case}Id = root.tree.oneSelection.id;
+							root.queryContext.${class?lower_case}Id = root.grid.oneSelection.id;
 							return;
 						}
 					}
-					if ('treeForm' == eventType) {
-						LOG("treeForm:" + arg0);
-						var action = arg0, tree = root.tree;
-						if ('check-change' == action) {
-							var cheched = root.$refs.treeForm.getCheckedNodes(true);
-							Vue.set(tree, 'multiSelection', cheched);
+					if ('grid-page' == eventType) {
+						LOG("grid-page:" + arg0);
+						var action = arg0;
+						if ('size-change' == action) {
+							var pageSize = arg1;
+							root.grid.query.page.pageSize = pageSize > 0 ? pageSize : 10;
 						}
-						if ('node-click' == action) {
-							var data=arg1, nodeData=arg2, $node=arg3;
-							tree.oneSelection = data;
-							data && (root.infoForm = qdpJsonCopy(tree.oneSelection));
-							root.queryContext(qdpId(root, tree.oneSelection));
+						if ('current-change' == action) {
+							var currentPage = arg1;
+							root.grid.query.page.currentPage = currentPage > 0 ? currentPage : 1;
 						}
-						return;
+						root.loadGrid();
+					}
+					if ('grid-table' == eventType) {
+						LOG("grid-table:" + arg0);
+						var action = arg0;
+						if ('selection-change' == action) {
+							var rows = arg1, grid = root.grid, $grid = root.$refs.grid;
+							if (rows.length == 1) {
+								grid.oneSelection = rows[0];
+								$grid.setCurrentRow(rows[0]);
+								root.queryContext(qdpId(root, rows[0]));
+							}
+							Vue.set(grid, 'multiSelection', rows);
+						}
+						if ('row-click' == action) {
+							var row = arg1, event = arg2, column = arg3, grid = root.grid, $grid = root.$refs.grid;
+							if (grid.oneSelection == row) {
+								$grid.setCurrentRow();
+								grid.oneSelection = null;
+								root.queryContext(null);
+							} else {
+								grid.oneSelection = row;
+								$grid.setCurrentRow(row);
+								root.queryContext(qdpId(root, row));
+							}
+						}
+						if ('sort-change' == action) {
+							var columnPropOrder = arg1, column = arg1.column, prop = arg1.prop, order = arg1.order;//[descending,ascending,null]
+							var orderMap = qdpObj({}, 'descending', 'desc', 'ascending', 'asc', '-', '');
+							root.grid.query.page.orderBy[0] = qdpObj({}, 'name', prop, 'order', orderMap[order || '-']);
+							root.loadGrid();
+						}
 					}
 					if ('addForm' == eventType) {
 						LOG("addForm:" + arg0);
@@ -574,7 +530,7 @@
 								if (qdpIsSuccess(data)) {
 									root.$message.success('成功');
 									root.addFormVisible = false;
-									root.loadTree();
+									root.loadGrid();
 									$addForm.resetFields();
 								} else {
 									root.$notify({
@@ -607,51 +563,6 @@
 						}
 						return;
 					}
-					if ('addChildForm' == eventType) {
-						LOG("addChildForm:" + arg0);
-						var action = arg0, $addChildForm = root.$refs.addChildForm, addChildForm = root.addChildForm;
-						if ('reset' == action) {
-							$addChildForm.resetFields();
-						}
-						if ('submit' == action) {
-							var contextCondition = {}, formData, url;
-							var success = function(data) {
-								if (qdpIsSuccess(data)) {
-									root.$message.success('成功');
-									$addChildForm.resetFields();
-									root.addChildFormVisible = false;
-									root.loadTree();
-								} else {
-									root.$notify({
-										title : 'Form Post=>Error', message : url + '\n<br/>' + qdpToString(qdpAjaxData(data)), duration : 0, type : 'error'
-									});
-								}
-							};
-							var error = function(response) {
-								root.$notify({
-									title : 'Http=>Error', desc : response.url + '\n<br/>' + qdpToString(response), duration : 0
-								});
-							};
-							var valid = function(valid) {
-								if (!valid) {
-									return;
-								}
-								root.$http.post(url, formData).then(success, error);
-							};
-							var then = function() {
-								formData = qdpJsonForm({arg0 : root.clearForm(qdpJsonCopy(addChildForm))});
-								//submit form
-								url = qdpFormatUrl(ctx + root.addChildFormUrl, contextCondition);
-								LOG("FN: addChildForm.url=" + url);
-								$addChildForm.validate(valid);
-							};
-							var confirm = {
-								confirmButtonText : '确定', cancelButtonText : '取消', type : 'warning'
-							};
-							root.$confirm('提交表单', '提示', confirm).then(then)['catch'](noop);
-						}
-						return;
-					}//addChildForm-END
 					if ('editForm' == eventType) {
 						LOG("editForm:" + arg0);
 						var action = arg0, $editForm = root.$refs.editForm, editForm = root.editForm;
@@ -665,7 +576,7 @@
 									root.$message.success('成功');
 									$editForm.resetFields();
 									root.editFormVisible = false;
-									root.loadTree();
+									root.loadGrid();
 								} else {
 									root.$notify({
 										title : 'Form Post=>Error', message : url + '\n<br/>' + qdpToString(qdpAjaxData(data)), duration : 0, type : 'error'
@@ -698,7 +609,8 @@
 						return;
 					}//editForm-END
 					if ('deleteForm' == eventType) {
-						var action = arg0, deleteForm = root.tree.oneSelection?[root.tree.oneSelection]:[];
+						LOG("deleteForm:" + arg0);
+						var action = arg0, deleteForm = root.grid.multiSelection;
 						var contextCondition = {}, formData, url, messages;
 						{
 							formData = [], messages = [];
@@ -714,7 +626,7 @@
 						var success = function(data) {
 							if (qdpIsSuccess(data)) {
 								root.$message.success('成功');
-								root.loadTree();
+								root.loadGrid();
 							} else {
 								root.$notify({
 									title : 'Form Post=>Error', message : url + '\n<br/>' + qdpToString(qdpAjaxData(data)), duration : 0, type : 'error'
@@ -753,7 +665,7 @@
 								if (qdpIsSuccess(data)) {
 									root.$message.success('成功');
 									root[actionBarName + 'Visible'] = false;
-									root.loadTree();
+									root.loadGrid();
 									$form.resetFields();
 								} else {
 									root.$notify({
@@ -804,7 +716,7 @@
 	<#list module.children as func>
 		<#assign class=javaClass(func.tableName,removePrefix)?cap_first/>
 		<#list func.children as item>
-			<#if item.type=='page' && item.name=='index' && item.formType=='tree'>
+			<#if item.type=='page' && item.name=='index' && item.formType=='grid'>
 				<#assign table=item pk=[] notNull=[] index=[] unique=[] autoInc=[] columns=[] foreign=[]/>
 				<#list table.fields as field>
 					<#if field.isPk><#assign pk=pk+[field]/></#if>

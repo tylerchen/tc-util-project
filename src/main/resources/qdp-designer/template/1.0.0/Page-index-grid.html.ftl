@@ -2,6 +2,7 @@
 <#include "/_page_util.ftl" />
 <#macro page date package class module table pk notNull index unique autoInc columns foreign func proModule project>
 <template>
+    <!-- template-1.0.0 -->
 	<div class="qdp-list-layout">
 		<!-- 搜索 --><#local ableFields=[]/><#list table.fields as field><#if field.searchable><#local ableFields=ableFields+[field]/></#if></#list>
 		<#if ableFields?has_content>

@@ -3,7 +3,7 @@
 <#macro page date package class module table pk notNull index unique autoInc columns foreign func proModule>
 <#local table=getTable(table.tableName, project).table!table/>
 <template>
-    <!-- template-1.0.0 -->
+    <!-- template-2.0.0 -->
 	<div class="qdp-list-layout">
 		<!-- 搜索 --><#local searchs=[]/><#list table.fields as field><#if field.searchable><#local searchs=searchs+[field]/></#if></#list>
 		<#if searchs?has_content>
