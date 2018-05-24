@@ -40,7 +40,7 @@
 				<el-table-column type="selection" width="35"></el-table-column>
 				<#list ableFields as field>
 					<#if ['radio','checkbox','switch','select']?seq_index_of(field.type.grid) gt -1>
-				<el-table-column :fixed="true" prop="${javaField(field.field)}" label="${javaFieldEnName(javaField(field.label!field.description!field.field))?capitalize}">
+				<el-table-column :fixed="true" prop="${javaField(field.field)}" label="${javaFieldEnName(javaField(field.label!field.description!field.field))?capitalize}" width="100">
 					<template scope="scope"><el-tag>{{getOption(scope.row, scope.column)}}</el-tag></template>
 				</el-table-column>
 					<#elseif field.type.add == 'modal'>
