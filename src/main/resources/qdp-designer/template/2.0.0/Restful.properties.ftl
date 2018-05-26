@@ -13,21 +13,21 @@ ${class}.interface.nullChar=-
 ${class}.method.get${class}=get${class}
 ${class}.method.get${class}.path=/get/:id
 ${class}.method.get${class}.arg0=${class}VO
-${class}.method.get${class}.arg0.value=id
+${class}.method.get${class}.arg0.props=id
 #
 ${class}.method.pageFind${class}=pageFind${class}
 ${class}.method.pageFind${class}.path=/page${fieldNamesPath}/:currentPage/:pageSize,/page${fieldNamesPath}/:currentPage,/page${fieldNamesPath}
 ${class}.method.pageFind${class}.arg0=${class}VO
-${class}.method.pageFind${class}.arg0.value=${fieldNamesJoin}
+${class}.method.pageFind${class}.arg0.props=${fieldNamesJoin}
 ${class}.method.pageFind${class}.arg1=Page
-${class}.method.pageFind${class}.arg1.value=currentPage,pageSize
+${class}.method.pageFind${class}.arg1.props=currentPage,pageSize
 #
 ${class}.method.pageFind${class}Map=pageFind${class}Map
 ${class}.method.pageFind${class}Map.path=/page/map${fieldNamesPath}/:currentPage/:pageSize,/page/map${fieldNamesPath}/:currentPage,/page/map${fieldNamesPath}
 ${class}.method.pageFind${class}Map.arg0=${class}VO
-${class}.method.pageFind${class}Map.arg0.value=${fieldNamesJoin}
+${class}.method.pageFind${class}Map.arg0.props=${fieldNamesJoin}
 ${class}.method.pageFind${class}Map.arg1=Page
-${class}.method.pageFind${class}Map.arg1.value=currentPage,pageSize
+${class}.method.pageFind${class}Map.arg1.props=currentPage,pageSize
 #
 ${class}.method.add${class}=add${class}
 ${class}.method.add${class}.method=POST
@@ -44,7 +44,7 @@ ${class}.method.remove${class}ByIds=remove${class}ByIds
 ${class}.method.remove${class}ByIds.method=DELETE
 ${class}.method.remove${class}ByIds.path=/:ids
 ${class}.method.remove${class}ByIds.arg0=String[]
-${class}.method.remove${class}ByIds.arg0.value=ids
+${class}.method.remove${class}ByIds.arg0.props=ids
 </#if></#list>
 <#--唯一方法-->
 <#list unique as field><#local javaFieldName=javaField(field.field)/>
@@ -52,7 +52,7 @@ ${class}.method.remove${class}ByIds.arg0.value=ids
 ${class}.method.getBy${javaFieldName?cap_first}=getBy${javaFieldName?cap_first}
 ${class}.method.getBy${javaFieldName?cap_first}.path=/get/${javaFieldName}/:${javaFieldName}
 ${class}.method.getBy${javaFieldName?cap_first}.arg0=${field.javaType}
-${class}.method.getBy${javaFieldName?cap_first}.arg0.value=${javaFieldName}
+${class}.method.getBy${javaFieldName?cap_first}.arg0.props=${javaFieldName}
 </#list>
 <#--关联查询-->
 <#list foreign as field><#if field.midTable?has_content && field.midMainField?has_content && field.midSecondField?has_content>
@@ -67,15 +67,15 @@ ${class}.method.getBy${javaFieldName?cap_first}.arg0.value=${javaFieldName}
 ${class}.method.pageFindAssign${refClass}=pageFindAssign${refClass}
 ${class}.method.pageFindAssign${refClass}.path=/${refClass}/:id${fieldNamesPath}/:currentPage/:pageSize,/${refClass}/:id${fieldNamesPath}/:currentPage,/${refClass}/:id${fieldNamesPath}
 ${class}.method.pageFindAssign${refClass}.arg0=${class}VO
-${class}.method.pageFindAssign${refClass}.arg0.value=id,${fieldNamesJoin}
+${class}.method.pageFindAssign${refClass}.arg0.props=id,${fieldNamesJoin}
 ${class}.method.pageFindAssign${refClass}.arg1=Page
-${class}.method.pageFindAssign${refClass}.arg1.value=currentPage,pageSize
+${class}.method.pageFindAssign${refClass}.arg1.props=currentPage,pageSize
 #
 ${class}.method.assign${refClass}=assign${refClass}
 ${class}.method.assign${refClass}.method=PUT
 ${class}.method.assign${refClass}.path=/${refClass}/:${javaField(field.field)}
 ${class}.method.assign${refClass}.arg0=${class}VO
-${class}.method.assign${refClass}.arg0.value=${javaField(field.field)}
+${class}.method.assign${refClass}.arg0.props=${javaField(field.field)}
 </#if></#list>
 <#--弹出表单-->
 <#list func.children as item><#if item.type=='page' && item.name!='index' && item.formType=='form'>
