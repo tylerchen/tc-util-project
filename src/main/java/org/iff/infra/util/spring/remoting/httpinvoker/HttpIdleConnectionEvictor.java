@@ -16,7 +16,7 @@ import org.apache.http.conn.HttpClientConnectionManager;
  */
 public class HttpIdleConnectionEvictor extends Thread {
 
-	private static final org.iff.infra.util.Logger.Log Logger = org.iff.infra.util.Logger.get("HttpInvoker");
+	private static final org.iff.infra.util.Logger.Log Logger = org.iff.infra.util.Logger.get("FOSS.RPC");
 
 	private final HttpClientConnectionManager connMgr;
 

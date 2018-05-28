@@ -53,7 +53,7 @@ import org.springframework.web.util.NestedServletException;
  */
 public class HttpInvokerServiceExporter extends RemoteInvocationSerializingExporter implements HttpRequestHandler {
 
-	private static final org.iff.infra.util.Logger.Log Logger = org.iff.infra.util.Logger.get("HttpInvoker");
+	private static final org.iff.infra.util.Logger.Log Logger = org.iff.infra.util.Logger.get("FOSS.RPC");
 
 	/**
 	 * Reads a remote invocation from the request, executes it,

@@ -49,7 +49,7 @@ public class DistributeLockFactory {
 	public static final String BASE_PATH = "/foss/dislock";
 	/*cache the zk client, you can reuse.*/
 	public static final Map<String, DistributeLockFactory> ZK_MAP = new HashMap<String, DistributeLockFactory>();
-	private static final Logger.Log LOG = Logger.get("DIST_LOCK");
+	private static final Logger.Log LOG = Logger.get("FOSS.DISLOCK");
 
 	/*the name of the lock client*/
 	private String name;

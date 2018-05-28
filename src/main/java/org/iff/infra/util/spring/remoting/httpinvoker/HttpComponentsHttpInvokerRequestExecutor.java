@@ -68,7 +68,7 @@ import org.springframework.util.StringUtils;
  */
 public class HttpComponentsHttpInvokerRequestExecutor extends AbstractHttpInvokerRequestExecutor {
 
-	private static final org.iff.infra.util.Logger.Log Logger = org.iff.infra.util.Logger.get("HttpInvoker");
+	private static final org.iff.infra.util.Logger.Log Logger = org.iff.infra.util.Logger.get("FOSS.RPC");
 
 	private static final int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
 

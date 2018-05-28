@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Logger {
 
-	private static final org.slf4j.Logger log = LoggerFactory.getLogger("FOSS");
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger("FOSS.LOG");
 
 	private static final Log LOGGER = new Log(log);
 
