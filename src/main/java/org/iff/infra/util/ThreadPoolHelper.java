@@ -10,10 +10,7 @@ package org.iff.infra.util;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * 提供四种线程池功能，主要目的是控制线程数量。
@@ -94,16 +91,29 @@ public class ThreadPoolHelper {
     }
 
     /**
-     * 采用 Scheduled 线程池执行任务，线程大小是固定的，大小为 CpuCoe*2 或 8，适合执行一些定时任务。
+     * 采用 Scheduled 线程池执行任务，线程大小是固定的，大小为 CpuCoe*2 或 8，适合执行一些定时任务，固定周期执行。
+     *
+     * @param runnable
+     * @param initialDelay
+     * @param period
+     * @param timeUnit
+     */
+    public static ScheduledFuture<?> executeAtFixedScheduled(Runnable runnable, long initialDelay,
+                                                             long period, TimeUnit timeUnit) {
+        return getScheduled().scheduleAtFixedRate(PreCheckHelper.checkNotNull(runnable, "ThreadPool runnable thread is required!"), initialDelay, period, timeUnit);
+    }
+
+    /**
+     * 采用 Scheduled 线程池执行任务，线程大小是固定的，大小为 CpuCoe*2 或 8，适合执行一些定时任务，与上一个任务时间间隔。
      *
      * @param runnable
      * @param initialDelay
      * @param delay
      * @param timeUnit
      */
-    public static void executeScheduled(Runnable runnable, long initialDelay,
-                                        long delay, TimeUnit timeUnit) {
-        getScheduled().scheduleWithFixedDelay(PreCheckHelper.checkNotNull(runnable, "ThreadPool runnable thread is required!"), initialDelay, delay, timeUnit);
+    public static ScheduledFuture<?> executeWithFixedScheduled(Runnable runnable, long initialDelay,
+                                                               long delay, TimeUnit timeUnit) {
+        return getScheduled().scheduleWithFixedDelay(PreCheckHelper.checkNotNull(runnable, "ThreadPool runnable thread is required!"), initialDelay, delay, timeUnit);
     }
 
     /**
