@@ -22,6 +22,18 @@ public class ShutdownHookHelper {
 
     private static final Map<String, ShutdownHookResource> resources = new LinkedHashMap<String, ShutdownHookResource>();
 
+    static {
+        try {
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null) {
+                sm.checkPermission(new RuntimePermission("shutdownHooks"));
+            }
+            Runtime.getRuntime().addShutdownHook(new ShutdownHookThread());
+        } catch (Exception e) {
+            Logger.error("System can not add ShutdownHook!", e);
+        }
+    }
+
     /**
      * 注册 ShutdownHook 资源。
      *
@@ -85,7 +97,7 @@ public class ShutdownHookHelper {
     /**
      * 用于关闭资源
      */
-    public static class ShutdownHookThread implements Runnable {
+    public static class ShutdownHookThread extends Thread {
         public void run() {
             List<String> keys = new ArrayList<String>(resources.keySet());
             Collections.reverse(keys);

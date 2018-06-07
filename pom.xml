@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.iff</groupId>
     <artifactId>tc-util</artifactId>
-    <version>1.0.25</version>
+    <version>1.0.26</version>
     <name>tc-util-project</name>
     <url>http://maven.apache.org</url>
 
@@ -12,9 +12,9 @@
             <id>tc-util-dev</id>
             <!-- 当前目录下有tc-util.md的时候就使用compile，否则使用provided。主要是IDEA使用provided时不会引入包。 -->
             <activation>
-               <file>
+                <file>
                     <exists>${basedir}/tc-util.md</exists>
-               </file>
+                </file>
             </activation>
             <properties>
                 <dep.scope>compile</dep.scope>
@@ -544,6 +544,14 @@
             <scope>${dep.scope}</scope>
         </dependency>
         <!-- monitor-END -->
+        <!-- Kafka -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>1.1.0</version>
+            <scope>${dep.scope}</scope>
+        </dependency>
+        <!-- Kafka-END -->
     </dependencies>
     <repositories>
         <repository>
