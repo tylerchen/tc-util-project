@@ -272,6 +272,7 @@ public class LogKafkaHelper {
             ShutdownHookHelper.unregister("FOSS.LOG.KAFKA-" + topic);
             producer = new KafkaProducer<String, String>(props);
             ShutdownHookHelper.register("FOSS.LOG.KAFKA-" + topic, producer);
+            lastRenew = System.currentTimeMillis();
             return this;
         }
 
