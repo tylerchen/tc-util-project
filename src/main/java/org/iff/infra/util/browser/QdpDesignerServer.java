@@ -10,6 +10,8 @@ package org.iff.infra.util.browser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
 import org.apache.http.entity.ContentType;
@@ -284,6 +286,58 @@ public class QdpDesignerServer {
                         } finally {
                             StreamHelper.closeWithoutError(osw);
                             StreamHelper.closeWithoutError(out);
+                        }
+                    }
+                    {//update pom.xml
+                        try {
+                            String content = StreamHelper.getContent(new FileInputStream(pom), false);
+                            String[] replaceStarts = new String[]{"<groupId>", "<artifactId>", "<version>"};
+                            String[] replaceEnds = new String[]{"</groupId>", "</artifactId>", "</version>"};
+                            String[] replaceValues = new String[]{(String) pc.get("groupId"), (String) pc.get("artifactId"), (String) pc.get("version")};
+                            String newContent = null;
+                            for (int i = 0; i < replaceStarts.length; i++) {
+                                String start = replaceStarts[i], end = replaceEnds[i], replace = replaceValues[i];
+                                int indexOf = content.indexOf(start);
+                                if (indexOf < 0) {
+                                    continue;
+                                }
+                                String value = content.substring(indexOf + start.length(), content.indexOf(end, indexOf + 2));
+                                if (value.equals(replace)) {
+                                    continue;
+                                }
+                                newContent = content = StringUtils.replace(content, start + value + end, start + replace + end, 1);
+                            }
+                            if (newContent != null) {
+                                FileUtils.write(pom, newContent, "UTF-8");
+                                System.out.println("POM update: " + pom.getAbsolutePath());
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+                    {//update spring xml
+                        String[] springFiles = new String[]{"src/main/resources/META-INF/spring/root.xml", "src/main/resources/META-INF/spring-app/spring-data-access.xml", "src/test/resources/META-INF/spring/root-test.xml", "src/test/resources/META-INF/spring/spring-data-access.xml"};
+                        for (String fileName : springFiles) {
+                            File springConfig = new File(file, fileName);
+                            if (!springConfig.exists() || !springConfig.isFile()) {
+                                continue;
+                            }
+                            try {
+                                String content = StreamHelper.getContent(new FileInputStream(springConfig), false);
+                                int indexOf = content.indexOf("\"com.foreveross.qdp,com.foreveross.common,com.foreveross.extension");
+                                if (indexOf < 0) {
+                                    continue;
+                                }
+                                String value = content.substring(indexOf + 1, content.indexOf('"', indexOf + 1));
+                                String[] split = content.split(",");
+                                if (ArrayUtils.contains(split, (String) pc.get("groupId"))) {
+                                    continue;
+                                }
+                                String newValue = value + "," + ((String) pc.get("groupId"));
+                                String replace = StringUtils.replace(content, value, newValue);
+                                FileUtils.write(springConfig, replace, "UTF-8");
+                                System.out.println("File package update: " + springConfig.getAbsolutePath());
+                            } catch (Exception e) {
+                            }
                         }
                     }
                     try {
