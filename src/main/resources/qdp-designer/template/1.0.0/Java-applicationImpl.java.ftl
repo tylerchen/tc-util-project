@@ -73,7 +73,7 @@ public class ${class}ApplicationImpl implements ${class}Application {
 	 * <pre>
 	 * get ${class}VO by id.
 	 * </pre>
-	 * @param vo
+	 * @param ${javaFieldName}
 	 * @return ${class}VO
 	 * (non-Javadoc)
 	 * @see ${appPackage(package,module,func.packageName)}.${class}Application#get${class}ById(${field.javaType})
@@ -222,7 +222,7 @@ public class ${class}ApplicationImpl implements ${class}Application {
 	 * <pre>
 	 * remove ${class}.
 	 * </pre>
-	 * @param id.
+	 * @param id
 	 * (non-Javadoc)
 	 * @see ${appPackage(package,module,func.packageName)}.${class}Application#remove${class}ById(${field.javaType})
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -241,7 +241,7 @@ public class ${class}ApplicationImpl implements ${class}Application {
 	 * <pre>
 	 * remove ${class}.
 	 * </pre>
-	 * @param ids.
+	 * @param ids
 	 * (non-Javadoc)
 	 * @see ${appPackage(package,module,func.packageName)}.${class}Application#remove${class}ByIds(${field.javaType}[])
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
@@ -303,7 +303,7 @@ public class ${class}ApplicationImpl implements ${class}Application {
 	 * <pre>
 	 * assign ${refClass} by id
 	 * </pre>
-	 * @param ids ${refClass} id
+	 * @param vo ${refClass} id
 	 * (non-Javadoc)
 	 * @see ${appPackage(package,module,func.packageName)}.${class}Application#assign${refClass}(${class}VO, Page)
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 

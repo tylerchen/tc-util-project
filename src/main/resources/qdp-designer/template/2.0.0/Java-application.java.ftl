@@ -43,7 +43,7 @@ public interface ${class}Application {
 	 * <pre>
 	 * get ${class}VO by id.
 	 * </pre>
-	 * @param vo
+	 * @param ${javaFieldName}
 	 * @return ${class}VO
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since ${date}
@@ -118,7 +118,7 @@ public interface ${class}Application {
 	 * <pre>
 	 * remove ${class}.
 	 * </pre>
-	 * @param id.
+	 * @param id
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since ${date}
 	 * auto generate by qdp v3.0.
@@ -129,7 +129,7 @@ public interface ${class}Application {
 	 * <pre>
 	 * remove ${class}.
 	 * </pre>
-	 * @param ids.
+	 * @param ids
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since ${date}
 	 * auto generate by qdp v3.0.
@@ -177,7 +177,7 @@ public interface ${class}Application {
 	 * <pre>
 	 * assign ${refClass} by id
 	 * </pre>
-	 * @param ids ${refClass} id
+	 * @param vo ${refClass} id
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since ${date}
 	 * auto generate by qdp v3.0.

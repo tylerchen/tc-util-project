@@ -116,7 +116,7 @@ public class ${class} implements Serializable {
 	 * remove ${class} by id
 	 * Usage : ${class}.remove(id)
 	 * </pre>
-	 * @param ${class?uncap_first}
+	 * @param ${javaFieldName}
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since ${date}
 	 */
@@ -131,7 +131,7 @@ public class ${class} implements Serializable {
 	 * remove ${class} by id
 	 * Usage : ${class}.remove(id)
 	 * </pre>
-	 * @param ${class?uncap_first}
+	 * @param ${javaFieldName}s
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since ${date}
 	 */
