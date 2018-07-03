@@ -132,6 +132,8 @@ public class ${class}RSApplicationImpl {
             {
                 page.setCurrentPage(NumberHelper.getInt(currentPage, 1));
                 page.setPageSize(NumberHelper.getInt(pageSize, 10));
+                asc = PreCheckHelper.equalsToNull(asc, "-");
+                desc = PreCheckHelper.equalsToNull(desc, "-");
                 if (StringUtils.isNotBlank(asc)) {
                     page.addAscOrderBy(asc);
                 }
@@ -198,6 +200,8 @@ public class ${class}RSApplicationImpl {
             {
                 page.setCurrentPage(NumberHelper.getInt(currentPage, 1));
                 page.setPageSize(NumberHelper.getInt(pageSize, 10));
+                asc = PreCheckHelper.equalsToNull(asc, "-");
+                desc = PreCheckHelper.equalsToNull(desc, "-");
                 if (StringUtils.isNotBlank(asc)) {
                     page.addAscOrderBy(asc);
                 }
@@ -393,6 +397,8 @@ public class ${class}RSApplicationImpl {
             {
                 page.setCurrentPage(NumberHelper.getInt(currentPage, 1));
                 page.setPageSize(NumberHelper.getInt(pageSize, 10));
+                asc = PreCheckHelper.equalsToNull(asc, "-");
+                desc = PreCheckHelper.equalsToNull(desc, "-");
                 if (StringUtils.isNotBlank(asc)) {
                     page.addAscOrderBy(asc);
                 }
