@@ -288,7 +288,7 @@ public class QdpDesignerServer {
                             StreamHelper.closeWithoutError(out);
                         }
                     }
-                    {//update pom.xml
+                    if(!IS_DEV){//update pom.xml
                         try {
                             String content = StreamHelper.getContent(new FileInputStream(pom), false);
                             String[] replaceStarts = new String[]{"<groupId>", "<artifactId>", "<version>"};
@@ -314,7 +314,7 @@ public class QdpDesignerServer {
                         } catch (Exception e) {
                         }
                     }
-                    {//update spring xml
+                    if(!IS_DEV){//update spring xml
                         String[] springFiles = new String[]{"src/main/resources/META-INF/spring/root.xml", "src/main/resources/META-INF/spring-app/spring-data-access.xml", "src/test/resources/META-INF/spring/root-test.xml", "src/test/resources/META-INF/spring/spring-data-access.xml"};
                         for (String fileName : springFiles) {
                             File springConfig = new File(file, fileName);
