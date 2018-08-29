@@ -7,6 +7,7 @@
  ******************************************************************************/
 package org.iff.infra.util.test;
 
+import org.iff.infra.util.PreRequiredHelperTest;
 import org.iff.infra.util.TestPreCheckHelper;
 import org.iff.infra.util.TestXStreamHelper;
 import org.iff.infra.util.TestXmlHelper;
@@ -16,24 +17,25 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
+ * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
  * @since Mar 14, 2016
  */
 public class AllTest {
 
-	public static Test suite() {
+    public static Test suite() {
 
-		TestSuite suite = new TestSuite("Running all tests.");
+        TestSuite suite = new TestSuite("Running all tests.");
 
-		suite.addTestSuite(TestHttpHelper.class);
-		suite.addTest(new JUnit4TestAdapter(TestXStreamHelper.class));
-		suite.addTest(new JUnit4TestAdapter(TestXmlHelper.class));
-		suite.addTest(new JUnit4TestAdapter(TestPreCheckHelper.class));
+        suite.addTestSuite(TestHttpHelper.class);
+        suite.addTest(new JUnit4TestAdapter(TestXStreamHelper.class));
+        suite.addTest(new JUnit4TestAdapter(TestXmlHelper.class));
+        suite.addTest(new JUnit4TestAdapter(TestPreCheckHelper.class));
+        suite.addTest(new JUnit4TestAdapter(PreRequiredHelperTest.class));
 
-		return suite;
-	}
+        return suite;
+    }
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(AllTest.suite());
-	}
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(AllTest.suite());
+    }
 }

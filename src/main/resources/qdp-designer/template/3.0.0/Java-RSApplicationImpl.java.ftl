@@ -72,7 +72,7 @@ public class ${class}RSApplicationImpl {
      */
     @ApiOperation(value = "get ${class} by id", notes = "get ${class} by id")
     @GetMapping("/get/{id}")
-    public ResultBean get${class}ById(@PathVariable String id) {
+    public ResultBean get${class}ById(@PathVariable(value = "id") String id) {
         try {
             return ResultBean.success().setBody(${class?uncap_first}Application.get${class}ById(id));
         } catch (Exception e) {
@@ -293,7 +293,7 @@ public class ${class}RSApplicationImpl {
      */
     @ApiOperation(value = "delete ${class}", notes = "delete ${class}")
     @DeleteMapping("/{id}")
-    public ResultBean remove${class}ById(@PathVariable String id) {
+    public ResultBean remove${class}ById(@PathVariable(value = "id") String id) {
         try {
             if (id.indexOf(',') > -1) {
                 ${class?uncap_first}Application.remove${class}ByIds(StringUtils.split(id, ','));
@@ -326,7 +326,7 @@ public class ${class}RSApplicationImpl {
      */
     @ApiOperation(value = "get ${class} by ${javaFieldName}", notes = "get ${class} by ${javaFieldName}")
     @GetMapping("/get/${javaFieldName}/{${javaFieldName}}")
-    public ResultBean getBy${javaFieldName?cap_first}(@PathVariable ${field.javaType} ${javaFieldName}) {
+    public ResultBean getBy${javaFieldName?cap_first}(@PathVariable(value = "${javaFieldName}") ${field.javaType} ${javaFieldName}) {
         try {
             return ResultBean.success().setBody(${class?uncap_first}Application.getBy${javaFieldName?cap_first}(${javaFieldName}));
         } catch (Exception e) {

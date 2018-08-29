@@ -15,11 +15,13 @@ import java.util.*;
 
 /**
  * 用于参数检查，并返回值，不符合的参数会抛出异常。
+ * 由于这个类的一些方法名有歧义，所以不建议使用，使用 PreRequiredHelper 替代。
  *
  * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
  * @since 2014-3-14
  */
 @SuppressWarnings("unchecked")
+@Deprecated
 public class PreCheckHelper {
 
     public static <T> T checkTrue(T expression, CharSequence message) {
