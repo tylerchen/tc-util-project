@@ -288,7 +288,7 @@ public class QdpDesignerServer {
                             StreamHelper.closeWithoutError(out);
                         }
                     }
-                    if(!IS_DEV){//update pom.xml
+                    {//update pom.xml
                         try {
                             String content = StreamHelper.getContent(new FileInputStream(pom), false);
                             String[] replaceStarts = new String[]{"<groupId>", "<artifactId>", "<version>"};
@@ -314,7 +314,7 @@ public class QdpDesignerServer {
                         } catch (Exception e) {
                         }
                     }
-                    if(!IS_DEV){//update spring xml
+                    {//update spring xml
                         String[] springFiles = new String[]{"src/main/resources/META-INF/spring/root.xml", "src/main/resources/META-INF/spring-app/spring-data-access.xml", "src/test/resources/META-INF/spring/root-test.xml", "src/test/resources/META-INF/spring/spring-data-access.xml"};
                         for (String fileName : springFiles) {
                             File springConfig = new File(file, fileName);
@@ -389,7 +389,10 @@ public class QdpDesignerServer {
             Map<String, Object> data = (Map<String, Object>) json.get("data");
             Map<String, Object> pc = (Map<String, Object>) data.get("projectConfig");
             String projectPath = (String) pc.get("projectPath");
-            String templateVersion = (String) pc.get("templateVersion");
+            String groupId = (String) pc.get("groupId");
+            String artifactId = (String) pc.get("artifactId");
+            String version = (String) pc.get("version");
+            String templateVersion = StringUtils.defaultString((String) pc.get("templateVersion"), "1.0.0");
             File file = new File(projectPath);
             if (file.exists() && file.isDirectory()) {
                 File pom = new File(file, "pom.xml");
@@ -426,28 +429,27 @@ public class QdpDesignerServer {
                             pomContent = StringUtils.contains(pomContent, "</parent>")
                                     ? StringUtils.substringAfter(pomContent, "</parent>") : pomContent;
                             //<groupId>org.iff</groupId>
-                            String groupId = StringUtils.substringAfter(pomContent, "<groupId>");
-                            groupId = StringUtils.substringBefore(groupId, "</groupId>").trim();
+                            if (StringUtils.isBlank(groupId)) {
+                                groupId = StringUtils.substringAfter(pomContent, "<groupId>");
+                                groupId = StringUtils.substringBefore(groupId, "</groupId>").trim();
+                            }
                             //<artifactId>tc-util</artifactId>
-                            String artifactId = StringUtils.substringAfter(pomContent, "<artifactId>");
-                            artifactId = StringUtils.substringBefore(artifactId, "</artifactId>").trim();
+                            if (StringUtils.isBlank(artifactId)) {
+                                artifactId = StringUtils.substringAfter(pomContent, "<artifactId>");
+                                artifactId = StringUtils.substringBefore(artifactId, "</artifactId>").trim();
+                            }
                             //<version>1.0.18</version>
-                            String version = StringUtils.substringAfter(pomContent, "<version>");
-                            version = StringUtils.substringBefore(version, "</version>").trim();
-                            if (StringUtils
-                                    .isBlank((String) MapHelper.getByPath(loadData, "data/projectConfig/groupId"))) {
+                            if (StringUtils.isBlank(version)) {
+                                version = StringUtils.substringAfter(pomContent, "<version>");
+                                version = StringUtils.substringBefore(version, "</version>").trim();
+                            }
+                            {
                                 MapHelper.setByPath(loadData, "data/projectConfig/groupId", groupId);
-                            }
-                            if (StringUtils
-                                    .isBlank((String) MapHelper.getByPath(loadData, "data/projectConfig/artifactId"))) {
                                 MapHelper.setByPath(loadData, "data/projectConfig/artifactId", artifactId);
-                            }
-                            if (StringUtils
-                                    .isBlank((String) MapHelper.getByPath(loadData, "data/projectConfig/version"))) {
                                 MapHelper.setByPath(loadData, "data/projectConfig/version", version);
+                                MapHelper.setByPath(loadData, "data/projectConfig/projectPath", projectPath);
+                                MapHelper.setByPath(loadData, "data/projectConfig/templateVersion", templateVersion);
                             }
-                            MapHelper.setByPath(loadData, "data/projectConfig/projectPath", projectPath);
-                            MapHelper.setByPath(loadData, "data/projectConfig/templateVersion", StringUtils.defaultString(templateVersion, "1.0.0"));
                         } catch (Exception e1) {
                             e1.printStackTrace();
                         }
