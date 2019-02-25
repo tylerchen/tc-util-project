@@ -1908,7 +1908,7 @@ public class PreRequiredHelper {
             Object[] array = object.toArray();
             object.clear();
             for (Object obj : array) {
-                if (obj != null && !(obj instanceof CharSequence && StringUtils.isBlank((CharSequence) obj))) {
+                if (blankToNull(obj) != null) {
                     object.add((T) obj);
                 }
             }
@@ -1922,7 +1922,7 @@ public class PreRequiredHelper {
             }
             Object[] array = ((Collection) object).toArray();
             for (Object obj : array) {
-                if (obj != null && !(obj instanceof CharSequence && StringUtils.isBlank((CharSequence) obj))) {
+                if (blankToNull(obj) != null) {
                     clt.add((T) obj);
                 }
             }
@@ -1953,9 +1953,9 @@ public class PreRequiredHelper {
         try {//如果当前 Map 可以被修改就直接修改，否则返回一个新的 Map 。
             Object[] array = object.keySet().toArray();
             for (Object key : array) {
-                Object key1 = (key instanceof CharSequence) && StringUtils.isBlank((CharSequence) key) ? null : key;
+                Object key1 = blankToNull(key);
                 Object value = object.get(key);
-                value = (value instanceof CharSequence) && StringUtils.isBlank((CharSequence) value) ? null : value;
+                value = blankToNull(value);
                 if (key1 == null || value == null) {
                     object.remove(key);
                 }
@@ -1970,9 +1970,9 @@ public class PreRequiredHelper {
             }
             Object[] array = object.keySet().toArray();
             for (Object key : array) {
-                Object key1 = (key instanceof CharSequence) && StringUtils.isBlank((CharSequence) key) ? null : key;
+                Object key1 = blankToNull(key);
                 Object value = object.get(key);
-                value = (value instanceof CharSequence) && StringUtils.isBlank((CharSequence) value) ? null : value;
+                value = blankToNull(value);
                 if (key1 == null || value == null) {
                     continue;
                 }
@@ -2007,14 +2007,17 @@ public class PreRequiredHelper {
         Object newInstance = Array.newInstance(object.getClass().getComponentType(), len);
         int count = 0;
         for (int i = 0; i < len; i++) {
-            Object obj = Array.get(object, i);
-            obj = (obj instanceof CharSequence) && StringUtils.isBlank((CharSequence) obj) ? null : obj;
+            Object obj = blankToNull(Array.get(object, i));
             if (obj != null) {
                 Array.set(newInstance, count, obj);
                 count++;
             }
         }
         return (T[]) ArrayUtils.subarray((T[]) newInstance, 0, count);
+    }
+
+    private static Object blankToNull(Object obj) {
+        return (obj instanceof CharSequence) && StringUtils.isBlank((CharSequence) obj) ? null : obj;
     }
 
     /**
@@ -2054,8 +2057,8 @@ public class PreRequiredHelper {
      * @param <T>    对象的类型
      * @return 对象
      * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
-     * @since Mar 4, 2018
      * @date 2019-02-25
+     * @since Mar 4, 2018
      */
     @SuppressWarnings("rawtypes")
     public static <T> Collection<T> trimAndRemoveBlank(Collection<T> object) {
@@ -2124,8 +2127,8 @@ public class PreRequiredHelper {
      * @param object 对象
      * @return 对象
      * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
-     * @since Mar 4, 2018
      * @date 2019-02-25
+     * @since Mar 4, 2018
      */
     @SuppressWarnings("rawtypes")
     public static Map<?, ?> trimAndRemoveBlank(Map<?, ?> object) {
@@ -2176,8 +2179,8 @@ public class PreRequiredHelper {
      * @param <T>    对象的类型
      * @return 对象
      * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
-     * @since Mar 4, 2018
      * @date 2019-02-25
+     * @since Mar 4, 2018
      */
     @SuppressWarnings("rawtypes")
     public static <T> T[] trimAndRemoveBlank(T[] object) {
