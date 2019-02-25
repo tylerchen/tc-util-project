@@ -7,7 +7,6 @@
  ******************************************************************************/
 package org.iff.infra.util;
 
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -2056,6 +2055,7 @@ public class PreRequiredHelper {
      * @return 对象
      * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
      * @since Mar 4, 2018
+     * @date 2019-02-25
      */
     @SuppressWarnings("rawtypes")
     public static <T> Collection<T> trimAndRemoveBlank(Collection<T> object) {
@@ -2066,9 +2066,8 @@ public class PreRequiredHelper {
             Object[] array = object.toArray();
             object.clear();
             for (Object obj : array) {
-                if (obj != null
-                        && !(obj instanceof String && StringUtils.trim((String) obj).length() < 1
-                        || obj instanceof CharSequence && StringUtils.isBlank((CharSequence) obj))) {
+                obj = trim(obj);
+                if (obj != null) {
                     object.add((T) obj);
                 }
             }
@@ -2082,14 +2081,34 @@ public class PreRequiredHelper {
             }
             Object[] array = ((Collection) object).toArray();
             for (Object obj : array) {
-                if (obj != null
-                        && !(obj instanceof String && StringUtils.trim((String) obj).length() < 1
-                        || obj instanceof CharSequence && StringUtils.isBlank((CharSequence) obj))) {
+                obj = trim(obj);
+                if (obj != null) {
                     clt.add((T) obj);
                 }
             }
             return clt;
         }
+    }
+
+    private static Object trim(Object obj) {
+        if (obj instanceof String) {
+            String trim = StringUtils.trim((String) obj);
+            return trim.length() < 1 ? null : trim;
+        }
+        if (obj instanceof StringBuffer) {
+            String str = obj.toString();
+            String trim = StringUtils.trim(str);
+            return trim.length() == str.length() ? obj : (trim.length() < 1 ? null : new StringBuilder(trim));
+        }
+        if (obj instanceof StringBuilder) {
+            String str = obj.toString();
+            String trim = StringUtils.trim(str);
+            return trim.length() == str.length() ? obj : (trim.length() < 1 ? null : new StringBuilder(trim));
+        }
+        if (obj instanceof CharSequence) {
+            return StringUtils.isBlank(((CharSequence) obj)) ? null : obj;
+        }
+        return obj;
     }
 
     /**
@@ -2106,6 +2125,7 @@ public class PreRequiredHelper {
      * @return 对象
      * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
      * @since Mar 4, 2018
+     * @date 2019-02-25
      */
     @SuppressWarnings("rawtypes")
     public static Map<?, ?> trimAndRemoveBlank(Map<?, ?> object) {
@@ -2115,13 +2135,8 @@ public class PreRequiredHelper {
         try {//如果当前 Map 可以被修改就直接修改，否则返回一个新的 Map 。
             Object[] array = object.keySet().toArray();
             for (Object key : array) {
-                Object key1 = key instanceof String && StringUtils.trim((String) key).length() < 1
-                        || (key instanceof CharSequence) && StringUtils.isBlank((CharSequence) key)
-                        ? null : key;
-                Object value = object.get(key);
-                value = value instanceof String && StringUtils.trim((String) value).length() < 1
-                        || (value instanceof CharSequence) && StringUtils.isBlank((CharSequence) value)
-                        ? null : value;
+                Object key1 = trim(key);
+                Object value = trim(object.get(key));
                 if (key1 == null || value == null) {
                     object.remove(key);
                 }
@@ -2136,13 +2151,8 @@ public class PreRequiredHelper {
             }
             Object[] array = object.keySet().toArray();
             for (Object key : array) {
-                Object key1 = key instanceof String && StringUtils.trim((String) key).length() < 1
-                        || (key instanceof CharSequence) && StringUtils.isBlank((CharSequence) key)
-                        ? null : key;
-                Object value = object.get(key);
-                value = value instanceof String && StringUtils.trim((String) value).length() < 1
-                        || (value instanceof CharSequence) && StringUtils.isBlank((CharSequence) value)
-                        ? null : value;
+                Object key1 = trim(key);
+                Object value = trim(object.get(key));
                 if (key1 == null || value == null) {
                     continue;
                 }
@@ -2167,6 +2177,7 @@ public class PreRequiredHelper {
      * @return 对象
      * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
      * @since Mar 4, 2018
+     * @date 2019-02-25
      */
     @SuppressWarnings("rawtypes")
     public static <T> T[] trimAndRemoveBlank(T[] object) {
@@ -2177,9 +2188,7 @@ public class PreRequiredHelper {
         Object newInstance = Array.newInstance(object.getClass().getComponentType(), len);
         int count = 0;
         for (int i = 0; i < len; i++) {
-            Object obj = Array.get(object, i);
-            obj = obj instanceof String && StringUtils.trim((String) obj).length() < 1
-                    || (obj instanceof CharSequence) && StringUtils.isBlank((CharSequence) obj) ? null : obj;
+            Object obj = trim(Array.get(object, i));
             if (obj != null) {
                 Array.set(newInstance, count, obj);
                 count++;
