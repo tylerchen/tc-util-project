@@ -25,8 +25,8 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.Tuple;
-import redis.clients.util.Pool;
-import redis.clients.util.SafeEncoder;
+import redis.clients.jedis.util.Pool;
+import redis.clients.jedis.util.SafeEncoder;
 
 /**
  * 连接多个Redis，多个Redis不一定是集群或分片，仅仅是用于高可用方式，原目的是用于ELK-R日志方案.
