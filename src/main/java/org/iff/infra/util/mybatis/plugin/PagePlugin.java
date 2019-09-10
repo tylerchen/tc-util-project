@@ -23,11 +23,11 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.iff.infra.util.Assert;
+import org.iff.infra.util.Exceptions;
 import org.iff.infra.util.Logger;
 import org.iff.infra.util.ReflectHelper;
 import org.iff.infra.util.jdbc.dialet.Dialect;
 
-import javax.xml.bind.PropertyException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -242,11 +242,7 @@ public class PagePlugin implements Interceptor {
         String dialect = ""; // 数据库方言
         dialect = p.getProperty("dialect");
         if (StringUtils.isEmpty(dialect)) {
-            try {
-                throw new PropertyException("dialect property is not found!");
-            } catch (PropertyException e) {
-                e.printStackTrace();
-            }
+            Exceptions.runtime("PagePlugin dialect property is not found!");
         } else {
             try {
                 dialectObject = (Dialect) Class.forName(dialect).getDeclaredConstructor().newInstance();
@@ -256,11 +252,7 @@ public class PagePlugin implements Interceptor {
         }
         pageSqlId = p.getProperty("pageSqlId");
         if (StringUtils.isEmpty(pageSqlId)) {
-            try {
-                throw new PropertyException("pageSqlId property is not found!");
-            } catch (PropertyException e) {
-                e.printStackTrace();
-            }
+            Exceptions.runtime("PagePlugin pageSqlId property is not found!");
         }
     }
 }

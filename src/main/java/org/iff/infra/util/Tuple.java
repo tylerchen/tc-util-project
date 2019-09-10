@@ -147,6 +147,11 @@ public class Tuple<T, A, B, C, D, E, F, G, H, I, J, K, L, M, N> implements Seria
         return true;
     }
 
+    public Tuple set(int index, Object arg) {
+        args[index] = arg;
+        return this;
+    }
+
     public boolean hasError() {
         return args[0] instanceof Throwable;
     }

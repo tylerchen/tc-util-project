@@ -29,11 +29,11 @@ public class InterfaceHelper {
      * @param throwExceptionWhenInvoke
      * @return
      */
-    public static Runnable toRunnable(Class<?> clazz, String publicStaticMethodName, boolean throwExceptionWhenInvoke) {
+    public static Runnable toRunnable(Class<?> clazz, String publicStaticMethodName, final boolean throwExceptionWhenInvoke) {
         clazz = PreRequiredHelper.requireNotNull(clazz);
         publicStaticMethodName = PreRequiredHelper.requireNotBlank(publicStaticMethodName);
         try {
-            Method method = clazz.getMethod(publicStaticMethodName);
+            final Method method = clazz.getMethod(publicStaticMethodName);
             return new Runnable() {
                 public void run() {
                     try {
@@ -61,15 +61,15 @@ public class InterfaceHelper {
      * @param throwExceptionWhenInvoke
      * @return
      */
-    public static Runnable toRunnable(Object instance, String publicMethodName, boolean throwExceptionWhenInvoke) {
-        instance = PreRequiredHelper.requireNotNull(instance);
+    public static Runnable toRunnable(final Object instance, String publicMethodName, final boolean throwExceptionWhenInvoke) {
+        PreRequiredHelper.requireNotNull(instance);
         publicMethodName = PreRequiredHelper.requireNotBlank(publicMethodName);
         try {
-            Method method = instance.getClass().getMethod(publicMethodName);
+            final Method method = instance.getClass().getMethod(publicMethodName);
             return new Runnable() {
                 public void run() {
                     try {
-                        method.invoke(null, null);
+                        method.invoke(instance, null);
                     } catch (Exception e) {
                         if (throwExceptionWhenInvoke) {
                             Exceptions.runtime("InterfaceHelper invoke method: " + method.toGenericString() + " error!", e);
@@ -93,11 +93,11 @@ public class InterfaceHelper {
      * @param throwExceptionWhenInvoke
      * @return
      */
-    public static Closeable toCloseable(Class<?> clazz, String publicStaticMethodName, boolean throwExceptionWhenInvoke) {
+    public static Closeable toCloseable(Class<?> clazz, String publicStaticMethodName, final boolean throwExceptionWhenInvoke) {
         clazz = PreRequiredHelper.requireNotNull(clazz);
         publicStaticMethodName = PreRequiredHelper.requireNotBlank(publicStaticMethodName);
         try {
-            Method method = clazz.getMethod(publicStaticMethodName);
+            final Method method = clazz.getMethod(publicStaticMethodName);
             return new Closeable() {
                 public void close() throws IOException {
                     try {
@@ -125,11 +125,11 @@ public class InterfaceHelper {
      * @param throwExceptionWhenInvoke
      * @return
      */
-    public static Closeable toCloseable(Object instance, String publicMethodName, boolean throwExceptionWhenInvoke) {
+    public static Closeable toCloseable(Object instance, String publicMethodName, final boolean throwExceptionWhenInvoke) {
         instance = PreRequiredHelper.requireNotNull(instance);
         publicMethodName = PreRequiredHelper.requireNotBlank(publicMethodName);
         try {
-            Method method = instance.getClass().getMethod(publicMethodName);
+            final Method method = instance.getClass().getMethod(publicMethodName);
             return new Closeable() {
                 public void close() throws IOException {
                     try {

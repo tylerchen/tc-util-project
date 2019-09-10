@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -502,9 +503,10 @@ public class TypeConvertHelper {
     }
 
     /**
-     * string type converter.
+     * string type converter, fix boolean value to true or false.
      *
-     * @author zhaochen
+     * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a>
+     * @since 2019-04-11
      */
     public class StringTypeConvert implements TypeConvert {
         public String getName() {
@@ -517,10 +519,17 @@ public class TypeConvertHelper {
             } else if (sourceValue == null) {
                 return null;
             } else if (sourceCls == boolean.class || sourceCls == Boolean.class) {
-                return ((Boolean) sourceValue) ? "Y" : "N";
+                return ((Boolean) sourceValue) ? "true" : "false";
+            } else if (sourceValue instanceof Date) {
+                return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(sourceValue);
+            } else if (sourceValue instanceof Clob) {
+                try {
+                    return ((Clob) sourceValue).getSubString(1, Long.valueOf(((Clob) sourceValue).length()).intValue());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
-                return (sourceValue instanceof Date) ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(sourceValue)
-                        : sourceValue.toString();
+                return sourceValue.toString();
             }
         }
     }
@@ -597,7 +606,7 @@ public class TypeConvertHelper {
                 try {
                     clob = new SerialClob(cs);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
                 return clob;
             }
@@ -639,7 +648,7 @@ public class TypeConvertHelper {
                 try {
                     blob = new SerialBlob(bs);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
                 return blob;
             }
@@ -851,6 +860,21 @@ public class TypeConvertHelper {
                         i++;
                     }
                     return arr;
+                }
+            } else if (sourceValue instanceof Blob) {
+                try {
+                    byte[] bs = ((Blob) sourceValue).getBytes(1, Long.valueOf(((Blob) sourceValue).length()).intValue());
+                    if (targetClassName.equals(byte[].class.getName())) {
+                        return bs;
+                    } else {
+                        Byte[] arr = new Byte[bs.length];
+                        for (int i = 0; i < arr.length; i++) {
+                            arr[i] = bs[i];
+                        }
+                        return arr;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             } else {
                 if (targetClassName.equals(byte[].class.getName())) {
