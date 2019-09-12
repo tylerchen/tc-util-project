@@ -9,6 +9,7 @@
 package org.iff.infra.domain.abilities;
 
 import org.iff.infra.util.Exceptions;
+import org.iff.infra.util.FCS;
 import org.iff.infra.util.PreRequiredHelper;
 
 /**
@@ -22,9 +23,9 @@ public interface SingletonAble {
     public static SingletonAble singletonInstance(Class<?> singletonAble) {
         PreRequiredHelper.requireNotNull(singletonAble);
         try {
-            return (SingletonAble) singletonAble.getClass().getField("INSTANCE").get(null);
+            return (SingletonAble) singletonAble.getField("INSTANCE").get(null);
         } catch (Exception e) {
-            Exceptions.runtime("SingletonAble there is no public static INSTANCE field declare in this class, implements first!", e);
+            Exceptions.runtime(FCS.get("SingletonAble there is no public static INSTANCE field declare in class {name}, implements first!", singletonAble.getName()), e);
         }
         return null;
     }
