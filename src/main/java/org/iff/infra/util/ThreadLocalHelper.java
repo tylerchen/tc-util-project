@@ -33,13 +33,14 @@ public class ThreadLocalHelper {
 	 * @author <a href="mailto:iffiff1@gmail.com">Tyler Chen</a> 
 	 * @since Aug 18, 2015
 	 */
-	public static void set(String name, Object value) {
+	public static synchronized <T> T set(String name, T value) {
 		Map map = params.get();
 		if (map == null) {
 			map = new LinkedHashMap();
 			params.set(map);
 		}
 		map.put(name, value);
+		return value;
 	}
 
 	/**

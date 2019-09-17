@@ -125,15 +125,15 @@ public class InterfaceHelper {
      * @param throwExceptionWhenInvoke
      * @return
      */
-    public static Closeable toCloseable(Object instance, String publicMethodName, final boolean throwExceptionWhenInvoke) {
-        instance = PreRequiredHelper.requireNotNull(instance);
+    public static Closeable toCloseable(final Object instance, String publicMethodName, final boolean throwExceptionWhenInvoke) {
+        PreRequiredHelper.requireNotNull(instance);
         publicMethodName = PreRequiredHelper.requireNotBlank(publicMethodName);
         try {
             final Method method = instance.getClass().getMethod(publicMethodName);
             return new Closeable() {
                 public void close() throws IOException {
                     try {
-                        method.invoke(null, null);
+                        method.invoke(instance, null);
                     } catch (Exception e) {
                         if (throwExceptionWhenInvoke) {
                             Exceptions.runtime("InterfaceHelper invoke method: " + method.toGenericString() + " error!", e);
