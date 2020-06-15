@@ -22,7 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<local.repository.path>file://${project.basedir}/lib</local.repository.path>
 
-		<version.spring>4.0.2.RELEASE</version.spring>
+		<version.spring>5.2.7.RELEASE</version.spring>
 		<version.jsr311>1.0</version.jsr311>
 		<version.cxf>2.7.3</version.cxf>
 	</properties>
