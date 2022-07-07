@@ -24,7 +24,7 @@
 
 		<version.spring>4.0.2.RELEASE</version.spring>
 		<version.jsr311>1.0</version.jsr311>
-		<version.cxf>2.7.3</version.cxf>
+		<version.cxf>2.7.8</version.cxf>
 	</properties>
 	<repositories>
 		<repository>
